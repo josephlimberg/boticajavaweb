@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaCore OS - Inventario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Navbar Superior -->
+<nav class="bg-white shadow px-6 py-3 flex justify-between items-center border-b">
+    <div class="font-bold text-blue-600 text-xl">PharmaCore OS</div>
+    <div class="flex gap-4 items-center">
+        <span class="text-sm">Hola, Administrador</span>
+        <!-- Botón para cerrar sesión de forma segura -->
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar Sesión</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container mx-auto mt-8 px-4 flex gap-6">
+
+    <!-- Menú Lateral -->
+    <aside class="w-1/4">
+        <ul class="bg-white rounded shadow text-sm">
+            <li class="border-b"><a href="#" class="block px-4 py-3 hover:bg-gray-50 text-gray-600">Dashboard</a></li>
+            <li class="border-b bg-blue-50 border-l-4 border-blue-500"><a href="/medicamentos" class="block px-4 py-3 text-blue-700 font-semibold">Inventario</a></li>
+            <li><a href="#" class="block px-4 py-3 hover:bg-gray-50 text-gray-600">Proveedores</a></li>
+        </ul>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <main class="w-3/4">
+
+        <!-- Formulario de Registro (HU-02) -->
+        <div class="bg-white p-6 rounded shadow mb-6">
+            <h2 class="text-lg font-bold mb-4">Registro de Medicamentos</h2>
+
+            <form th:action="@{/medicamentos/guardar}" th:object="${nuevoMedicamento}" method="post">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">NOMBRE DEL MEDICAMENTO</label>
+                        <input type="text" th:field="*{nombre}" class="w-full border rounded px-3 py-2 text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">CATEGORÍA</label>
+                        <select th:field="*{categoria.id}" class="w-full border rounded px-3 py-2 text-sm" required>
+                            <option value="" disabled selected>Seleccione una categoría</option>
+                            <!-- Llenamos el select con las categorías de la BD -->
+                            <option th:each="cat : ${listaCategorias}" th:value="${cat.id}" th:text="${cat.nombre}"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">STOCK INICIAL (UNIDADES)</label>
+                        <input type="number" th:field="*{stock}" class="w-full border rounded px-3 py-2 text-sm" min="0" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">FECHA DE VENCIMIENTO</label>
+                        <input type="date" th:field="*{fechaVencimiento}" class="w-full border rounded px-3 py-2 text-sm" required>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="reset" class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-bold rounded">Guardar Registro</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla de Visualización (HU-03) -->
+        <div class="bg-white rounded shadow overflow-hidden">
+            <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                <h3 class="font-bold text-gray-700">Inventario Actual</h3>
+            </div>
+            <table class="w-full text-left text-sm">
+                <thead class="bg-gray-100 text-gray-600">
+                <tr>
+                    <th class="p-3">Nombre</th>
+                    <th class="p-3">Categoría</th>
+                    <th class="p-3">Stock</th>
+                    <th class="p-3">Vencimiento</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                <!-- Iteramos sobre la lista de medicamentos enviada por el Controlador -->
+                <tr th:each="med : ${listaMedicamentos}" class="hover:bg-gray-50">
+                    <td class="p-3 font-medium text-gray-800" th:text="${med.nombre}"></td>
+                    <!-- Accedemos al nombre de la categoría a través de la relación -->
+                    <td class="p-3 text-blue-600" th:text="${med.categoria.nombre}"></td>
+                    <td class="p-3" th:text="${med.stock} + ' unidades'"></td>
+                    <td class="p-3 text-gray-500" th:text="${med.fechaVencimiento}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: botica-integrador
+    restart: "no"
+    environment:
+      MYSQL_DATABASE: boticaintegrador2
+      MYSQL_ROOT_PASSWORD: root123 # Contraseña para el usuario root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # Mapeamos tu script SQL para que cree las tablas e inserte los datos iniciales
+      - ./bdbotica.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql_data:

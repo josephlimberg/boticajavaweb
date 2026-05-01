@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaCore OS - Acceso al Sistema</title>
+    <!-- Importamos Tailwind CSS por CDN para que funcione de inmediato -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 flex items-center justify-center h-screen">
+
+<div class="bg-white p-8 rounded-lg shadow-lg w-96">
+    <div class="text-center mb-6">
+        <div class="bg-blue-500 text-white w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <!-- Icono simple -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        </div>
+        <h1 class="text-xl font-bold text-gray-800">PharmaCore OS</h1>
+        <p class="text-xs text-gray-500 mt-1">Clinical Data Management Environment</p>
+    </div>
+
+    <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Acceso al Sistema</h2>
+
+    <!-- Mensajes de Error o Logout manejados por Spring Security -->
+    <div th:if="${param.error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-sm">
+        Usuario o contraseña incorrectos.
+    </div>
+    <div th:if="${param.logout}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4 text-sm">
+        Has cerrado sesión correctamente.
+    </div>
+
+    <!-- Formulario que envía los datos a Spring Security -->
+    <form th:action="@{/login}" method="post">
+        <div class="mb-4">
+            <label for="username" class="block text-xs font-bold text-gray-600 mb-1">USUARIO</label>
+            <div class="relative">
+                <input type="text" id="username" name="username" class="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Ej. m.gonzalez" required>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-1">
+                <label for="password" class="block text-xs font-bold text-gray-600">CONTRASEÑA</label>
+                <a href="#" class="text-xs text-blue-500 hover:underline">¿OLVIDÓ SU CLAVE?</a>
+            </div>
+            <div class="relative">
+                <input type="password" id="password" name="password" class="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="********" required>
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none transition duration-150">
+            INICIAR SESIÓN →
+        </button>
+    </form>
+</div>
+
+</body>
+</html>
