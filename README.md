@@ -74,3 +74,6 @@ mi-proyecto/
 │   │           └── fragments/      <-- Trozos de HTML reutilizables (navbar, footer)
 │   │
 │   └── test/                       <-- Pruebas unitarias y de integración
+
+#Correr el spring boot en el directorio boticajavaweb
+mvn spring-boot:run
