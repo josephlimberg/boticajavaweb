@@ -25,7 +25,6 @@ public class Medicamento {
     @Column(nullable = false, length = 150)
     private String nombre;
 
-    // Relación con la tabla Categorías
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
@@ -59,4 +58,8 @@ public class Medicamento {
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
+    
+    // Campo transitorio para mostrar info del lote en la tabla (no se guarda en BD)
+    @Transient
+    private String loteInfo;
 }

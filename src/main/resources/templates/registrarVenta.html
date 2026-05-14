@@ -1,0 +1,436 @@
+<!doctype html>
+
+<html class="light" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#0070ea",
+              "surface-dim": "#d7d9e5",
+              "on-secondary-fixed": "#191c1d",
+              "on-secondary-fixed-variant": "#454748",
+              "on-error-container": "#93000a",
+              "inverse-on-surface": "#eef0fb",
+              "on-surface-variant": "#414754",
+              surface: "#f9f9ff",
+              "primary-fixed": "#d8e2ff",
+              "error-container": "#ffdad6",
+              "tertiary-container": "#c64f00",
+              tertiary: "#9e3d00",
+              "on-primary": "#ffffff",
+              "on-secondary-container": "#626566",
+              "on-secondary": "#ffffff",
+              "secondary-container": "#e1e3e4",
+              outline: "#717786",
+              "tertiary-fixed-dim": "#ffb695",
+              "inverse-surface": "#2d3039",
+              "on-primary-container": "#fefcff",
+              "surface-variant": "#e0e2ed",
+              secondary: "#5c5f60",
+              "on-primary-fixed": "#001a41",
+              "tertiary-fixed": "#ffdbcc",
+              "on-error": "#ffffff",
+              "secondary-fixed": "#e1e3e4",
+              "surface-container-high": "#e6e8f3",
+              "primary-fixed-dim": "#adc7ff",
+              "on-primary-fixed-variant": "#004493",
+              "on-tertiary-fixed": "#351000",
+              "on-tertiary-container": "#fffbff",
+              "surface-container-low": "#f1f3fe",
+              "on-background": "#181c23",
+              background: "#f9f9ff",
+              "surface-tint": "#005bc0",
+              "surface-container": "#ebedf9",
+              "on-tertiary-fixed-variant": "#7c2e00",
+              "outline-variant": "#c1c6d7",
+              "on-tertiary": "#ffffff",
+              primary: "#0059bb",
+              "surface-bright": "#f9f9ff",
+              "surface-container-highest": "#e0e2ed",
+              "secondary-fixed-dim": "#c5c7c8",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#181c23",
+              error: "#ba1a1a",
+              "inverse-primary": "#adc7ff",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "container-padding-desktop": "2.5rem",
+              unit: "8px",
+              gutter: "1.5rem",
+              "sidebar-width": "280px",
+              "container-padding-mobile": "1rem",
+            },
+            fontFamily: {
+              "body-md": ["Inter"],
+              "headline-sm": ["Inter"],
+              "body-lg": ["Inter"],
+              "display-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "label-sm": ["Inter"],
+              "label-lg": ["Inter"],
+              "display-lg-mobile": ["Inter"],
+            },
+            fontSize: {
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-sm": [
+                "20px",
+                { lineHeight: "28px", fontWeight: "600" },
+              ],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "display-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }],
+              "headline-md": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+              "label-lg": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "display-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface">
+    <!-- SideNavBar -->
+    <aside
+      class="fixed left-0 top-0 h-screen w-[280px] z-50 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col h-full py-8"
+    >
+      <div class="px-6 mb-10 flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary"
+        >
+          <span class="material-symbols-outlined">health_and_safety</span>
+        </div>
+        <div>
+          <h1
+            class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim font-bold"
+          >
+            Botica Control
+          </h1>
+          <p class="text-label-sm text-on-surface-variant">
+            Gestión Farmacéutica
+          </p>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 space-y-1">
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">home</span>
+          Inicio
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">inventory_2</span>
+          Inventario
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container dark:bg-primary-container text-on-primary-container dark:text-on-primary-container border-l-4 border-primary font-bold font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">point_of_sale</span>
+          Registrar Venta
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">receipt_long</span>
+          Ventas Diarias
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">bar_chart</span>
+          Reportes
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">group</span>
+          Usuarios
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">history</span>
+          Historial de Acciones
+        </a>
+      </nav>
+      <div class="px-4 mt-auto">
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">logout</span>
+          Cerrar Sesión
+        </a>
+      </div>
+    </aside>
+    <!-- Main Content -->
+    <main class="ml-[280px] p-10 min-h-screen">
+      <!-- Header -->
+      <header class="flex justify-between items-center mb-10">
+        <div>
+          <h2 class="font-display-lg text-display-lg text-on-surface">
+            Registrar Nueva Venta
+          </h2>
+          <p class="text-body-md text-on-surface-variant">
+            Complete los detalles de la transacción para procesar el pedido.
+          </p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full border border-green-200"
+          >
+            <span class="material-symbols-outlined mr-2 text-[20px]"
+              >check_circle</span
+            >
+            <span class="text-label-lg">Sistema Conectado</span>
+          </div>
+        </div>
+      </header>
+      <!-- Sale Interface Grid -->
+      <div class="grid grid-cols-12 gap-8">
+        <!-- Left Column: Search and Inputs -->
+        <div class="col-span-8 space-y-8">
+          <!-- Search & Selection Section -->
+          <section
+            class="bg-surface-container-lowest border border-outline-variant p-8 rounded-xl shadow-sm"
+          >
+            <div class="flex items-center gap-4 mb-6">
+              <span class="material-symbols-outlined text-primary text-[28px]"
+                >search</span
+              >
+              <h3 class="font-headline-sm text-headline-sm">
+                Selección de Medicamento
+              </h3>
+            </div>
+            <div class="relative w-full mb-6">
+              <input
+                class="w-full h-14 pl-12 pr-4 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all text-body-lg"
+                placeholder="Buscar por nombre o código de barras..."
+                type="text"
+              />
+              <span
+                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline"
+                >barcode_scanner</span
+              >
+            </div>
+            <!-- Quick Selection Cards -->
+            <div class="grid grid-cols-2 gap-4">
+              <div
+                class="p-4 border-2 border-primary bg-primary-fixed/30 rounded-lg flex justify-between items-center cursor-pointer"
+              >
+                <div>
+                  <p class="font-label-lg text-on-primary-fixed">
+                    Paracetamol 500mg
+                  </p>
+                  <p class="text-label-sm text-on-surface-variant">
+                    Stock: 142 unidades
+                  </p>
+                </div>
+                <span class="text-headline-sm font-bold text-primary"
+                  >S/ 0.50</span
+                >
+              </div>
+              <div
+                class="p-4 border border-outline-variant hover:border-primary transition-colors rounded-lg flex justify-between items-center cursor-pointer"
+              >
+                <div>
+                  <p class="font-label-lg">Amoxicilina 500mg</p>
+                  <p class="text-label-sm text-on-surface-variant">
+                    Stock: 58 unidades
+                  </p>
+                </div>
+                <span class="text-headline-sm font-bold text-on-surface"
+                  >S/ 1.20</span
+                >
+              </div>
+            </div>
+          </section>
+          <!-- Transaction Details Form -->
+          <section
+            class="bg-surface-container-lowest border border-outline-variant p-8 rounded-xl shadow-sm"
+          >
+            <div class="flex items-center gap-4 mb-8">
+              <span class="material-symbols-outlined text-primary text-[28px]"
+                >edit_note</span
+              >
+              <h3 class="font-headline-sm text-headline-sm">
+                Detalles de Venta
+              </h3>
+            </div>
+            <div class="grid grid-cols-2 gap-8">
+              <div class="space-y-2">
+                <label class="font-label-lg text-on-surface-variant"
+                  >Cantidad</label
+                >
+                <input
+                  class="w-full h-14 px-4 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-headline-sm font-bold text-primary"
+                  type="number"
+                  value="10"
+                />
+              </div>
+              <div class="space-y-2">
+                <label class="font-label-lg text-on-surface-variant"
+                  >Precio Unitario</label
+                >
+                <div class="relative">
+                  <span
+                    class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold"
+                    >S/</span
+                  >
+                  <input
+                    class="w-full h-14 pl-10 pr-4 bg-surface-container-high border border-outline-variant rounded-lg text-headline-sm font-bold text-on-surface-variant cursor-not-allowed"
+                    readonly=""
+                    type="text"
+                    value="0.50"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- Success Message (Ghost state) -->
+          <div
+            class="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 opacity-80"
+          >
+            <span class="material-symbols-outlined">info</span>
+            <p class="text-label-lg">
+              Venta anterior registrada con éxito: #V-4921 (S/ 25.00)
+            </p>
+          </div>
+        </div>
+        <!-- Right Column: Summary and Checkout -->
+        <div class="col-span-4 space-y-8">
+          <section
+            class="bg-primary text-on-primary p-8 rounded-xl shadow-xl sticky top-8"
+          >
+            <h3 class="font-label-lg uppercase tracking-widest opacity-80 mb-2">
+              Total a Pagar
+            </h3>
+            <div class="flex items-baseline gap-2 mb-8">
+              <span class="text-headline-md font-medium">S/</span>
+              <span class="text-[64px] font-extrabold leading-none">5.00</span>
+            </div>
+            <div class="space-y-4 border-t border-on-primary/20 pt-6 mb-8">
+              <div class="flex justify-between items-center opacity-90">
+                <span class="text-body-md">Subtotal</span>
+                <span class="font-label-lg">S/ 5.00</span>
+              </div>
+              <div class="flex justify-between items-center opacity-90">
+                <span class="text-body-md">Descuento (0%)</span>
+                <span class="font-label-lg">S/ 0.00</span>
+              </div>
+              <div
+                class="flex justify-between items-center text-body-lg font-bold"
+              >
+                <span>TOTAL NETO</span>
+                <span>S/ 5.00</span>
+              </div>
+            </div>
+            <button
+              class="w-full bg-white text-primary h-16 rounded-xl font-headline-md hover:bg-primary-fixed transition-all flex items-center justify-center gap-3 shadow-lg active:scale-95"
+            >
+              <span
+                class="material-symbols-outlined"
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >check_circle</span
+              >
+              Registrar Venta
+            </button>
+            <button
+              class="w-full mt-4 bg-transparent border border-on-primary/30 text-on-primary/80 h-12 rounded-lg font-label-lg hover:bg-on-primary/10 transition-colors flex items-center justify-center gap-2"
+            >
+              <span class="material-symbols-outlined">print</span>
+              Imprimir Ticket
+            </button>
+          </section>
+          <!-- Help/Context Card -->
+          <div
+            class="p-6 bg-surface-container-high rounded-xl border border-outline-variant"
+          >
+            <div class="flex items-start gap-3">
+              <span class="material-symbols-outlined text-primary"
+                >lightbulb</span
+              >
+              <div>
+                <p class="font-label-lg mb-1">Acceso Rápido</p>
+                <p class="text-label-sm text-on-surface-variant">
+                  Presione
+                  <kbd
+                    class="px-1 py-0.5 bg-white border border-outline-variant rounded text-[10px]"
+                    >F2</kbd
+                  >
+                  para buscar o
+                  <kbd
+                    class="px-1 py-0.5 bg-white border border-outline-variant rounded text-[10px]"
+                    >ENTER</kbd
+                  >
+                  para confirmar la venta.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Visual Polish Overlay (Subtle Gradient Background) -->
+    <div
+      class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#f1f3fe_0%,_#f9f9ff_100%)] pointer-events-none"
+    ></div>
+  </body>
+</html>

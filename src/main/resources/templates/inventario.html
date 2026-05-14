@@ -1,101 +1,1252 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PharmaCore OS - Inventario</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 text-gray-800">
-
-<!-- Navbar Superior -->
-<nav class="bg-white shadow px-6 py-3 flex justify-between items-center border-b">
-    <div class="font-bold text-blue-600 text-xl">PharmaCore OS</div>
-    <div class="flex gap-4 items-center">
-        <span class="text-sm">Hola, Administrador</span>
-        <!-- Botón para cerrar sesión de forma segura -->
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar Sesión</button>
-        </form>
-    </div>
-</nav>
-
-<div class="container mx-auto mt-8 px-4 flex gap-6">
-
-    <!-- Menú Lateral -->
-    <aside class="w-1/4">
-        <ul class="bg-white rounded shadow text-sm">
-            <li class="border-b"><a href="#" class="block px-4 py-3 hover:bg-gray-50 text-gray-600">Dashboard</a></li>
-            <li class="border-b bg-blue-50 border-l-4 border-blue-500"><a href="/medicamentos" class="block px-4 py-3 text-blue-700 font-semibold">Inventario</a></li>
-            <li><a href="#" class="block px-4 py-3 hover:bg-gray-50 text-gray-600">Proveedores</a></li>
-        </ul>
+<!doctype html>
+<html class="light" lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#0070ea",
+              "surface-dim": "#d7d9e5",
+              "on-secondary-fixed": "#191c1d",
+              "on-secondary-fixed-variant": "#454748",
+              "on-error-container": "#93000a",
+              "inverse-on-surface": "#eef0fb",
+              "on-surface-variant": "#414754",
+              surface: "#f9f9ff",
+              "primary-fixed": "#d8e2ff",
+              "error-container": "#ffdad6",
+              "tertiary-container": "#c64f00",
+              tertiary: "#9e3d00",
+              "on-primary": "#ffffff",
+              "on-secondary-container": "#626566",
+              "on-secondary": "#ffffff",
+              "secondary-container": "#e1e3e4",
+              outline: "#717786",
+              "tertiary-fixed-dim": "#ffb695",
+              "inverse-surface": "#2d3039",
+              "on-primary-container": "#fefcff",
+              "surface-variant": "#e0e2ed",
+              secondary: "#5c5f60",
+              "on-primary-fixed": "#001a41",
+              "tertiary-fixed": "#ffdbcc",
+              "on-error": "#ffffff",
+              "secondary-fixed": "#e1e3e4",
+              "surface-container-high": "#e6e8f3",
+              "primary-fixed-dim": "#adc7ff",
+              "on-primary-fixed-variant": "#004493",
+              "on-tertiary-fixed": "#351000",
+              "on-tertiary-container": "#fffbff",
+              "surface-container-low": "#f1f3fe",
+              "on-background": "#181c23",
+              background: "#f9f9ff",
+              "surface-tint": "#005bc0",
+              "surface-container": "#ebedf9",
+              "on-tertiary-fixed-variant": "#7c2e00",
+              "outline-variant": "#c1c6d7",
+              "on-tertiary": "#ffffff",
+              primary: "#0059bb",
+              "surface-bright": "#f9f9ff",
+              "surface-container-highest": "#e0e2ed",
+              "secondary-fixed-dim": "#c5c7c8",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#181c23",
+              error: "#ba1a1a",
+              "inverse-primary": "#adc7ff",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "container-padding-desktop": "2.5rem",
+              unit: "8px",
+              gutter: "1.5rem",
+              "sidebar-width": "280px",
+              "container-padding-mobile": "1rem",
+            },
+            fontFamily: {
+              "body-md": ["Inter"],
+              "headline-sm": ["Inter"],
+              "body-lg": ["Inter"],
+              "display-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "label-sm": ["Inter"],
+              "label-lg": ["Inter"],
+              "display-lg-mobile": ["Inter"],
+            },
+            fontSize: {
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-sm": [
+                "20px",
+                { lineHeight: "28px", fontWeight: "600" },
+              ],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "display-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }],
+              "headline-md": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+              "label-lg": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "display-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .zebra-table tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+      /* Modal styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.active {
+        display: flex;
+      }
+      .modal-content {
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface">
+    <!-- SideNavBar -->
+    <aside
+      class="fixed left-0 top-0 h-screen w-[280px] z-50 bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-8"
+    >
+      <div class="px-6 mb-10">
+        <h1 class="font-headline-md text-headline-md text-primary font-bold">
+          Botica Control
+        </h1>
+        <p class="text-on-surface-variant font-label-lg text-label-lg">
+          Gestión Farmacéutica
+        </p>
+      </div>
+      <nav class="flex-1 space-y-1 px-4">
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">home</span> Inicio
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container border-l-4 border-primary font-bold font-label-lg text-label-lg rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">inventory_2</span> Inventario
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">point_of_sale</span> Registrar
+          Venta
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">receipt_long</span> Ventas
+          Diarias
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">bar_chart</span> Reportes
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">group</span> Usuarios
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">history</span> Historial de
+          Acciones
+        </a>
+      </nav>
+      <div class="px-4 mt-auto">
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">logout</span> Cerrar Sesión
+        </a>
+      </div>
     </aside>
-
-    <!-- Contenido Principal -->
-    <main class="w-3/4">
-
-        <!-- Formulario de Registro (HU-02) -->
-        <div class="bg-white p-6 rounded shadow mb-6">
-            <h2 class="text-lg font-bold mb-4">Registro de Medicamentos</h2>
-
-            <form th:action="@{/medicamentos/guardar}" th:object="${nuevoMedicamento}" method="post">
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">NOMBRE DEL MEDICAMENTO</label>
-                        <input type="text" th:field="*{nombre}" class="w-full border rounded px-3 py-2 text-sm" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">CATEGORÍA</label>
-                        <select th:field="*{categoria.id}" class="w-full border rounded px-3 py-2 text-sm" required>
-                            <option value="" disabled selected>Seleccione una categoría</option>
-                            <!-- Llenamos el select con las categorías de la BD -->
-                            <option th:each="cat : ${listaCategorias}" th:value="${cat.id}" th:text="${cat.nombre}"></option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">STOCK INICIAL (UNIDADES)</label>
-                        <input type="number" th:field="*{stock}" class="w-full border rounded px-3 py-2 text-sm" min="0" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">FECHA DE VENCIMIENTO</label>
-                        <input type="date" th:field="*{fechaVencimiento}" class="w-full border rounded px-3 py-2 text-sm" required>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2">
-                    <button type="reset" class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-bold rounded">Guardar Registro</button>
-                </div>
-            </form>
+    <!-- TopAppBar -->
+    <header
+      class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 z-40 bg-surface border-b border-outline-variant"
+    >
+      <div class="flex justify-between items-center px-gutter w-full h-full">
+        <div class="flex items-center gap-4 flex-1 max-w-md">
+          <div class="relative w-full">
+            <span
+              class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+              >search</span
+            >
+            <input
+              class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-primary text-body-md font-body-md"
+              placeholder="Buscar medicamento por nombre..."
+              type="text"
+              id="searchInput"
+            />
+          </div>
         </div>
-
-        <!-- Tabla de Visualización (HU-03) -->
-        <div class="bg-white rounded shadow overflow-hidden">
-            <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
-                <h3 class="font-bold text-gray-700">Inventario Actual</h3>
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-2">
+            <button
+              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button
+              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <span class="material-symbols-outlined">settings</span>
+            </button>
+          </div>
+          <div
+            class="flex items-center gap-3 ml-2 border-l border-outline-variant pl-6"
+          >
+            <div class="text-right">
+              <p class="font-label-lg text-label-lg leading-none">
+                Dr. Ricardo Pérez
+              </p>
+              <p class="text-[12px] text-on-surface-variant">
+                Farmacéutico Jefe
+              </p>
             </div>
-            <table class="w-full text-left text-sm">
-                <thead class="bg-gray-100 text-gray-600">
-                <tr>
-                    <th class="p-3">Nombre</th>
-                    <th class="p-3">Categoría</th>
-                    <th class="p-3">Stock</th>
-                    <th class="p-3">Vencimiento</th>
-                </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                <!-- Iteramos sobre la lista de medicamentos enviada por el Controlador -->
-                <tr th:each="med : ${listaMedicamentos}" class="hover:bg-gray-50">
-                    <td class="p-3 font-medium text-gray-800" th:text="${med.nombre}"></td>
-                    <!-- Accedemos al nombre de la categoría a través de la relación -->
-                    <td class="p-3 text-blue-600" th:text="${med.categoria.nombre}"></td>
-                    <td class="p-3" th:text="${med.stock} + ' unidades'"></td>
-                    <td class="p-3 text-gray-500" th:text="${med.fechaVencimiento}"></td>
-                </tr>
-                </tbody>
-            </table>
+            <img
+              alt="Avatar del Farmacéutico"
+              class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA80n2oKDsA5z5f8Gd4fQvLsgvezITVxm0FpqD4RdK0UGzmKql1RPkJDHroyl-wjabRtWYkxIVzuj66yU-o0qlGyKcF0WtWthQtTualcLRPhkT_sPZfARO2JaW2veVJIKM2RCBLHhucAS5zoI2GUEKBWKRD6H_3Z4bwHO09zlhbbgXZqNkEIFNycb5c5Lw0hg0tQKXHRxSAFbmAtRjjW-GZ9kEe6tfDfSlGqEOpThSwzKmDGia9RXyAyxZe7wpEyBI5X7jDjNODcdU5"
+            />
+          </div>
         </div>
+      </div>
+    </header>
+    <!-- Main Content Canvas -->
+    <main class="ml-[280px] pt-16 min-h-screen p-gutter bg-surface">
+      <div class="max-w-7xl mx-auto space-y-8">
+        <!-- Header Action Row -->
+        <div
+          class="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-6"
+        >
+          <div>
+            <h2 class="font-display-lg text-display-lg text-on-surface">
+              Inventario de Productos
+            </h2>
+            <p class="text-on-surface-variant font-body-md">
+              Gestiona el stock, vencimientos y categorías de tu botica.
+            </p>
+          </div>
+          <button
+            id="openModalBtn"
+            class="h-12 px-6 bg-primary text-on-primary font-bold rounded-lg flex items-center gap-2 hover:opacity-90 transition-all active:scale-95"
+          >
+            <span class="material-symbols-outlined">add</span>
+            Agregar medicamento
+          </button>
+        </div>
+        <!-- Dashboard Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div
+            class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl border-t-4 border-t-primary shadow-sm"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-on-surface-variant font-label-lg"
+                >Stock Total</span
+              >
+              <span class="material-symbols-outlined text-primary"
+                >inventory_2</span
+              >
+            </div>
+            <p class="text-display-lg font-display-lg" th:text="${stockTotal}">
+              0
+            </p>
+            <p class="text-on-surface-variant text-label-sm mt-1">
+              Productos activos (no vencidos)
+            </p>
+          </div>
 
+          <div
+            class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl border-t-4 border-t-warning shadow-sm"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-on-surface-variant font-label-lg"
+                >Próximos a Vencer</span
+              >
+              <span class="material-symbols-outlined text-warning"
+                >warning</span
+              >
+            </div>
+            <p
+              class="text-display-lg font-display-lg text-warning"
+              th:text="${proximosAVencer}"
+            >
+              0
+            </p>
+            <p class="text-on-surface-variant text-label-sm mt-1">
+              Vencimiento en 30 días
+            </p>
+          </div>
+
+          <div
+            class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl border-t-4 border-t-error shadow-sm"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-on-surface-variant font-label-lg"
+                >Stock Bajo</span
+              >
+              <span class="material-symbols-outlined text-error"
+                >trending_down</span
+              >
+            </div>
+            <p
+              class="text-display-lg font-display-lg text-error"
+              th:text="${stockBajo}"
+            >
+              0
+            </p>
+            <p class="text-on-surface-variant text-label-sm mt-1">
+              Requieren reabastecimiento
+            </p>
+          </div>
+
+          <div
+            class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl border-t-4 border-t-gray-500 shadow-sm"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-on-surface-variant font-label-lg"
+                >Vencidos</span
+              >
+              <span class="material-symbols-outlined text-gray-500"
+                >cancel</span
+              >
+            </div>
+            <p
+              class="text-display-lg font-display-lg text-gray-500"
+              th:text="${vencidos}"
+            >
+              0
+            </p>
+            <p class="text-on-surface-variant text-label-sm mt-1">
+              Productos vencidos
+            </p>
+          </div>
+        </div>
+        <!-- Filters and Table Container -->
+        <div
+          class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm"
+        >
+          <!-- Table Filters -->
+          <div
+            class="p-6 border-b border-outline-variant flex flex-wrap gap-4 items-center justify-between"
+          >
+            <div class="flex items-center gap-4">
+              <div class="relative">
+                <select
+                  id="categoryFilter"
+                  class="appearance-none bg-surface-container border border-outline-variant rounded-lg px-4 py-2 pr-10 font-label-lg text-label-lg focus:outline-none focus:border-primary"
+                >
+                  <option value="">Todas las Categorías</option>
+                  <option
+                    th:each="cat : ${listaCategorias}"
+                    th:value="${cat.id}"
+                    th:text="${cat.nombre}"
+                  ></option>
+                </select>
+                <span
+                  class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant"
+                  >expand_more</span
+                >
+              </div>
+              <div class="relative">
+                <select
+                  id="statusFilter"
+                  class="appearance-none bg-surface-container border border-outline-variant rounded-lg px-4 py-2 pr-10 font-label-lg text-label-lg focus:outline-none focus:border-primary"
+                >
+                  <option value="">Estado: Todos</option>
+                  <option value="bajo">Stock Bajo</option>
+                  <option value="proximo">Próximos a Vencer (30 días)</option>
+                  <option value="vencido">Vencido</option>
+                </select>
+                <span
+                  class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant"
+                  >filter_list</span
+                >
+              </div>
+            </div>
+            <span class="text-on-surface-variant font-label-lg" id="recordCount"
+              >Mostrando
+              <span th:text="${#lists.size(listaMedicamentos)}">0</span>
+              medicamentos</span
+            >
+          </div>
+          <!-- Data Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left zebra-table border-collapse">
+              <thead class="bg-surface-container-high">
+                <tr>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant border-b border-outline-variant"
+                  >
+                    Nombre
+                  </th>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant border-b border-outline-variant"
+                  >
+                    Categoría
+                  </th>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant border-b border-outline-variant text-center"
+                  >
+                    Stock actual
+                  </th>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant border-b border-outline-variant"
+                  >
+                    Fecha vencimiento
+                  </th>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant border-b border-outline-variant text-right"
+                  >
+                    Lote
+                  </th>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant border-b border-outline-variant text-right"
+                  >
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                id="medicamentosTableBody"
+                class="divide-y divide-outline-variant"
+              >
+                <tr th:each="med : ${listaMedicamentos}">
+                  <td class="px-6 py-5">
+                    <div class="flex flex-col">
+                      <span
+                        class="font-bold text-on-surface"
+                        th:text="${med.nombre}"
+                      ></span>
+                      <span
+                        class="text-label-sm text-on-surface-variant"
+                        th:text="${med.formaFarmaceutica}"
+                      ></span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-5">
+                    <span
+                      class="px-3 py-1 bg-secondary-container text-secondary font-label-sm rounded-full"
+                      th:text="${med.categoria.nombre}"
+                    >
+                    </span>
+                  </td>
+                  <td
+                    class="px-6 py-5 text-center font-bold"
+                    th:classappend="${med.stock < med.nivelMinimo ? 'text-error' : 'text-on-surface'}"
+                    th:text="${med.stock}"
+                  >
+                    0
+                  </td>
+                  <td class="px-6 py-5">
+                    <span
+                      th:classappend="${med.fechaVencimiento.isBefore(T(java.time.LocalDate).now()) ? 'text-error font-bold' : 'text-on-surface'}"
+                      th:text="${#temporals.format(med.fechaVencimiento, 'dd/MM/yyyy')}"
+                    >
+                    </span>
+                  </td>
+                  <td class="px-6 py-5 text-right">
+                    <span
+                      class="text-on-surface-variant text-label-sm"
+                      th:text="${med.loteInfo}"
+                      >-</span
+                    >
+                  </td>
+                  <td class="px-6 py-5 text-right">
+                    <div class="flex justify-end gap-2">
+                      <button
+                        class="edit-btn p-2 hover:bg-primary-container hover:text-on-primary-container rounded transition-colors text-on-surface-variant"
+                        th:data-id="${med.id}"
+                        th:data-nombre="${med.nombre}"
+                        th:data-categoria-id="${med.categoria.id}"
+                        th:data-forma="${med.formaFarmaceutica}"
+                        th:data-descripcion="${med.descripcion}"
+                        th:data-proveedor="${med.proveedor}"
+                        th:data-stock="${med.stock}"
+                        th:data-nivel-minimo="${med.nivelMinimo}"
+                        th:data-precio="${med.precio}"
+                        th:data-ubicacion="${med.ubicacionEstante}"
+                        th:data-fecha-vencimiento="${#temporals.format(med.fechaVencimiento, 'yyyy-MM-dd')}"
+                      >
+                        <span class="material-symbols-outlined">edit</span>
+                      </button>
+                      <button
+                        class="delete-btn p-2 hover:bg-error-container hover:text-on-error-container rounded transition-colors text-on-surface-variant"
+                        th:data-id="${med.id}"
+                        th:data-nombre="${med.nombre}"
+                      >
+                        <span class="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination -->
+          <div
+            class="p-6 bg-surface-container-low flex items-center justify-between"
+          >
+            <span class="text-label-sm text-on-surface-variant"
+              >Página 1 de 1</span
+            >
+            <div class="flex gap-2">
+              <button
+                class="px-4 py-2 border border-outline-variant rounded-lg text-label-lg font-label-lg hover:bg-surface-container-high disabled:opacity-50"
+                disabled=""
+              >
+                Anterior
+              </button>
+              <button
+                class="px-4 py-2 border border-outline-variant rounded-lg text-label-lg font-label-lg bg-surface-container-lowest hover:bg-primary-container hover:text-on-primary-container transition-colors"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
-</div>
-</body>
+
+    <!-- MODAL PARA AGREGAR/EDITAR MEDICAMENTO -->
+    <div id="medicamentoModal" class="modal-overlay">
+      <div
+        class="modal-content bg-surface-container-lowest rounded-xl shadow-xl"
+      >
+        <div
+          class="p-6 border-b border-outline-variant flex justify-between items-center"
+        >
+          <h3 class="text-headline-sm font-headline-sm" id="modalTitle">
+            Agregar Medicamento
+          </h3>
+          <button
+            id="closeModalBtn"
+            class="p-2 hover:bg-surface-container-high rounded-lg"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form
+          id="medicamentoForm"
+          th:action="@{/medicamentos/guardar}"
+          method="post"
+          class="p-6 space-y-5"
+        >
+          <input type="hidden" id="medicamentoId" name="id" value="0" />
+
+          <div>
+            <label
+              class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+              >Nombre *</label
+            >
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              required
+              class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+              >Categoría *</label
+            >
+            <select
+              id="categoriaId"
+              name="categoriaId"
+              required
+              class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+            >
+              <option value="">Seleccione una categoría</option>
+              <option
+                th:each="cat : ${listaCategorias}"
+                th:value="${cat.id}"
+                th:text="${cat.nombre}"
+              ></option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+              >Forma Farmacéutica</label
+            >
+            <input
+              type="text"
+              id="formaFarmaceutica"
+              name="formaFarmaceutica"
+              class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+              >Descripción</label
+            >
+            <textarea
+              id="descripcion"
+              name="descripcion"
+              rows="2"
+              class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+            ></textarea>
+          </div>
+
+          <div>
+            <label
+              class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+              >Proveedor</label
+            >
+            <input
+              type="text"
+              id="proveedor"
+              name="proveedor"
+              class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+                >Stock *</label
+              >
+              <input
+                type="number"
+                id="stock"
+                name="stock"
+                required
+                value="0"
+                min="0"
+                class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+                >Nivel Mínimo</label
+              >
+              <input
+                type="number"
+                id="nivelMinimo"
+                name="nivelMinimo"
+                value="20"
+                min="0"
+                class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+                >Precio *</label
+              >
+              <input
+                type="number"
+                step="0.01"
+                id="precio"
+                name="precio"
+                required
+                value="0"
+                class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+                >Ubicación Estante</label
+              >
+              <input
+                type="text"
+                id="ubicacionEstante"
+                name="ubicacionEstante"
+                class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label
+              class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+              >Fecha Vencimiento *</label
+            >
+            <input
+              type="date"
+              id="fechaVencimiento"
+              name="fechaVencimiento"
+              required
+              class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+            />
+          </div>
+
+          <!-- SECCIÓN DE LOTE -->
+          <div class="border-t border-outline-variant pt-5 mt-2">
+            <h4 class="text-headline-sm font-headline-sm text-primary mb-4">
+              Información del Lote
+            </h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+                  >Código de Lote *</label
+                >
+                <input
+                  type="text"
+                  id="codigoLote"
+                  name="codigoLote"
+                  required
+                  class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+                  >Stock del Lote</label
+                >
+                <input
+                  type="number"
+                  id="stockLote"
+                  name="stockLote"
+                  value="0"
+                  min="0"
+                  class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+                />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+                  >Fecha Fabricación</label
+                >
+                <input
+                  type="date"
+                  id="fechaFabricacion"
+                  name="fechaFabricacion"
+                  class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface-variant mb-1"
+                  >Precio Compra</label
+                >
+                <input
+                  type="number"
+                  step="0.01"
+                  id="precioCompra"
+                  name="precioCompra"
+                  class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              id="cancelModalBtn"
+              class="px-6 py-2 border border-outline-variant rounded-lg font-label-lg hover:bg-surface-container-high transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-6 py-2 bg-primary text-on-primary rounded-lg font-label-lg font-bold hover:opacity-90 transition-all"
+            >
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN PARA ELIMINAR -->
+    <div id="deleteModal" class="modal-overlay">
+      <div
+        class="modal-content bg-surface-container-lowest rounded-xl shadow-xl max-w-md"
+      >
+        <div class="p-6 border-b border-outline-variant">
+          <h3 class="text-headline-sm font-headline-sm">
+            Confirmar Eliminación
+          </h3>
+        </div>
+        <div class="p-6">
+          <p>
+            ¿Está seguro que desea eliminar el medicamento
+            <strong id="deleteMedName"></strong>?
+          </p>
+          <p class="text-on-surface-variant text-label-sm mt-2">
+            Esta acción no se puede deshacer.
+          </p>
+        </div>
+        <div class="p-6 border-t border-outline-variant flex justify-end gap-3">
+          <button
+            id="cancelDeleteBtn"
+            class="px-6 py-2 border border-outline-variant rounded-lg font-label-lg hover:bg-surface-container-high transition-colors"
+          >
+            Cancelar
+          </button>
+          <form
+            id="deleteForm"
+            th:action="@{/medicamentos/eliminar}"
+            method="post"
+            style="display: inline"
+          >
+            <input type="hidden" id="deleteMedId" name="id" />
+            <button
+              type="submit"
+              class="px-6 py-2 bg-error text-on-error rounded-lg font-label-lg font-bold hover:opacity-90 transition-all"
+            >
+              Eliminar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Variables
+  let currentDeleteId = null;
+  let currentDeleteName = '';
+
+  // Modal elements
+  const modal = document.getElementById('medicamentoModal');
+  const openBtn = document.getElementById('openModalBtn');
+  const closeBtn = document.getElementById('closeModalBtn');
+  const cancelBtn = document.getElementById('cancelModalBtn');
+  const form = document.getElementById('medicamentoForm');
+  const modalTitle = document.getElementById('modalTitle');
+
+  // Delete modal elements
+  const deleteModal = document.getElementById('deleteModal');
+  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+  const deleteMedNameSpan = document.getElementById('deleteMedName');
+  const deleteForm = document.getElementById('deleteForm');
+  const deleteMedIdInput = document.getElementById('deleteMedId');
+
+  // Form fields
+  const medicamentoId = document.getElementById('medicamentoId');
+  const nombreInput = document.getElementById('nombre');
+  const categoriaSelect = document.getElementById('categoriaId');
+  const formaInput = document.getElementById('formaFarmaceutica');
+  const descripcionInput = document.getElementById('descripcion');
+  const proveedorInput = document.getElementById('proveedor');
+  const stockInput = document.getElementById('stock');
+  const nivelMinimoInput = document.getElementById('nivelMinimo');
+  const precioInput = document.getElementById('precio');
+  const ubicacionInput = document.getElementById('ubicacionEstante');
+  const fechaVencimientoInput = document.getElementById('fechaVencimiento');
+  const codigoLoteInput = document.getElementById('codigoLote');
+  const stockLoteInput = document.getElementById('stockLote');
+  const fechaFabricacionInput = document.getElementById('fechaFabricacion');
+  const precioCompraInput = document.getElementById('precioCompra');
+
+  // --- NUEVA FUNCIONALIDAD: AUTO-GUARDADO DE BORRADOR ---
+  const STORAGE_KEY = 'medicamentoFormDraft';
+
+  // Función para guardar el estado actual del formulario en localStorage
+  function saveFormDraft() {
+    // Solo guardamos si el modal NO está en modo edición (id vacío o 0)
+    const isEditMode = medicamentoId.value && medicamentoId.value !== '0';
+    if (isEditMode) return;
+
+    const draftData = {
+      nombre: nombreInput.value,
+      categoriaId: categoriaSelect.value,
+      formaFarmaceutica: formaInput.value,
+      descripcion: descripcionInput.value,
+      proveedor: proveedorInput.value,
+      stock: stockInput.value,
+      nivelMinimo: nivelMinimoInput.value,
+      precio: precioInput.value,
+      ubicacionEstante: ubicacionInput.value,
+      fechaVencimiento: fechaVencimientoInput.value,
+      codigoLote: codigoLoteInput.value,
+      stockLote: stockLoteInput.value,
+      fechaFabricacion: fechaFabricacionInput.value,
+      precioCompra: precioCompraInput.value,
+    };
+    
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
+    } catch(e) { console.error("Error guardando borrador:", e); }
+  }
+
+  // Función para cargar el borrador guardado en el formulario
+  function loadFormDraft() {
+    // Solo cargamos si estamos en modo "Agregar" (no edición)
+    if (medicamentoId.value && medicamentoId.value !== '0') return;
+    
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (!savedDraft) return;
+    
+    try {
+        const draftData = JSON.parse(savedDraft);
+        // Cargamos los datos en el formulario si existen
+        if (draftData.nombre) nombreInput.value = draftData.nombre;
+        if (draftData.categoriaId) categoriaSelect.value = draftData.categoriaId;
+        if (draftData.formaFarmaceutica) formaInput.value = draftData.formaFarmaceutica;
+        if (draftData.descripcion) descripcionInput.value = draftData.descripcion;
+        if (draftData.proveedor) proveedorInput.value = draftData.proveedor;
+        if (draftData.stock) stockInput.value = draftData.stock;
+        if (draftData.nivelMinimo) nivelMinimoInput.value = draftData.nivelMinimo;
+        if (draftData.precio) precioInput.value = draftData.precio;
+        if (draftData.ubicacionEstante) ubicacionInput.value = draftData.ubicacionEstante;
+        if (draftData.fechaVencimiento) fechaVencimientoInput.value = draftData.fechaVencimiento;
+        if (draftData.codigoLote) codigoLoteInput.value = draftData.codigoLote;
+        if (draftData.stockLote) stockLoteInput.value = draftData.stockLote;
+        if (draftData.fechaFabricacion) fechaFabricacionInput.value = draftData.fechaFabricacion;
+        if (draftData.precioCompra) precioCompraInput.value = draftData.precioCompra;
+    } catch(e) { console.error("Error cargando borrador:", e); }
+  }
+
+  // Función para limpiar el borrador después de guardar exitosamente
+  function clearFormDraft() {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  // --- MODIFICAR FUNCIONES EXISTENTES ---
+  // Open modal for new medicamento
+  function openModal() {
+      modalTitle.innerText = 'Agregar Medicamento';
+      medicamentoId.value = '';
+      form.reset();
+      // Valores por defecto
+      stockInput.value = '0';
+      nivelMinimoInput.value = '20';
+      stockLoteInput.value = '0';
+      // Limpiar otros campos
+      codigoLoteInput.value = '';
+      fechaFabricacionInput.value = '';
+      precioCompraInput.value = '';
+      
+      // CARGAR EL BORRADOR GUARDADO
+      loadFormDraft();
+      
+      modal.classList.add('active');
+  }
+
+  // Open modal for edit con AJAX
+  async function openEditModal(id) {
+      try {
+          modalTitle.innerText = 'Editar Medicamento';
+          
+          // Limpiar formulario primero
+          form.reset();
+          
+          // Hacer petición para obtener los datos completos
+          const response = await fetch(`/medicamentos/${id}`);
+          const data = await response.json();
+          
+          // Llenar campos del medicamento
+          medicamentoId.value = data.id || '';
+          nombreInput.value = data.nombre || '';
+          categoriaSelect.value = data.categoriaId || '';
+          formaInput.value = data.formaFarmaceutica || '';
+          descripcionInput.value = data.descripcion || '';
+          proveedorInput.value = data.proveedor || '';
+          stockInput.value = data.stock || 0;
+          nivelMinimoInput.value = data.nivelMinimo || 20;
+          precioInput.value = data.precio || 0;
+          ubicacionInput.value = data.ubicacionEstante || '';
+          fechaVencimientoInput.value = data.fechaVencimiento || '';
+          
+          // Llenar campos del lote
+          if (data.codigoLote) {
+              codigoLoteInput.value = data.codigoLote;
+              stockLoteInput.value = data.stockLote || 0;
+              fechaFabricacionInput.value = data.fechaFabricacion || '';
+              precioCompraInput.value = data.precioCompra || 0;
+          } else {
+              codigoLoteInput.value = '';
+              stockLoteInput.value = '0';
+              fechaFabricacionInput.value = '';
+              precioCompraInput.value = '';
+          }
+          
+          modal.classList.add('active');
+      } catch (error) {
+          console.error('Error al cargar el medicamento:', error);
+          alert('Error al cargar los datos del medicamento');
+      }
+  }
+
+  // Close modal (funcion modificada para guardar antes de cerrar)
+  function closeModal() {
+      // Guardar el estado actual del formulario (solo si no estamos editando)
+      if (!medicamentoId.value || medicamentoId.value === '0' || medicamentoId.value === '') {
+          saveFormDraft();
+      }
+      modal.classList.remove('active');
+  }
+
+  // --- MODIFICAR EL ENVÍO DEL FORMULARIO ---
+  // Interceptar el envío del formulario para limpiar el borrador si se guarda exitosamente
+  form.addEventListener('submit', function(e) {
+      // No prevenimos el envío normal, solo agregamos un listener para después
+      // Como el formulario se envía de manera tradicional, no podemos esperar la respuesta aquí fácilmente.
+      // Una forma es asumir que si se envió (y no hay errores de red), el borrador se limpia.
+      // Para una experiencia más robusta, idealmente se usaría fetch, pero por ahora:
+      if (!medicamentoId.value || medicamentoId.value === '0') {
+          // Es un nuevo medicamento, programamos la limpieza del borrador
+          // El problema es que si la página recarga, el borrador se perderá igual.
+          // Usaremos sessionStorage para indicar que se acaba de enviar el form
+          sessionStorage.setItem('formJustSubmitted', 'true');
+      }
+  });
+
+  // Al cargar la página, si venimos de un envío exitoso, limpiamos el borrador.
+  if (sessionStorage.getItem('formJustSubmitted') === 'true') {
+      clearFormDraft();
+      sessionStorage.removeItem('formJustSubmitted');
+  }
+
+  // Delete modal functions
+  function openDeleteModal(id, nombre) {
+      currentDeleteId = id;
+      currentDeleteName = nombre;
+      deleteMedNameSpan.innerText = nombre;
+      deleteMedIdInput.value = id;
+      deleteModal.classList.add('active');
+  }
+
+  function closeDeleteModal() {
+      deleteModal.classList.remove('active');
+      currentDeleteId = null;
+      currentDeleteName = '';
+  }
+
+  // --- CONFIGURAR AUTO-GUARDADO AL ESCRIBIR ---
+  // Añadir event listeners a todos los campos del formulario para guardar cambios en tiempo real
+  const allFormInputs = [
+      nombreInput, categoriaSelect, formaInput, descripcionInput, proveedorInput,
+      stockInput, nivelMinimoInput, precioInput, ubicacionInput, fechaVencimientoInput,
+      codigoLoteInput, stockLoteInput, fechaFabricacionInput, precioCompraInput
+  ];
+  
+  allFormInputs.forEach(input => {
+      if (input) {
+          input.addEventListener('input', function() {
+              // Solo guardar si el modal está visible y no estamos en edición
+              if (modal.classList.contains('active') && (!medicamentoId.value || medicamentoId.value === '0')) {
+                  saveFormDraft();
+              }
+          });
+          input.addEventListener('change', function() {
+              if (modal.classList.contains('active') && (!medicamentoId.value || medicamentoId.value === '0')) {
+                  saveFormDraft();
+              }
+          });
+      }
+  });
+
+  // Event listeners
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+  cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+
+  // Close modal on outside click (también guardará)
+  modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+  });
+  deleteModal.addEventListener('click', (e) => {
+      if (e.target === deleteModal) closeDeleteModal();
+  });
+
+  // Edit buttons - usar el ID para hacer fetch
+  function setupEditButtons() {
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+          // Remover event listeners anteriores si existen
+          const newBtn = btn.cloneNode(true);
+          btn.parentNode.replaceChild(newBtn, btn);
+          
+          newBtn.addEventListener('click', (e) => {
+              const id = newBtn.getAttribute('data-id');
+              if (id) {
+                  openEditModal(id);
+              }
+          });
+      });
+  }
+
+  // Delete buttons
+  function setupDeleteButtons() {
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+          const newBtn = btn.cloneNode(true);
+          btn.parentNode.replaceChild(newBtn, btn);
+          
+          newBtn.addEventListener('click', (e) => {
+              const id = newBtn.getAttribute('data-id');
+              const nombre = newBtn.getAttribute('data-nombre');
+              openDeleteModal(id, nombre);
+          });
+      });
+  }
+
+  // Inicializar los botones cuando la página carga
+  document.addEventListener('DOMContentLoaded', () => {
+      setupEditButtons();
+      setupDeleteButtons();
+      
+      // Configurar filtros de búsqueda
+      const searchInput = document.getElementById('searchInput');
+      const categoryFilter = document.getElementById('categoryFilter');
+      const statusFilter = document.getElementById('statusFilter');
+      
+      if (searchInput) searchInput.addEventListener('input', filterTable);
+      if (categoryFilter) categoryFilter.addEventListener('change', filterTable);
+      if (statusFilter) statusFilter.addEventListener('change', filterTable);
+      
+      // Limpiar borrador si existe al inicio (opcional, para evitar datos residuales)
+      // clearFormDraft(); // Descomentar si quieres que siempre empiece limpio al cargar la página
+      
+      filterTable();
+  });
+
+  // Función de filtrado (mantener la existente)
+  function filterTable() {
+      const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+      const categoryId = document.getElementById('categoryFilter')?.value || '';
+      const status = document.getElementById('statusFilter')?.value || '';
+      const tableBody = document.getElementById('medicamentosTableBody');
+      if (!tableBody) return;
+      
+      const rows = tableBody.querySelectorAll('tr');
+      let visibleCount = 0;
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const fechaLimite = new Date();
+      fechaLimite.setDate(hoy.getDate() + 30);
+      
+      rows.forEach(row => {
+          const nombre = row.querySelector('td:first-child .font-bold')?.innerText.toLowerCase() || '';
+          const categoria = row.querySelector('td:nth-child(2) span')?.innerText || '';
+          const stock = parseInt(row.querySelector('td:nth-child(3)')?.innerText) || 0;
+          const fechaVencimientoStr = row.querySelector('td:nth-child(4) span')?.innerText || '';
+          
+          // Convertir fecha de vencimiento
+          let fechaVenc = null;
+          let estaVencido = false;
+          if (fechaVencimientoStr) {
+              const parts = fechaVencimientoStr.split('/');
+              fechaVenc = new Date(parts[2], parts[1] - 1, parts[0]);
+              fechaVenc.setHours(0, 0, 0, 0);
+              estaVencido = fechaVenc < hoy;
+          }
+          
+          let matchesSearch = nombre.includes(searchTerm);
+          let matchesCategory = !categoryId || categoria === document.querySelector(`option[value="${categoryId}"]`)?.innerText;
+          let matchesStatus = true;
+          
+          // Filtrar por estado
+          if (status === 'bajo') {
+              matchesStatus = stock < 20;
+          } else if (status === 'proximo') {
+              if (fechaVenc) {
+                  matchesStatus = fechaVenc >= hoy && fechaVenc <= fechaLimite;
+              } else {
+                  matchesStatus = false;
+              }
+          } else if (status === 'vencido') {
+              matchesStatus = estaVencido;
+          } else if (status === '') {
+              // Cuando es "Todos", NO mostrar los vencidos
+              matchesStatus = !estaVencido;
+          }
+          
+          if (matchesSearch && matchesCategory && matchesStatus) {
+              row.style.display = '';
+              visibleCount++;
+          } else {
+              row.style.display = 'none';
+          }
+      });
+      
+      const recordCountSpan = document.getElementById('recordCount');
+      if (recordCountSpan) {
+          recordCountSpan.innerHTML = `Mostrando ${visibleCount} medicamentos`;
+      }
+  }
+
+  // Si hay cambios dinámicos en la tabla (por ejemplo después de guardar/eliminar)
+  // puedes llamar a setupEditButtons y setupDeleteButtons nuevamente
+
+      if (searchInput) searchInput.addEventListener("input", filterTable);
+      if (categoryFilter)
+        categoryFilter.addEventListener("change", filterTable);
+      if (statusFilter) statusFilter.addEventListener("change", filterTable);
+    </script>
+  </body>
 </html>
