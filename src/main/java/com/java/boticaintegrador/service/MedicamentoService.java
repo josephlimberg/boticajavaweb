@@ -4,6 +4,7 @@ import com.java.boticaintegrador.model.Medicamento;
 import com.java.boticaintegrador.repository.MedicamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,8 +18,17 @@ public class MedicamentoService {
         return medicamentoRepository.findAll();
     }
 
-    public void guardar(Medicamento medicamento) {
-        // Aquí en el futuro (Sprint 3) pondremos la lógica para validar alertas
-        medicamentoRepository.save(medicamento);
+    @Transactional
+    public Medicamento guardar(Medicamento medicamento) {
+        return medicamentoRepository.save(medicamento);
+    }
+
+    public Medicamento buscarPorId(Long id) {
+        return medicamentoRepository.findById(id).orElse(null);
+    }
+
+    @Transactional
+    public void eliminar(Long id) {
+        medicamentoRepository.deleteById(id);
     }
 }

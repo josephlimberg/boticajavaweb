@@ -16,4 +16,8 @@ public class CategoriaService {
     public List<Categoria> listarTodas() {
         return categoriaRepository.findAll();
     }
+
+    public Categoria buscarPorId(Long id) {
+        return categoriaRepository.findById(id).orElse(null);
+    }
 }
