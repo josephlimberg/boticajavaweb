@@ -12,4 +12,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // Spring Boot detecta el nombre y crea la consulta SQL automáticamente:
     // SELECT * FROM usuarios WHERE username = ?
     Optional<Usuario> findByUsername(String username);
+    
 }
