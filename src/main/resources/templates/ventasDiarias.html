@@ -1,0 +1,684 @@
+<!doctype html>
+<html class="light" lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#0070ea",
+              "surface-dim": "#d7d9e5",
+              "on-secondary-fixed": "#191c1d",
+              "on-secondary-fixed-variant": "#454748",
+              "on-error-container": "#93000a",
+              "inverse-on-surface": "#eef0fb",
+              "on-surface-variant": "#414754",
+              surface: "#f9f9ff",
+              "primary-fixed": "#d8e2ff",
+              "error-container": "#ffdad6",
+              "tertiary-container": "#c64f00",
+              tertiary: "#9e3d00",
+              "on-primary": "#ffffff",
+              "on-secondary-container": "#626566",
+              "on-secondary": "#ffffff",
+              "secondary-container": "#e1e3e4",
+              outline: "#717786",
+              "tertiary-fixed-dim": "#ffb695",
+              "inverse-surface": "#2d3039",
+              "on-primary-container": "#fefcff",
+              "surface-variant": "#e0e2ed",
+              secondary: "#5c5f60",
+              "on-primary-fixed": "#001a41",
+              "tertiary-fixed": "#ffdbcc",
+              "on-error": "#ffffff",
+              "secondary-fixed": "#e1e3e4",
+              "surface-container-high": "#e6e8f3",
+              "primary-fixed-dim": "#adc7ff",
+              "on-primary-fixed-variant": "#004493",
+              "on-tertiary-fixed": "#351000",
+              "on-tertiary-container": "#fffbff",
+              "surface-container-low": "#f1f3fe",
+              "on-background": "#181c23",
+              background: "#f9f9ff",
+              "surface-tint": "#005bc0",
+              "surface-container": "#ebedf9",
+              "on-tertiary-fixed-variant": "#7c2e00",
+              "outline-variant": "#c1c6d7",
+              "on-tertiary": "#ffffff",
+              primary: "#0059bb",
+              "surface-bright": "#f9f9ff",
+              "surface-container-highest": "#e0e2ed",
+              "secondary-fixed-dim": "#c5c7c8",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#181c23",
+              error: "#ba1a1a",
+              "inverse-primary": "#adc7ff",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "container-padding-desktop": "2.5rem",
+              unit: "8px",
+              gutter: "1.5rem",
+              "sidebar-width": "280px",
+              "container-padding-mobile": "1rem",
+            },
+            fontFamily: {
+              "body-md": ["Inter"],
+              "headline-sm": ["Inter"],
+              "body-lg": ["Inter"],
+              "display-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "label-sm": ["Inter"],
+              "label-lg": ["Inter"],
+              "display-lg-mobile": ["Inter"],
+            },
+            fontSize: {
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-sm": [
+                "20px",
+                { lineHeight: "28px", fontWeight: "600" },
+              ],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "display-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }],
+              "headline-md": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+              "label-lg": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "display-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      @media print {
+        .no-print {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface">
+    <!-- SideNavBar -->
+    <aside
+      class="fixed left-0 top-0 h-screen w-[280px] z-50 bg-surface-container-low border-r border-outline-variant flex flex-col py-8"
+    >
+      <div class="px-6 mb-10">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary"
+          >
+            <span class="material-symbols-outlined">health_metrics</span>
+          </div>
+          <div>
+            <h1 class="font-headline-md text-headline-md text-primary font-bold">
+              Botica Control
+            </h1>
+            <p class="text-label-sm text-on-surface-variant font-label-sm">
+              Gestión Farmacéutica
+            </p>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 space-y-1">
+        <a
+          th:href="@{/}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">home</span>
+          Inicio
+        </a>
+        <a
+          th:href="@{/medicamentos}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">inventory_2</span>
+          Inventario
+        </a>
+        <a
+          th:href="@{/ventas}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">point_of_sale</span>
+          Registrar Venta
+        </a>
+        <a
+          th:href="@{/ventas/diarias}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container border-l-4 border-primary font-bold font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">receipt_long</span>
+          Ventas Diarias
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">bar_chart</span>
+          Reportes
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">group</span>
+          Usuarios
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">history</span>
+          Historial de Acciones
+        </a>
+      </nav>
+      <div class="px-4 mt-auto">
+        <a
+          th:href="@{/logout}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg text-error"
+        >
+          <span class="material-symbols-outlined">logout</span>
+          Cerrar Sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- TopAppBar -->
+    <header
+      class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 z-40 bg-surface border-b border-outline-variant flex justify-between items-center px-gutter"
+    >
+      <div class="flex items-center gap-4 flex-1">
+        <div class="relative w-full max-w-md">
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+            >search</span
+          >
+          <input
+            id="searchInput"
+            class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-body-md focus:ring-2 focus:ring-primary"
+            placeholder="Buscar por cliente o medicamento..."
+            type="text"
+          />
+        </div>
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-4">
+          <button
+            class="text-on-surface-variant hover:text-primary transition-colors"
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button
+            class="text-on-surface-variant hover:text-primary transition-colors"
+          >
+            <span class="material-symbols-outlined">settings</span>
+          </button>
+        </div>
+        <div class="h-8 w-[1px] bg-outline-variant"></div>
+        <div
+            class="flex items-center gap-3 ml-2 border-l border-outline-variant pl-6"
+          >
+            <div class="text-right">
+              <p class="font-label-lg text-label-lg leading-none">
+                Dr. Ricardo Pérez
+              </p>
+              <p class="text-[12px] text-on-surface-variant">
+                Farmacéutico Jefe
+              </p>
+            </div>
+            <img
+              alt="Avatar del Farmacéutico"
+              class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA80n2oKDsA5z5f8Gd4fQvLsgvezITVxm0FpqD4RdK0UGzmKql1RPkJDHroyl-wjabRtWYkxIVzuj66yU-o0qlGyKcF0WtWthQtTualcLRPhkT_sPZfARO2JaW2veVJIKM2RCBLHhucAS5zoI2GUEKBWKRD6H_3Z4bwHO09zlhbbgXZqNkEIFNycb5c5Lw0hg0tQKXHRxSAFbmAtRjjW-GZ9kEe6tfDfSlGqEOpThSwzKmDGia9RXyAyxZe7wpEyBI5X7jDjNODcdU5"
+            />
+          </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="ml-[280px] pt-24 min-h-screen p-gutter">
+      <div class="max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+          <div>
+            <h2 class="font-display-lg text-display-lg text-on-surface mb-2">
+              Registro de Ventas
+            </h2>
+            <p class="text-body-lg text-on-surface-variant">
+              Monitoreo de transacciones realizadas.
+            </p>
+          </div>
+          <div class="flex gap-3 flex-wrap">
+            <!-- Selector de fecha -->
+            <div class="relative">
+              <input
+                type="date"
+                id="fechaFiltro"
+                th:value="${fechaSeleccionada}"
+                class="px-4 py-2 rounded-lg bg-surface-container border border-outline-variant text-on-surface font-label-lg focus:outline-none focus:border-primary"
+              />
+            </div>
+            <button
+              id="exportarBtn"
+              class="flex items-center gap-2 px-6 py-2 rounded-lg bg-primary text-on-primary font-label-lg shadow-sm hover:opacity-90 transition-opacity"
+            >
+              <span class="material-symbols-outlined text-[20px]">download</span>
+              Exportar Reporte
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="p-6 bg-surface-container-lowest rounded-xl border border-outline-variant">
+            <p class="text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">
+              Total Ventas
+            </p>
+            <div class="flex items-baseline gap-2">
+              <span id="totalVentas" class="text-display-lg font-display-lg text-on-surface">0</span>
+            </div>
+          </div>
+          <div class="p-6 bg-surface-container-lowest rounded-xl border border-outline-variant">
+            <p class="text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">
+              Monto Total
+            </p>
+            <div class="flex items-baseline gap-2">
+              <span id="montoTotal" class="text-display-lg font-display-lg text-primary">S/ 0.00</span>
+            </div>
+          </div>
+          <div class="p-6 bg-surface-container-lowest rounded-xl border border-outline-variant">
+            <p class="text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">
+              Ticket Promedio
+            </p>
+            <div class="flex items-baseline gap-2">
+              <span id="ticketPromedio" class="text-display-lg font-display-lg text-on-surface">S/ 0.00</span>
+            </div>
+          </div>
+          <div class="p-6 bg-surface-container-lowest rounded-xl border border-outline-variant border-t-4 border-t-primary">
+            <p class="text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">
+              Estado del Sistema
+            </p>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+              <span class="text-label-lg font-label-lg text-on-surface">En Línea</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Table Container -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="bg-surface-container text-left border-b border-outline-variant">
+                  <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant">ID</th>
+                  <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant">Cliente</th>
+                  <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant">Productos</th>
+                  <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant text-center">Cantidad</th>
+                  <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant text-right">Total</th>
+                  <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant">Método Pago</th>
+                  <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant">Fecha/Hora</th>
+                  <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant text-center">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tablaVentas" class="divide-y divide-outline-variant">
+                <tr th:each="venta : ${ventas}">
+                  <td class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant" th:text="${venta.id}">#001</td>
+                  <td class="px-6 py-4">
+                    <span class="font-label-lg text-label-lg text-on-surface" th:text="${venta.clienteAnonimoNombre}">Cliente</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex flex-col">
+                      <span class="text-body-md" th:text="${venta.productosResumen}">-</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center font-body-md" th:text="${venta.totalProductos}">0</td>
+                  <td class="px-6 py-4 text-right font-label-lg text-primary" th:text="'S/ ' + ${#numbers.formatDecimal(venta.total, 1, 2)}">S/ 0.00</td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 rounded-full bg-secondary-container text-secondary text-label-sm" th:text="${venta.metodoPago}">EFECTIVO</span>
+                  </td>
+                  <td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant" th:text="${venta.fechaHoraFormateada}">-</td>
+                  <td class="px-6 py-4 text-center">
+                    <button th:data-id="${venta.id}" class="ver-detalle-btn p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-all">
+                      <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(ventas)}">
+                  <td colspan="8" class="px-6 py-12 text-center text-on-surface-variant">
+                    <span class="material-symbols-outlined text-4xl mb-2">receipt</span>
+                    <p>No hay ventas registradas para esta fecha</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Total Banner -->
+          <div class="bg-primary-container p-6 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-on-primary-container flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[32px]">payments</span>
+              </div>
+              <div>
+                <p class="text-on-primary-container font-label-lg opacity-80 uppercase tracking-widest">
+                  Resumen del Día
+                </p>
+                <h3 class="text-headline-md font-bold text-on-primary-container">
+                  Total Acumulado
+                </h3>
+              </div>
+            </div>
+            <div class="text-right">
+              <p id="totalAcumulado" class="text-on-primary-container font-display-lg text-display-lg font-bold">
+                S/ 0.00
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Variables
+      let ventasData = [];
+
+      // Inicializar datos desde Thymeleaf
+      document.addEventListener('DOMContentLoaded', function() {
+        // Capturar datos de las ventas del modelo
+        const ventasRows = document.querySelectorAll('#tablaVentas tr');
+        ventasData = Array.from(ventasRows).filter(row => row.querySelector('.ver-detalle-btn')).map(row => {
+          const btn = row.querySelector('.ver-detalle-btn');
+          return {
+            id: btn.getAttribute('data-id'),
+            rawData: row
+          };
+        });
+        
+        actualizarEstadisticas();
+      });
+
+      // Filtro de búsqueda
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const term = this.value.toLowerCase();
+          const rows = document.querySelectorAll('#tablaVentas tr');
+          rows.forEach(row => {
+            if (row.querySelector('.ver-detalle-btn')) {
+              const texto = row.innerText.toLowerCase();
+              row.style.display = texto.includes(term) ? '' : 'none';
+            }
+          });
+          actualizarEstadisticas();
+        });
+      }
+
+      // Filtro por fecha
+      const fechaFiltro = document.getElementById('fechaFiltro');
+      if (fechaFiltro) {
+        fechaFiltro.addEventListener('change', function() {
+          window.location.href = `/ventas/diarias?fecha=${this.value}`;
+        });
+      }
+
+      // Actualizar estadísticas
+      function actualizarEstadisticas() {
+        const rows = document.querySelectorAll('#tablaVentas tr');
+        let visibleRows = Array.from(rows).filter(row => row.querySelector('.ver-detalle-btn') && row.style.display !== 'none');
+        
+        const totalVentas = visibleRows.length;
+        let montoTotal = 0;
+        
+        visibleRows.forEach(row => {
+          const totalCell = row.querySelector('td:nth-child(5)');
+          if (totalCell) {
+            const totalText = totalCell.innerText.replace('S/', '').replace('S/ ', '').trim();
+            const total = parseFloat(totalText);
+            if (!isNaN(total)) montoTotal += total;
+          }
+        });
+        
+        const ticketPromedio = totalVentas > 0 ? montoTotal / totalVentas : 0;
+        
+        document.getElementById('totalVentas').innerText = totalVentas;
+        document.getElementById('montoTotal').innerText = `S/ ${montoTotal.toFixed(2)}`;
+        document.getElementById('ticketPromedio').innerText = `S/ ${ticketPromedio.toFixed(2)}`;
+        document.getElementById('totalAcumulado').innerText = `S/ ${montoTotal.toFixed(2)}`;
+      }
+
+      // Generar boleta PDF para una venta
+      function generarBoletaVenta(ventaId, clienteNombre, metodoPago, productos, subtotal, igv, total, fecha) {
+        const numeroBoleta = `B00${ventaId}-${Math.floor(Math.random() * 1000)}`;
+        const fechaFormateada = new Date(fecha).toLocaleString();
+        
+        const contenidoHTML = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset="UTF-8">
+              <title>Comprobante de Venta</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                  .ticket { max-width: 400px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px; }
+                  .header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 10px; margin-bottom: 15px; }
+                  .header h1 { margin: 0; font-size: 18px; color: #0059bb; }
+                  .header p { margin: 5px 0; font-size: 12px; color: #666; }
+                  .info-cliente { margin-bottom: 15px; padding: 10px; background: #f5f5f5; border-radius: 5px; font-size: 12px; }
+                  .info-cliente p { margin: 3px 0; }
+                  table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
+                  th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+                  th { background: #f0f0f0; }
+                  .text-right { text-align: right; }
+                  .totales { border-top: 2px solid #333; padding-top: 10px; margin-top: 10px; }
+                  .totales p { margin: 5px 0; font-size: 12px; display: flex; justify-content: space-between; }
+                  .total-final { font-size: 16px; font-weight: bold; color: #0059bb; }
+                  .footer { text-align: center; margin-top: 20px; padding-top: 10px; border-top: 2px dashed #333; font-size: 10px; color: #666; }
+              </style>
+          </head>
+          <body>
+              <div class="ticket">
+                  <div class="header">
+                      <h1>BOTICA CONTROL</h1>
+                      <p>RUC: 20600000001</p>
+                      <p>Av. Ejemplo 123 - Lima</p>
+                      <p>Tel: 999 999 999</p>
+                      <h3>BOLETA ELECTRÓNICA</h3>
+                      <p><strong>N° ${numeroBoleta}</strong></p>
+                  </div>
+                  <div class="info-cliente">
+                      <p><strong>Cliente:</strong> ${clienteNombre}</p>
+                      <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+                      <p><strong>Método de Pago:</strong> ${metodoPago}</p>
+                  </div>
+                  <table>
+                      <thead>
+                          <tr><th>Producto</th><th class="text-right">Cant</th><th class="text-right">P.Unit</th><th class="text-right">Subtotal</th></tr>
+                      </thead>
+                      <tbody>
+                          ${productos.map(p => `
+                              <tr><td>${p.nombre}</td><td class="text-right">${p.cantidad}</td><td class="text-right">S/ ${p.precio.toFixed(2)}</td><td class="text-right">S/ ${p.subtotal.toFixed(2)}</td></tr>
+                          `).join('')}
+                      </tbody>
+                  </table>
+                  <div class="totales">
+                      <p><span>Subtotal:</span><span>S/ ${subtotal.toFixed(2)}</span></p>
+                      <p><span>IGV (18%):</span><span>S/ ${igv.toFixed(2)}</span></p>
+                      <p class="total-final"><span>TOTAL:</span><span>S/ ${total.toFixed(2)}</span></p>
+                  </div>
+                  <div class="footer">
+                      <p>¡Gracias por su compra!</p>
+                      <p>Válido como comprobante de pago</p>
+                  </div>
+              </div>
+          </body>
+          </html>
+        `;
+        
+        const ventana = window.open('', '_blank');
+        ventana.document.write(contenidoHTML);
+        ventana.document.close();
+        ventana.print();
+      }
+
+      // Ver detalle de venta (desde backend)
+      async function verDetalleVenta(id) {
+        try {
+          const response = await fetch(`/ventas/detalle/${id}`);
+          const venta = await response.json();
+          
+          generarBoletaVenta(
+            venta.id,
+            venta.clienteNombre,
+            venta.metodoPago,
+            venta.productos,
+            venta.subtotal,
+            venta.igv,
+            venta.total,
+            venta.fecha
+          );
+        } catch (error) {
+          console.error('Error al obtener detalle:', error);
+          alert('Error al cargar el detalle de la venta');
+        }
+      }
+
+      // Exportar reporte del día
+      function exportarReporte() {
+        const rows = document.querySelectorAll('#tablaVentas tr');
+        let ventasVisibles = [];
+        
+        Array.from(rows).forEach(row => {
+          if (row.querySelector('.ver-detalle-btn') && row.style.display !== 'none') {
+            const celdas = row.querySelectorAll('td');
+            if (celdas.length >= 7) {
+              ventasVisibles.push({
+                id: celdas[0]?.innerText || '-',
+                cliente: celdas[1]?.innerText || '-',
+                productos: celdas[2]?.innerText || '-',
+                cantidad: celdas[3]?.innerText || '0',
+                total: celdas[4]?.innerText || 'S/ 0.00',
+                metodoPago: celdas[5]?.innerText || '-',
+                fecha: celdas[6]?.innerText || '-'
+              });
+            }
+          }
+        });
+        
+        let fechaSeleccionada = document.getElementById('fechaFiltro')?.value;
+        let fechaFormateada;
+        
+        if (fechaSeleccionada) {
+            // Convertir la fecha a formato local sin desfase
+            const [year, month, day] = fechaSeleccionada.split('-');
+            fechaFormateada = `${day}/${month}/${year}`;
+        } else {
+            const hoy = new Date();
+            fechaFormateada = `${hoy.getDate().toString().padStart(2, '0')}/${(hoy.getMonth() + 1).toString().padStart(2, '0')}/${hoy.getFullYear()}`;
+        }
+        
+        const totalVentas = ventasVisibles.length;
+        let montoTotal = 0;
+        ventasVisibles.forEach(v => {
+            const monto = parseFloat(v.total.replace('S/', '').replace('S/ ', '').trim());
+            if (!isNaN(monto)) montoTotal += monto;
+        });
+        
+        const contenidoHTML = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset="UTF-8">
+              <title>Reporte de Ventas - ${fechaFormateada}</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 20px; }
+                  h1 { color: #0059bb; }
+                  table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                  th { background-color: #f2f2f2; }
+                  .text-right { text-align: right; }
+                  .totales { margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 5px; }
+              </style>
+          </head>
+          <body>
+              <h1>Botica Control - Reporte de Ventas</h1>
+              <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+              <p><strong>Total de Ventas:</strong> ${totalVentas}</p>
+              <p><strong>Monto Total:</strong> S/ ${montoTotal.toFixed(2)}</p>
+              <p><strong>Ticket Promedio:</strong> S/ ${totalVentas > 0 ? (montoTotal / totalVentas).toFixed(2) : '0.00'}</p>
+              <table>
+                  <thead>
+                      <tr><th>ID</th><th>Cliente</th><th>Productos</th><th>Cantidad</th><th>Total</th><th>Método Pago</th><th>Fecha/Hora</th></tr>
+                  </thead>
+                  <tbody>
+                      ${ventasVisibles.map(v => `<tr><td>${v.id}</td><td>${v.cliente}</td><td>${v.productos}</td><td class="text-right">${v.cantidad}</td><td class="text-right">${v.total}</td><td>${v.metodoPago}</td><td>${v.fecha}</td></tr>`).join('')}
+                  </tbody>
+              </table>
+              <div class="totales">
+                  <p><strong>Resumen:</strong> Total Ventas: ${totalVentas} | Monto Total: S/ ${montoTotal.toFixed(2)}</p>
+              </div>
+              <p style="margin-top: 30px; font-size: 12px; color: #666;">Reporte generado el ${new Date().toLocaleString()}</p>
+          </body>
+          </html>
+        `;
+        
+        const ventana = window.open('', '_blank');
+        ventana.document.write(contenidoHTML);
+        ventana.document.close();
+        ventana.print();
+      }
+
+      // Event listeners
+      document.querySelectorAll('.ver-detalle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          if (id) verDetalleVenta(id);
+        });
+      });
+      
+      document.getElementById('exportarBtn')?.addEventListener('click', exportarReporte);
+      
+      // Actualizar estadísticas cuando cambia el filtro
+      const observer = new MutationObserver(() => actualizarEstadisticas());
+      observer.observe(document.getElementById('tablaVentas'), { childList: true, subtree: true, attributes: true });
+    </script>
+  </body>
+</html>

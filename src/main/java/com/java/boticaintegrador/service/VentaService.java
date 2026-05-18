@@ -4,6 +4,10 @@ import com.java.boticaintegrador.model.Usuario;
 import com.java.boticaintegrador.model.Venta;
 import com.java.boticaintegrador.repository.UsuarioRepository;
 import com.java.boticaintegrador.repository.VentaRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,4 +29,12 @@ public class VentaService {
     public Usuario obtenerUsuarioPorUsername(String username) {
         return usuarioRepository.findByUsername(username).orElse(null);
     }
+
+    public List<Venta> buscarPorFecha(LocalDate fecha) {
+        return ventaRepository.findByFechaVenta(fecha);
+    }
+
+    public Venta buscarPorId(Long id) {
+        return ventaRepository.findById(id).orElse(null);
+}
 }

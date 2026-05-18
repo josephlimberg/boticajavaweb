@@ -15,7 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,8 @@ public class VentaController {
     public String mostrarVenta(Model model) {
         return "registrarVenta";
     }
+
+    
 
     @GetMapping("/buscar")
     @ResponseBody
@@ -127,5 +131,73 @@ public class VentaController {
             e.printStackTrace();
             return "redirect:/ventas?error=" + e.getMessage();
         }
+    }
+
+    @GetMapping("/diarias")
+    public String ventasDiarias(Model model, @RequestParam(required = false) String fecha) {
+        LocalDate fechaFiltro = fecha != null ? LocalDate.parse(fecha) : LocalDate.now();
+        
+        List<Venta> ventas = ventaService.buscarPorFecha(fechaFiltro);
+        
+        // Procesar ventas para la vista
+        List<Map<String, Object>> ventasDTO = ventas.stream().map(v -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", v.getId());
+            map.put("clienteAnonimoNombre", v.getClienteAnonimoNombre() != null ? v.getClienteAnonimoNombre() : "Anónimo");
+            map.put("total", v.getTotal());
+            map.put("metodoPago", v.getMetodoPago());
+            map.put("fechaHoraFormateada", v.getFechaVenta().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            
+            int totalProductos = v.getDetalles().stream().mapToInt(DetalleVenta::getCantidad).sum();
+            String productosResumen = v.getDetalles().stream()
+                    .limit(2)
+                    .map(d -> d.getMedicamento().getNombre())
+                    .collect(Collectors.joining(", "));
+            if (v.getDetalles().size() > 2) productosResumen += " +" + (v.getDetalles().size() - 2);
+            
+            map.put("totalProductos", totalProductos);
+            map.put("productosResumen", productosResumen);
+            
+            return map;
+        }).collect(Collectors.toList());
+        
+        model.addAttribute("ventas", ventasDTO);
+        model.addAttribute("fechaSeleccionada", fechaFiltro.toString());
+        // Quitar esta línea si da error:
+        // model.addAttribute("usuarioNombre", obtenerNombreUsuario());
+        // O poner un valor fijo:
+        model.addAttribute("usuarioNombre", "Administrador");
+        
+        return "ventasDiarias";
+    }
+
+    @GetMapping("/detalle/{id}")
+    @ResponseBody
+    public Map<String, Object> obtenerDetalleVenta(@PathVariable Long id) {
+        Venta venta = ventaService.buscarPorId(id);
+        
+        List<Map<String, Object>> productos = venta.getDetalles().stream().map(d -> {
+            Map<String, Object> p = new HashMap<>();
+            p.put("nombre", d.getMedicamento().getNombre());
+            p.put("cantidad", d.getCantidad());
+            p.put("precio", d.getPrecioUnitario());
+            p.put("subtotal", d.getSubtotal());
+            return p;
+        }).collect(Collectors.toList());
+        
+        BigDecimal subtotal = venta.getTotal().divide(new BigDecimal("1.18"), 2, RoundingMode.HALF_UP);
+        BigDecimal igv = venta.getTotal().subtract(subtotal);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", venta.getId());
+        response.put("clienteNombre", venta.getClienteAnonimoNombre() != null ? venta.getClienteAnonimoNombre() : "Anónimo");
+        response.put("metodoPago", venta.getMetodoPago());
+        response.put("productos", productos);
+        response.put("subtotal", subtotal);
+        response.put("igv", igv);
+        response.put("total", venta.getTotal());
+        response.put("fecha", venta.getFechaVenta().toString());
+        
+        return response;
     }
 }
