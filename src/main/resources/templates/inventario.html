@@ -162,13 +162,20 @@
     <aside
       class="fixed left-0 top-0 h-screen w-[280px] z-50 bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-8"
     >
-      <div class="px-6 mb-10">
-        <h1 class="font-headline-md text-headline-md text-primary font-bold">
-          Botica Control
-        </h1>
-        <p class="text-on-surface-variant font-label-lg text-label-lg">
-          Gestión Farmacéutica
-        </p>
+      <div class="px-6 mb-10 flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary"
+        >
+          <span class="material-symbols-outlined">health_and_safety</span>
+        </div>
+        <div>
+          <h1 class="font-headline-md text-headline-md text-primary font-bold">
+            Botica Control
+          </h1>
+          <p class="text-label-sm text-on-surface-variant">
+            Gestión Farmacéutica
+          </p>
+        </div>
       </div>
       <nav class="flex-1 space-y-1 px-4">
         <a
@@ -184,8 +191,8 @@
           <span class="material-symbols-outlined">inventory_2</span> Inventario
         </a>
         <a
+          th:href="@{/ventas}"
           class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">point_of_sale</span> Registrar
           Venta
@@ -877,371 +884,418 @@
 
     <script>
       // Variables
-  let currentDeleteId = null;
-  let currentDeleteName = '';
+      let currentDeleteId = null;
+      let currentDeleteName = "";
 
-  // Modal elements
-  const modal = document.getElementById('medicamentoModal');
-  const openBtn = document.getElementById('openModalBtn');
-  const closeBtn = document.getElementById('closeModalBtn');
-  const cancelBtn = document.getElementById('cancelModalBtn');
-  const form = document.getElementById('medicamentoForm');
-  const modalTitle = document.getElementById('modalTitle');
+      // Modal elements
+      const modal = document.getElementById("medicamentoModal");
+      const openBtn = document.getElementById("openModalBtn");
+      const closeBtn = document.getElementById("closeModalBtn");
+      const cancelBtn = document.getElementById("cancelModalBtn");
+      const form = document.getElementById("medicamentoForm");
+      const modalTitle = document.getElementById("modalTitle");
 
-  // Delete modal elements
-  const deleteModal = document.getElementById('deleteModal');
-  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-  const deleteMedNameSpan = document.getElementById('deleteMedName');
-  const deleteForm = document.getElementById('deleteForm');
-  const deleteMedIdInput = document.getElementById('deleteMedId');
+      // Delete modal elements
+      const deleteModal = document.getElementById("deleteModal");
+      const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+      const deleteMedNameSpan = document.getElementById("deleteMedName");
+      const deleteForm = document.getElementById("deleteForm");
+      const deleteMedIdInput = document.getElementById("deleteMedId");
 
-  // Form fields
-  const medicamentoId = document.getElementById('medicamentoId');
-  const nombreInput = document.getElementById('nombre');
-  const categoriaSelect = document.getElementById('categoriaId');
-  const formaInput = document.getElementById('formaFarmaceutica');
-  const descripcionInput = document.getElementById('descripcion');
-  const proveedorInput = document.getElementById('proveedor');
-  const stockInput = document.getElementById('stock');
-  const nivelMinimoInput = document.getElementById('nivelMinimo');
-  const precioInput = document.getElementById('precio');
-  const ubicacionInput = document.getElementById('ubicacionEstante');
-  const fechaVencimientoInput = document.getElementById('fechaVencimiento');
-  const codigoLoteInput = document.getElementById('codigoLote');
-  const stockLoteInput = document.getElementById('stockLote');
-  const fechaFabricacionInput = document.getElementById('fechaFabricacion');
-  const precioCompraInput = document.getElementById('precioCompra');
+      // Form fields
+      const medicamentoId = document.getElementById("medicamentoId");
+      const nombreInput = document.getElementById("nombre");
+      const categoriaSelect = document.getElementById("categoriaId");
+      const formaInput = document.getElementById("formaFarmaceutica");
+      const descripcionInput = document.getElementById("descripcion");
+      const proveedorInput = document.getElementById("proveedor");
+      const stockInput = document.getElementById("stock");
+      const nivelMinimoInput = document.getElementById("nivelMinimo");
+      const precioInput = document.getElementById("precio");
+      const ubicacionInput = document.getElementById("ubicacionEstante");
+      const fechaVencimientoInput = document.getElementById("fechaVencimiento");
+      const codigoLoteInput = document.getElementById("codigoLote");
+      const stockLoteInput = document.getElementById("stockLote");
+      const fechaFabricacionInput = document.getElementById("fechaFabricacion");
+      const precioCompraInput = document.getElementById("precioCompra");
 
-  // --- NUEVA FUNCIONALIDAD: AUTO-GUARDADO DE BORRADOR ---
-  const STORAGE_KEY = 'medicamentoFormDraft';
+      // --- NUEVA FUNCIONALIDAD: AUTO-GUARDADO DE BORRADOR ---
+      const STORAGE_KEY = "medicamentoFormDraft";
 
-  // Función para guardar el estado actual del formulario en localStorage
-  function saveFormDraft() {
-    // Solo guardamos si el modal NO está en modo edición (id vacío o 0)
-    const isEditMode = medicamentoId.value && medicamentoId.value !== '0';
-    if (isEditMode) return;
+      // Función para guardar el estado actual del formulario en localStorage
+      function saveFormDraft() {
+        // Solo guardamos si el modal NO está en modo edición (id vacío o 0)
+        const isEditMode = medicamentoId.value && medicamentoId.value !== "0";
+        if (isEditMode) return;
 
-    const draftData = {
-      nombre: nombreInput.value,
-      categoriaId: categoriaSelect.value,
-      formaFarmaceutica: formaInput.value,
-      descripcion: descripcionInput.value,
-      proveedor: proveedorInput.value,
-      stock: stockInput.value,
-      nivelMinimo: nivelMinimoInput.value,
-      precio: precioInput.value,
-      ubicacionEstante: ubicacionInput.value,
-      fechaVencimiento: fechaVencimientoInput.value,
-      codigoLote: codigoLoteInput.value,
-      stockLote: stockLoteInput.value,
-      fechaFabricacion: fechaFabricacionInput.value,
-      precioCompra: precioCompraInput.value,
-    };
-    
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
-    } catch(e) { console.error("Error guardando borrador:", e); }
-  }
+        const draftData = {
+          nombre: nombreInput.value,
+          categoriaId: categoriaSelect.value,
+          formaFarmaceutica: formaInput.value,
+          descripcion: descripcionInput.value,
+          proveedor: proveedorInput.value,
+          stock: stockInput.value,
+          nivelMinimo: nivelMinimoInput.value,
+          precio: precioInput.value,
+          ubicacionEstante: ubicacionInput.value,
+          fechaVencimiento: fechaVencimientoInput.value,
+          codigoLote: codigoLoteInput.value,
+          stockLote: stockLoteInput.value,
+          fechaFabricacion: fechaFabricacionInput.value,
+          precioCompra: precioCompraInput.value,
+        };
 
-  // Función para cargar el borrador guardado en el formulario
-  function loadFormDraft() {
-    // Solo cargamos si estamos en modo "Agregar" (no edición)
-    if (medicamentoId.value && medicamentoId.value !== '0') return;
-    
-    const savedDraft = localStorage.getItem(STORAGE_KEY);
-    if (!savedDraft) return;
-    
-    try {
-        const draftData = JSON.parse(savedDraft);
-        // Cargamos los datos en el formulario si existen
-        if (draftData.nombre) nombreInput.value = draftData.nombre;
-        if (draftData.categoriaId) categoriaSelect.value = draftData.categoriaId;
-        if (draftData.formaFarmaceutica) formaInput.value = draftData.formaFarmaceutica;
-        if (draftData.descripcion) descripcionInput.value = draftData.descripcion;
-        if (draftData.proveedor) proveedorInput.value = draftData.proveedor;
-        if (draftData.stock) stockInput.value = draftData.stock;
-        if (draftData.nivelMinimo) nivelMinimoInput.value = draftData.nivelMinimo;
-        if (draftData.precio) precioInput.value = draftData.precio;
-        if (draftData.ubicacionEstante) ubicacionInput.value = draftData.ubicacionEstante;
-        if (draftData.fechaVencimiento) fechaVencimientoInput.value = draftData.fechaVencimiento;
-        if (draftData.codigoLote) codigoLoteInput.value = draftData.codigoLote;
-        if (draftData.stockLote) stockLoteInput.value = draftData.stockLote;
-        if (draftData.fechaFabricacion) fechaFabricacionInput.value = draftData.fechaFabricacion;
-        if (draftData.precioCompra) precioCompraInput.value = draftData.precioCompra;
-    } catch(e) { console.error("Error cargando borrador:", e); }
-  }
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
+        } catch (e) {
+          console.error("Error guardando borrador:", e);
+        }
+      }
 
-  // Función para limpiar el borrador después de guardar exitosamente
-  function clearFormDraft() {
-    localStorage.removeItem(STORAGE_KEY);
-  }
+      // Función para cargar el borrador guardado en el formulario
+      function loadFormDraft() {
+        // Solo cargamos si estamos en modo "Agregar" (no edición)
+        if (medicamentoId.value && medicamentoId.value !== "0") return;
 
-  // --- MODIFICAR FUNCIONES EXISTENTES ---
-  // Open modal for new medicamento
-  function openModal() {
-      modalTitle.innerText = 'Agregar Medicamento';
-      medicamentoId.value = '';
-      form.reset();
-      // Valores por defecto
-      stockInput.value = '0';
-      nivelMinimoInput.value = '20';
-      stockLoteInput.value = '0';
-      // Limpiar otros campos
-      codigoLoteInput.value = '';
-      fechaFabricacionInput.value = '';
-      precioCompraInput.value = '';
-      
-      // CARGAR EL BORRADOR GUARDADO
-      loadFormDraft();
-      
-      modal.classList.add('active');
-  }
+        const savedDraft = localStorage.getItem(STORAGE_KEY);
+        if (!savedDraft) return;
 
-  // Open modal for edit con AJAX
-  async function openEditModal(id) {
-      try {
-          modalTitle.innerText = 'Editar Medicamento';
-          
+        try {
+          const draftData = JSON.parse(savedDraft);
+          // Cargamos los datos en el formulario si existen
+          if (draftData.nombre) nombreInput.value = draftData.nombre;
+          if (draftData.categoriaId)
+            categoriaSelect.value = draftData.categoriaId;
+          if (draftData.formaFarmaceutica)
+            formaInput.value = draftData.formaFarmaceutica;
+          if (draftData.descripcion)
+            descripcionInput.value = draftData.descripcion;
+          if (draftData.proveedor) proveedorInput.value = draftData.proveedor;
+          if (draftData.stock) stockInput.value = draftData.stock;
+          if (draftData.nivelMinimo)
+            nivelMinimoInput.value = draftData.nivelMinimo;
+          if (draftData.precio) precioInput.value = draftData.precio;
+          if (draftData.ubicacionEstante)
+            ubicacionInput.value = draftData.ubicacionEstante;
+          if (draftData.fechaVencimiento)
+            fechaVencimientoInput.value = draftData.fechaVencimiento;
+          if (draftData.codigoLote)
+            codigoLoteInput.value = draftData.codigoLote;
+          if (draftData.stockLote) stockLoteInput.value = draftData.stockLote;
+          if (draftData.fechaFabricacion)
+            fechaFabricacionInput.value = draftData.fechaFabricacion;
+          if (draftData.precioCompra)
+            precioCompraInput.value = draftData.precioCompra;
+        } catch (e) {
+          console.error("Error cargando borrador:", e);
+        }
+      }
+
+      // Función para limpiar el borrador después de guardar exitosamente
+      function clearFormDraft() {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+
+      // --- MODIFICAR FUNCIONES EXISTENTES ---
+      // Open modal for new medicamento
+      function openModal() {
+        modalTitle.innerText = "Agregar Medicamento";
+        medicamentoId.value = "";
+        form.reset();
+        // Valores por defecto
+        stockInput.value = "0";
+        nivelMinimoInput.value = "20";
+        stockLoteInput.value = "0";
+        // Limpiar otros campos
+        codigoLoteInput.value = "";
+        fechaFabricacionInput.value = "";
+        precioCompraInput.value = "";
+
+        // CARGAR EL BORRADOR GUARDADO
+        loadFormDraft();
+
+        modal.classList.add("active");
+      }
+
+      // Open modal for edit con AJAX
+      async function openEditModal(id) {
+        try {
+          modalTitle.innerText = "Editar Medicamento";
+
           // Limpiar formulario primero
           form.reset();
-          
+
           // Hacer petición para obtener los datos completos
           const response = await fetch(`/medicamentos/${id}`);
           const data = await response.json();
-          
+
           // Llenar campos del medicamento
-          medicamentoId.value = data.id || '';
-          nombreInput.value = data.nombre || '';
-          categoriaSelect.value = data.categoriaId || '';
-          formaInput.value = data.formaFarmaceutica || '';
-          descripcionInput.value = data.descripcion || '';
-          proveedorInput.value = data.proveedor || '';
+          medicamentoId.value = data.id || "";
+          nombreInput.value = data.nombre || "";
+          categoriaSelect.value = data.categoriaId || "";
+          formaInput.value = data.formaFarmaceutica || "";
+          descripcionInput.value = data.descripcion || "";
+          proveedorInput.value = data.proveedor || "";
           stockInput.value = data.stock || 0;
           nivelMinimoInput.value = data.nivelMinimo || 20;
           precioInput.value = data.precio || 0;
-          ubicacionInput.value = data.ubicacionEstante || '';
-          fechaVencimientoInput.value = data.fechaVencimiento || '';
-          
+          ubicacionInput.value = data.ubicacionEstante || "";
+          fechaVencimientoInput.value = data.fechaVencimiento || "";
+
           // Llenar campos del lote
           if (data.codigoLote) {
-              codigoLoteInput.value = data.codigoLote;
-              stockLoteInput.value = data.stockLote || 0;
-              fechaFabricacionInput.value = data.fechaFabricacion || '';
-              precioCompraInput.value = data.precioCompra || 0;
+            codigoLoteInput.value = data.codigoLote;
+            stockLoteInput.value = data.stockLote || 0;
+            fechaFabricacionInput.value = data.fechaFabricacion || "";
+            precioCompraInput.value = data.precioCompra || 0;
           } else {
-              codigoLoteInput.value = '';
-              stockLoteInput.value = '0';
-              fechaFabricacionInput.value = '';
-              precioCompraInput.value = '';
+            codigoLoteInput.value = "";
+            stockLoteInput.value = "0";
+            fechaFabricacionInput.value = "";
+            precioCompraInput.value = "";
           }
-          
-          modal.classList.add('active');
-      } catch (error) {
-          console.error('Error al cargar el medicamento:', error);
-          alert('Error al cargar los datos del medicamento');
-      }
-  }
 
-  // Close modal (funcion modificada para guardar antes de cerrar)
-  function closeModal() {
-      // Guardar el estado actual del formulario (solo si no estamos editando)
-      if (!medicamentoId.value || medicamentoId.value === '0' || medicamentoId.value === '') {
+          modal.classList.add("active");
+        } catch (error) {
+          console.error("Error al cargar el medicamento:", error);
+          alert("Error al cargar los datos del medicamento");
+        }
+      }
+
+      // Close modal (funcion modificada para guardar antes de cerrar)
+      function closeModal() {
+        // Guardar el estado actual del formulario (solo si no estamos editando)
+        if (
+          !medicamentoId.value ||
+          medicamentoId.value === "0" ||
+          medicamentoId.value === ""
+        ) {
           saveFormDraft();
+        }
+        modal.classList.remove("active");
       }
-      modal.classList.remove('active');
-  }
 
-  // --- MODIFICAR EL ENVÍO DEL FORMULARIO ---
-  // Interceptar el envío del formulario para limpiar el borrador si se guarda exitosamente
-  form.addEventListener('submit', function(e) {
-      // No prevenimos el envío normal, solo agregamos un listener para después
-      // Como el formulario se envía de manera tradicional, no podemos esperar la respuesta aquí fácilmente.
-      // Una forma es asumir que si se envió (y no hay errores de red), el borrador se limpia.
-      // Para una experiencia más robusta, idealmente se usaría fetch, pero por ahora:
-      if (!medicamentoId.value || medicamentoId.value === '0') {
+      // --- MODIFICAR EL ENVÍO DEL FORMULARIO ---
+      // Interceptar el envío del formulario para limpiar el borrador si se guarda exitosamente
+      form.addEventListener("submit", function (e) {
+        // No prevenimos el envío normal, solo agregamos un listener para después
+        // Como el formulario se envía de manera tradicional, no podemos esperar la respuesta aquí fácilmente.
+        // Una forma es asumir que si se envió (y no hay errores de red), el borrador se limpia.
+        // Para una experiencia más robusta, idealmente se usaría fetch, pero por ahora:
+        if (!medicamentoId.value || medicamentoId.value === "0") {
           // Es un nuevo medicamento, programamos la limpieza del borrador
           // El problema es que si la página recarga, el borrador se perderá igual.
           // Usaremos sessionStorage para indicar que se acaba de enviar el form
-          sessionStorage.setItem('formJustSubmitted', 'true');
+          sessionStorage.setItem("formJustSubmitted", "true");
+        }
+      });
+
+      // Al cargar la página, si venimos de un envío exitoso, limpiamos el borrador.
+      if (sessionStorage.getItem("formJustSubmitted") === "true") {
+        clearFormDraft();
+        sessionStorage.removeItem("formJustSubmitted");
       }
-  });
 
-  // Al cargar la página, si venimos de un envío exitoso, limpiamos el borrador.
-  if (sessionStorage.getItem('formJustSubmitted') === 'true') {
-      clearFormDraft();
-      sessionStorage.removeItem('formJustSubmitted');
-  }
-
-  // Delete modal functions
-  function openDeleteModal(id, nombre) {
-      currentDeleteId = id;
-      currentDeleteName = nombre;
-      deleteMedNameSpan.innerText = nombre;
-      deleteMedIdInput.value = id;
-      deleteModal.classList.add('active');
-  }
-
-  function closeDeleteModal() {
-      deleteModal.classList.remove('active');
-      currentDeleteId = null;
-      currentDeleteName = '';
-  }
-
-  // --- CONFIGURAR AUTO-GUARDADO AL ESCRIBIR ---
-  // Añadir event listeners a todos los campos del formulario para guardar cambios en tiempo real
-  const allFormInputs = [
-      nombreInput, categoriaSelect, formaInput, descripcionInput, proveedorInput,
-      stockInput, nivelMinimoInput, precioInput, ubicacionInput, fechaVencimientoInput,
-      codigoLoteInput, stockLoteInput, fechaFabricacionInput, precioCompraInput
-  ];
-  
-  allFormInputs.forEach(input => {
-      if (input) {
-          input.addEventListener('input', function() {
-              // Solo guardar si el modal está visible y no estamos en edición
-              if (modal.classList.contains('active') && (!medicamentoId.value || medicamentoId.value === '0')) {
-                  saveFormDraft();
-              }
-          });
-          input.addEventListener('change', function() {
-              if (modal.classList.contains('active') && (!medicamentoId.value || medicamentoId.value === '0')) {
-                  saveFormDraft();
-              }
-          });
+      // Delete modal functions
+      function openDeleteModal(id, nombre) {
+        currentDeleteId = id;
+        currentDeleteName = nombre;
+        deleteMedNameSpan.innerText = nombre;
+        deleteMedIdInput.value = id;
+        deleteModal.classList.add("active");
       }
-  });
 
-  // Event listeners
-  openBtn.addEventListener('click', openModal);
-  closeBtn.addEventListener('click', closeModal);
-  cancelBtn.addEventListener('click', closeModal);
-  cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+      function closeDeleteModal() {
+        deleteModal.classList.remove("active");
+        currentDeleteId = null;
+        currentDeleteName = "";
+      }
 
-  // Close modal on outside click (también guardará)
-  modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-  });
-  deleteModal.addEventListener('click', (e) => {
-      if (e.target === deleteModal) closeDeleteModal();
-  });
+      // --- CONFIGURAR AUTO-GUARDADO AL ESCRIBIR ---
+      // Añadir event listeners a todos los campos del formulario para guardar cambios en tiempo real
+      const allFormInputs = [
+        nombreInput,
+        categoriaSelect,
+        formaInput,
+        descripcionInput,
+        proveedorInput,
+        stockInput,
+        nivelMinimoInput,
+        precioInput,
+        ubicacionInput,
+        fechaVencimientoInput,
+        codigoLoteInput,
+        stockLoteInput,
+        fechaFabricacionInput,
+        precioCompraInput,
+      ];
 
-  // Edit buttons - usar el ID para hacer fetch
-  function setupEditButtons() {
-      document.querySelectorAll('.edit-btn').forEach(btn => {
+      allFormInputs.forEach((input) => {
+        if (input) {
+          input.addEventListener("input", function () {
+            // Solo guardar si el modal está visible y no estamos en edición
+            if (
+              modal.classList.contains("active") &&
+              (!medicamentoId.value || medicamentoId.value === "0")
+            ) {
+              saveFormDraft();
+            }
+          });
+          input.addEventListener("change", function () {
+            if (
+              modal.classList.contains("active") &&
+              (!medicamentoId.value || medicamentoId.value === "0")
+            ) {
+              saveFormDraft();
+            }
+          });
+        }
+      });
+
+      // Event listeners
+      openBtn.addEventListener("click", openModal);
+      closeBtn.addEventListener("click", closeModal);
+      cancelBtn.addEventListener("click", closeModal);
+      cancelDeleteBtn.addEventListener("click", closeDeleteModal);
+
+      // Close modal on outside click (también guardará)
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+      deleteModal.addEventListener("click", (e) => {
+        if (e.target === deleteModal) closeDeleteModal();
+      });
+
+      // Edit buttons - usar el ID para hacer fetch
+      function setupEditButtons() {
+        document.querySelectorAll(".edit-btn").forEach((btn) => {
           // Remover event listeners anteriores si existen
           const newBtn = btn.cloneNode(true);
           btn.parentNode.replaceChild(newBtn, btn);
-          
-          newBtn.addEventListener('click', (e) => {
-              const id = newBtn.getAttribute('data-id');
-              if (id) {
-                  openEditModal(id);
-              }
-          });
-      });
-  }
 
-  // Delete buttons
-  function setupDeleteButtons() {
-      document.querySelectorAll('.delete-btn').forEach(btn => {
+          newBtn.addEventListener("click", (e) => {
+            const id = newBtn.getAttribute("data-id");
+            if (id) {
+              openEditModal(id);
+            }
+          });
+        });
+      }
+
+      // Delete buttons
+      function setupDeleteButtons() {
+        document.querySelectorAll(".delete-btn").forEach((btn) => {
           const newBtn = btn.cloneNode(true);
           btn.parentNode.replaceChild(newBtn, btn);
-          
-          newBtn.addEventListener('click', (e) => {
-              const id = newBtn.getAttribute('data-id');
-              const nombre = newBtn.getAttribute('data-nombre');
-              openDeleteModal(id, nombre);
+
+          newBtn.addEventListener("click", (e) => {
+            const id = newBtn.getAttribute("data-id");
+            const nombre = newBtn.getAttribute("data-nombre");
+            openDeleteModal(id, nombre);
           });
+        });
+      }
+
+      // Inicializar los botones cuando la página carga
+      document.addEventListener("DOMContentLoaded", () => {
+        setupEditButtons();
+        setupDeleteButtons();
+
+        // Configurar filtros de búsqueda
+        const searchInput = document.getElementById("searchInput");
+        const categoryFilter = document.getElementById("categoryFilter");
+        const statusFilter = document.getElementById("statusFilter");
+
+        if (searchInput) searchInput.addEventListener("input", filterTable);
+        if (categoryFilter)
+          categoryFilter.addEventListener("change", filterTable);
+        if (statusFilter) statusFilter.addEventListener("change", filterTable);
+
+        // Limpiar borrador si existe al inicio (opcional, para evitar datos residuales)
+        // clearFormDraft(); // Descomentar si quieres que siempre empiece limpio al cargar la página
+
+        filterTable();
       });
-  }
 
-  // Inicializar los botones cuando la página carga
-  document.addEventListener('DOMContentLoaded', () => {
-      setupEditButtons();
-      setupDeleteButtons();
-      
-      // Configurar filtros de búsqueda
-      const searchInput = document.getElementById('searchInput');
-      const categoryFilter = document.getElementById('categoryFilter');
-      const statusFilter = document.getElementById('statusFilter');
-      
-      if (searchInput) searchInput.addEventListener('input', filterTable);
-      if (categoryFilter) categoryFilter.addEventListener('change', filterTable);
-      if (statusFilter) statusFilter.addEventListener('change', filterTable);
-      
-      // Limpiar borrador si existe al inicio (opcional, para evitar datos residuales)
-      // clearFormDraft(); // Descomentar si quieres que siempre empiece limpio al cargar la página
-      
-      filterTable();
-  });
+      // Función de filtrado (mantener la existente)
+      function filterTable() {
+        const searchTerm =
+          document.getElementById("searchInput")?.value.toLowerCase() || "";
+        const categoryId =
+          document.getElementById("categoryFilter")?.value || "";
+        const status = document.getElementById("statusFilter")?.value || "";
+        const tableBody = document.getElementById("medicamentosTableBody");
+        if (!tableBody) return;
 
-  // Función de filtrado (mantener la existente)
-  function filterTable() {
-      const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-      const categoryId = document.getElementById('categoryFilter')?.value || '';
-      const status = document.getElementById('statusFilter')?.value || '';
-      const tableBody = document.getElementById('medicamentosTableBody');
-      if (!tableBody) return;
-      
-      const rows = tableBody.querySelectorAll('tr');
-      let visibleCount = 0;
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      const fechaLimite = new Date();
-      fechaLimite.setDate(hoy.getDate() + 30);
-      
-      rows.forEach(row => {
-          const nombre = row.querySelector('td:first-child .font-bold')?.innerText.toLowerCase() || '';
-          const categoria = row.querySelector('td:nth-child(2) span')?.innerText || '';
-          const stock = parseInt(row.querySelector('td:nth-child(3)')?.innerText) || 0;
-          const fechaVencimientoStr = row.querySelector('td:nth-child(4) span')?.innerText || '';
-          
+        const rows = tableBody.querySelectorAll("tr");
+        let visibleCount = 0;
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        const fechaLimite = new Date();
+        fechaLimite.setDate(hoy.getDate() + 30);
+
+        rows.forEach((row) => {
+          const nombre =
+            row
+              .querySelector("td:first-child .font-bold")
+              ?.innerText.toLowerCase() || "";
+          const categoria =
+            row.querySelector("td:nth-child(2) span")?.innerText || "";
+          const stock =
+            parseInt(row.querySelector("td:nth-child(3)")?.innerText) || 0;
+          const fechaVencimientoStr =
+            row.querySelector("td:nth-child(4) span")?.innerText || "";
+
           // Convertir fecha de vencimiento
           let fechaVenc = null;
           let estaVencido = false;
           if (fechaVencimientoStr) {
-              const parts = fechaVencimientoStr.split('/');
-              fechaVenc = new Date(parts[2], parts[1] - 1, parts[0]);
-              fechaVenc.setHours(0, 0, 0, 0);
-              estaVencido = fechaVenc < hoy;
+            const parts = fechaVencimientoStr.split("/");
+            fechaVenc = new Date(parts[2], parts[1] - 1, parts[0]);
+            fechaVenc.setHours(0, 0, 0, 0);
+            estaVencido = fechaVenc < hoy;
           }
-          
-          let matchesSearch = nombre.includes(searchTerm);
-          let matchesCategory = !categoryId || categoria === document.querySelector(`option[value="${categoryId}"]`)?.innerText;
-          let matchesStatus = true;
-          
-          // Filtrar por estado
-          if (status === 'bajo') {
-              matchesStatus = stock < 20;
-          } else if (status === 'proximo') {
-              if (fechaVenc) {
-                  matchesStatus = fechaVenc >= hoy && fechaVenc <= fechaLimite;
-              } else {
-                  matchesStatus = false;
-              }
-          } else if (status === 'vencido') {
-              matchesStatus = estaVencido;
-          } else if (status === '') {
-              // Cuando es "Todos", NO mostrar los vencidos
-              matchesStatus = !estaVencido;
-          }
-          
-          if (matchesSearch && matchesCategory && matchesStatus) {
-              row.style.display = '';
-              visibleCount++;
-          } else {
-              row.style.display = 'none';
-          }
-      });
-      
-      const recordCountSpan = document.getElementById('recordCount');
-      if (recordCountSpan) {
-          recordCountSpan.innerHTML = `Mostrando ${visibleCount} medicamentos`;
-      }
-  }
 
-  // Si hay cambios dinámicos en la tabla (por ejemplo después de guardar/eliminar)
-  // puedes llamar a setupEditButtons y setupDeleteButtons nuevamente
+          let matchesSearch = nombre.includes(searchTerm);
+          let matchesCategory =
+            !categoryId ||
+            categoria ===
+              document.querySelector(`option[value="${categoryId}"]`)
+                ?.innerText;
+          let matchesStatus = true;
+
+          // Filtrar por estado
+          if (status === "bajo") {
+            matchesStatus = stock < 20;
+          } else if (status === "proximo") {
+            if (fechaVenc) {
+              matchesStatus = fechaVenc >= hoy && fechaVenc <= fechaLimite;
+            } else {
+              matchesStatus = false;
+            }
+          } else if (status === "vencido") {
+            matchesStatus = estaVencido;
+          } else if (status === "") {
+            // Cuando es "Todos", NO mostrar los vencidos
+            matchesStatus = !estaVencido;
+          }
+
+          if (matchesSearch && matchesCategory && matchesStatus) {
+            row.style.display = "";
+            visibleCount++;
+          } else {
+            row.style.display = "none";
+          }
+        });
+
+        const recordCountSpan = document.getElementById("recordCount");
+        if (recordCountSpan) {
+          recordCountSpan.innerHTML = `Mostrando ${visibleCount} medicamentos`;
+        }
+      }
+
+      // Si hay cambios dinámicos en la tabla (por ejemplo después de guardar/eliminar)
+      // puedes llamar a setupEditButtons y setupDeleteButtons nuevamente
 
       if (searchInput) searchInput.addEventListener("input", filterTable);
       if (categoryFilter)
