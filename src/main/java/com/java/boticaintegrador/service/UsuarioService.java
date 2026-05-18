@@ -3,6 +3,8 @@ package com.java.boticaintegrador.service;
 import com.java.boticaintegrador.model.Usuario;
 import com.java.boticaintegrador.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,4 +30,17 @@ public class UsuarioService implements UserDetailsService {
                 .roles(usuario.getRol()) // Ej: "ADMIN"
                 .build();
     }
+
+    private String obtenerNombreUsuario() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                return auth.getName();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Farmacéutico";
+    }
+
 }
