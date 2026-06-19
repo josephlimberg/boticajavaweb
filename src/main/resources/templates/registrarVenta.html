@@ -156,11 +156,30 @@
       .search-result-item:hover {
         background-color: #f1f3fe;
       }
+      .search-result-item.selected {
+        background-color: #d8e2ff;
+      }
       .cart-item {
         transition: background-color 0.2s;
       }
       .cart-item:hover {
         background-color: #f1f3fe;
+      }
+      .cliente-seleccionado {
+        background-color: #f0f7ff;
+        border: 2px solid #0059bb;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-top: 8px;
+      }
+      .badge-frecuente {
+        background-color: #fbbf24;
+        color: #000;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        margin-left: 6px;
       }
     </style>
   </head>
@@ -256,9 +275,7 @@
       class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 z-40 bg-surface border-b border-outline-variant"
     >
       <div class="flex justify-between items-center px-gutter w-full h-full">
-        <div class="flex items-center gap-4 flex-1 max-w-md">
-
-        </div>
+        <div class="flex items-center gap-4 flex-1 max-w-md"></div>
         <div class="flex items-center gap-6">
           <div class="flex items-center gap-2">
             <button
@@ -433,7 +450,60 @@
               </h3>
             </div>
 
-            <div class="space-y-4">
+            <!-- Buscador de Clientes -->
+            <div class="relative mb-4">
+              <label class="block text-label-lg text-on-surface-variant mb-1"
+                >Buscar Cliente</label
+              >
+              <div class="relative">
+                <input
+                  type="text"
+                  id="buscarCliente"
+                  class="w-full px-4 py-2 pl-10 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                  placeholder="Buscar por nombre o DNI..."
+                  autocomplete="off"
+                />
+                <span
+                  class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]"
+                  >search</span
+                >
+                <!-- Resultados de búsqueda de clientes -->
+                <div id="clienteSearchResults" class="search-results"></div>
+              </div>
+            </div>
+
+            <!-- Cliente Seleccionado -->
+            <div id="clienteSeleccionado" class="hidden">
+              <div
+                class="cliente-seleccionado flex items-center justify-between"
+              >
+                <div>
+                  <span class="font-bold" id="clienteSeleccionadoNombre"
+                    >-</span
+                  >
+                  <span
+                    class="text-label-sm text-on-surface-variant ml-2"
+                    id="clienteSeleccionadoDni"
+                    >-</span
+                  >
+                  <span id="clienteSeleccionadoBadge"></span>
+                  <div class="text-label-sm text-on-surface-variant">
+                    Compras: <span id="clienteSeleccionadoCompras">0</span>
+                  </div>
+                </div>
+                <button
+                  onclick="limpiarClienteSeleccionado()"
+                  class="text-error hover:bg-error-container p-1 rounded-full transition-colors"
+                  title="Quitar cliente"
+                >
+                  <span class="material-symbols-outlined text-[20px]"
+                    >close</span
+                  >
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-4 mt-4">
               <div>
                 <label class="block text-label-lg text-on-surface-variant mb-1"
                   >Nombre del Cliente *</label
@@ -464,14 +534,14 @@
             </div>
           </section>
 
-          <!-- Resumen de Total (modificado) -->
+          <!-- Resumen de Total -->
           <section
             class="bg-primary text-on-primary p-6 rounded-xl shadow-xl sticky top-8"
           >
             <h3 class="font-label-lg uppercase tracking-widest opacity-80 mb-2">
               Total a Pagar
             </h3>
-            <div class="flex items-baseline gap-2 mb-6">
+            <div class="flex items-baseline gap-2 mb-2">
               <span class="text-headline-md font-medium">S/</span>
               <span
                 id="totalPagar"
@@ -479,21 +549,49 @@
                 >0.00</span
               >
             </div>
+            <!-- Badge de descuento -->
+            <div id="descuentoBadge" class="hidden mb-4">
+              <span
+                class="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-bold"
+              >
+                🎉 5% DESCUENTO APLICADO
+              </span>
+            </div>
 
             <div class="space-y-3 border-t border-on-primary/20 pt-5 mb-6">
               <div class="flex justify-between items-center opacity-90">
                 <span class="text-body-md">Subtotal</span>
                 <span id="subtotal" class="font-label-lg">S/ 0.00</span>
               </div>
-              <div class="flex justify-between items-center opacity-90">
+              <div
+                class="flex justify-between items-center opacity-90"
+                id="descuentoRow"
+              >
+                <span class="text-body-md">Descuento (5%)</span>
+                <span id="descuentoMonto" class="font-label-lg text-yellow-300"
+                  >-S/ 0.00</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center opacity-90 border-t border-on-primary/10 pt-2"
+              >
+                <span class="text-body-md">Total con Descuento</span>
+                <span id="totalConDescuento" class="font-label-lg"
+                  >S/ 0.00</span
+                >
+              </div>
+              <div class="flex justify-between items-center opacity-60 text-sm">
                 <span class="text-body-md">IGV (18%)</span>
                 <span id="igv" class="font-label-lg">S/ 0.00</span>
               </div>
               <div
                 class="flex justify-between items-center text-body-lg font-bold pt-2 border-t border-on-primary/20"
               >
-                <span>TOTAL</span>
+                <span>MONTO FINAL</span>
                 <span id="totalNeto">S/ 0.00</span>
+              </div>
+              <div class="flex justify-between items-center opacity-50 text-xs">
+                <span>El IGV es informativo y no afecta al total</span>
               </div>
             </div>
 
@@ -505,6 +603,12 @@
                 id="clienteNombreInput"
                 name="clienteNombre"
               />
+              <input
+                type="hidden"
+                id="pacienteIdInput"
+                name="pacienteId"
+                value="0"
+              />
               <input type="hidden" id="totalInput" name="total" value="0" />
               <input
                 type="hidden"
@@ -513,6 +617,12 @@
                 value="0"
               />
               <input type="hidden" id="igvInput" name="igv" value="0" />
+              <input
+                type="hidden"
+                id="descuentoInput"
+                name="descuento"
+                value="0"
+              />
 
               <button
                 type="submit"
@@ -548,278 +658,447 @@
     ></div>
 
     <script>
-      // Variables globales
-      let carrito = [];
-      let timeoutId = null;
+    // ==========================================
+    // VARIABLES GLOBALES
+    // ==========================================
+    let carrito = [];
+    let timeoutId = null;
+    let clienteTimeoutId = null;
+    let selectedIndex = -1;
+    let clienteSeleccionadoId = 0;
+    let clienteSeleccionadoNombre = null;
 
-      // Elementos DOM
-      const searchInput = document.getElementById("searchInput");
-      const searchResults = document.getElementById("searchResults");
-      const cartBody = document.getElementById("cartBody");
-      const cartCount = document.getElementById("cartCount");
-      const totalPagar = document.getElementById("totalPagar");
-      const subtotal = document.getElementById("subtotal");
-      const totalNeto = document.getElementById("totalNeto");
-      const registrarBtn = document.getElementById("registrarVentaBtn");
-      const totalInput = document.getElementById("totalInput");
-      const detallesVenta = document.getElementById("detallesVenta");
+    // ==========================================
+    // ELEMENTOS DOM
+    // ==========================================
+    const searchInput = document.getElementById("searchInput");
+    const searchResults = document.getElementById("searchResults");
+    const cartBody = document.getElementById("cartBody");
+    const cartCount = document.getElementById("cartCount");
+    const totalPagar = document.getElementById("totalPagar");
+    const subtotal = document.getElementById("subtotal");
+    const totalNeto = document.getElementById("totalNeto");
+    const totalConDescuento = document.getElementById("totalConDescuento");
+    const registrarBtn = document.getElementById("registrarVentaBtn");
+    const totalInput = document.getElementById("totalInput");
+    const detallesVenta = document.getElementById("detallesVenta");
+    const clienteNombre = document.getElementById("clienteNombre");
+    const buscarCliente = document.getElementById("buscarCliente");
+    const clienteSearchResults = document.getElementById("clienteSearchResults");
+    const clienteSeleccionadoDiv = document.getElementById("clienteSeleccionado");
+    const clienteSeleccionadoNombreSpan = document.getElementById("clienteSeleccionadoNombre");
+    const clienteSeleccionadoDniSpan = document.getElementById("clienteSeleccionadoDni");
+    const clienteSeleccionadoComprasSpan = document.getElementById("clienteSeleccionadoCompras");
+    const clienteSeleccionadoBadge = document.getElementById("clienteSeleccionadoBadge");
+    const pacienteIdInput = document.getElementById("pacienteIdInput");
+    const descuentoMonto = document.getElementById("descuentoMonto");
+    const igvElement = document.getElementById("igv");
+    const descuentoBadge = document.getElementById("descuentoBadge");
+    const descuentoRow = document.getElementById("descuentoRow");
 
-      // Función de búsqueda con debounce
-      searchInput.addEventListener("input", function () {
+    // ==========================================
+    // BUSCADOR DE MEDICAMENTOS
+    // ==========================================
+    searchInput.addEventListener("input", function () {
         const query = this.value.trim();
-
         if (timeoutId) clearTimeout(timeoutId);
-
         if (query.length >= 4) {
-          timeoutId = setTimeout(() => buscarMedicamentos(query), 300);
+            timeoutId = setTimeout(() => buscarMedicamentos(query), 300);
         } else {
-          searchResults.classList.remove("active");
-          searchResults.innerHTML = "";
+            searchResults.classList.remove("active");
+            searchResults.innerHTML = "";
         }
-      });
+    });
 
-      // Buscar medicamentos
-      async function buscarMedicamentos(query) {
+    async function buscarMedicamentos(query) {
         try {
-          const response = await fetch(
-            `/ventas/buscar?query=${encodeURIComponent(query)}`,
-          );
-          const medicamentos = await response.json();
+            const response = await fetch(`/ventas/buscar?query=${encodeURIComponent(query)}`);
+            const medicamentos = await response.json();
 
-          if (medicamentos.length === 0) {
-            searchResults.innerHTML =
-              '<div class="search-result-item">No se encontraron medicamentos</div>';
-            searchResults.classList.add("active");
-            return;
-          }
+            if (medicamentos.length === 0) {
+                searchResults.innerHTML = '<div class="search-result-item">No se encontraron medicamentos</div>';
+                searchResults.classList.add("active");
+                return;
+            }
 
-          searchResults.innerHTML = medicamentos
-            .map(
-              (med) => `
-            <div class="search-result-item" onclick="agregarAlCarrito(${med.id}, '${med.nombre}', ${med.precio}, ${med.stock})">
-              <div class="flex justify-between items-center">
-                <div>
-                  <span class="font-bold">${med.nombre}</span>
-                  <span class="text-label-sm text-on-surface-variant ml-2">Stock: ${med.stock}</span>
+            searchResults.innerHTML = medicamentos.map((med) => `
+                <div class="search-result-item" onclick="agregarAlCarrito(${med.id}, '${med.nombre}', ${med.precio}, ${med.stock})">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="font-bold">${med.nombre}</span>
+                            <span class="text-label-sm text-on-surface-variant ml-2">Stock: ${med.stock}</span>
+                        </div>
+                        <span class="font-bold text-primary">S/ ${med.precio.toFixed(2)}</span>
+                    </div>
+                    <div class="text-label-sm text-on-surface-variant">${med.formaFarmaceutica || ""}</div>
                 </div>
-                <span class="font-bold text-primary">S/ ${med.precio.toFixed(2)}</span>
-              </div>
-              <div class="text-label-sm text-on-surface-variant">${med.formaFarmaceutica || ""}</div>
-            </div>
-          `,
-            )
-            .join("");
-
-          searchResults.classList.add("active");
+            `).join("");
+            searchResults.classList.add("active");
         } catch (error) {
-          console.error("Error al buscar:", error);
+            console.error("Error al buscar:", error);
         }
-      }
+    }
 
-      // Cerrar resultados al hacer clic fuera
-      document.addEventListener("click", function (e) {
-        if (
-          !searchInput.contains(e.target) &&
-          !searchResults.contains(e.target)
-        ) {
-          searchResults.classList.remove("active");
-        }
-      });
-
-      // Agregar al carrito
-      function agregarAlCarrito(id, nombre, precio, stockMaximo) {
-        // Verificar si ya existe en el carrito
-        const existente = carrito.find((item) => item.id === id);
-
-        if (existente) {
-          if (existente.cantidad < stockMaximo) {
-            existente.cantidad++;
-          } else {
-            alert("Stock insuficiente");
-            return;
-          }
+    // ==========================================
+    // BUSCADOR DE CLIENTES
+    // ==========================================
+    buscarCliente.addEventListener("input", function () {
+        const query = this.value.trim();
+        if (clienteTimeoutId) clearTimeout(clienteTimeoutId);
+        if (query.length >= 3) {
+            clienteTimeoutId = setTimeout(() => buscarClientes(query), 300);
         } else {
-          carrito.push({
-            id: id,
-            nombre: nombre,
-            precio: precio,
-            cantidad: 1,
-            maxStock: stockMaximo,
-          });
+            clienteSearchResults.classList.remove("active");
+            clienteSearchResults.innerHTML = "";
+        }
+    });
+
+    async function buscarClientes(query) {
+    try {
+        const response = await fetch(`/ventas/buscar-pacientes?query=${encodeURIComponent(query)}`);
+        const pacientes = await response.json();
+
+        if (pacientes.length === 0) {
+            clienteSearchResults.innerHTML = '<div class="search-result-item">No se encontraron clientes</div>';
+            clienteSearchResults.classList.add("active");
+            return;
         }
 
+        clienteSearchResults.innerHTML = pacientes.map((p) => {
+            const tieneDescuento = p.tieneDescuento || ((p.comprasRealizadas + 1) % 5 === 0);
+            return `
+                <div class="search-result-item" onclick="seleccionarCliente(${p.id}, '${p.nombre}', '${p.apellido}', '${p.dni}', ${p.comprasRealizadas}, ${tieneDescuento}, ${p.comprasFaltantes || 0})">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="font-bold">${p.nombre} ${p.apellido}</span>
+                            <span class="text-label-sm text-on-surface-variant ml-2">DNI: ${p.dni}</span>
+                            ${tieneDescuento ? '<span class="badge-frecuente" style="background-color: #fbbf24; color: #000; padding: 2px 8px; border-radius: 9999px; font-size: 10px; font-weight: bold; margin-left: 4px;">🎉 DESCUENTO</span>' : ''}
+                        </div>
+                        <div class="text-right">
+                            <span class="text-label-sm block">${p.comprasRealizadas} compras</span>
+                            ${tieneDescuento ? '<span class="text-green-600 text-xs font-bold">¡Compra N° ' + (p.comprasRealizadas + 1) + '!</span>' : ''}
+                            ${!tieneDescuento && p.comprasFaltantes ? '<span class="text-xs text-on-surface-variant">Faltan ' + p.comprasFaltantes + ' compras</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="text-label-sm text-on-surface-variant mt-1">
+                        ${p.telefono ? `📱 ${p.telefono}` : ''} | ${p.estado === 'ACTIVO' ? '🟢 Activo' : '🔴 Inactivo'}
+                    </div>
+                </div>
+            `;
+        }).join("");
+        clienteSearchResults.classList.add("active");
+    } catch (error) {
+        console.error("Error al buscar clientes:", error);
+    }
+}
+
+
+    // ==========================================
+    // SELECCIONAR CLIENTE
+    // ==========================================
+    function seleccionarCliente(id, nombre, apellido, dni, compras, tieneDescuento, comprasFaltantes) {
+    const nombreCompleto = `${nombre} ${apellido}`;
+    
+    clienteSeleccionadoId = id;
+    clienteSeleccionadoNombre = nombreCompleto;
+    pacienteIdInput.value = id;
+    clienteNombre.value = nombreCompleto;
+    
+    clienteSeleccionadoNombreSpan.textContent = nombreCompleto;
+    clienteSeleccionadoDniSpan.textContent = `DNI: ${dni}`;
+    clienteSeleccionadoComprasSpan.textContent = compras;
+    
+    // Verificar si la PRÓXIMA compra tiene descuento
+    if (tieneDescuento) {
+        clienteSeleccionadoBadge.innerHTML = `
+            <span class="badge-frecuente" style="background-color: #fbbf24; color: #000; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: bold;">
+                ⭐ ¡Compra N° ${parseInt(compras) + 1} - 5% DESCUENTO!
+            </span>
+            <span class="text-xs text-green-600 ml-2">
+                (${compras} compras acumuladas)
+            </span>
+        `;
+    } else {
+        const faltantes = comprasFaltantes || (5 - (compras % 5));
+        clienteSeleccionadoBadge.innerHTML = `
+            <span class="text-xs text-on-surface-variant">
+                ${compras} compras acumuladas - Faltan ${faltantes} compras para descuento
+            </span>
+        `;
+    }
+    
+    clienteSeleccionadoDiv.classList.remove("hidden");
+    clienteSearchResults.classList.remove("active");
+    clienteSearchResults.innerHTML = "";
+    buscarCliente.value = "";
+    
+    calcularTotal();
+    
+    const mensaje = tieneDescuento 
+        ? `✅ Cliente seleccionado: ${nombreCompleto}\n🎉 ¡Compra N° ${parseInt(compras) + 1}! 5% de descuento aplicado!`
+        : `✅ Cliente seleccionado: ${nombreCompleto}\n📊 ${compras} compras acumuladas`;
+    
+    mostrarNotificacion(mensaje, "success");
+}
+
+
+    // ==========================================
+    // LIMPIAR CLIENTE SELECCIONADO
+    // ==========================================
+    function limpiarClienteSeleccionado() {
+        clienteSeleccionadoId = 0;
+        clienteSeleccionadoNombre = null;
+        pacienteIdInput.value = "0";
+        clienteNombre.value = "Anónimo";
+        clienteSeleccionadoDiv.classList.add("hidden");
+        clienteSeleccionadoBadge.innerHTML = "";
+        document.getElementById("clienteSeleccionadoCompras").textContent = "0";
+        
+        calcularTotal();
+        
+        mostrarNotificacion("Cliente removido, se usará Anónimo", "info");
+    }
+
+    // ==========================================
+    // CERRAR RESULTADOS AL HACER CLIC FUERA
+    // ==========================================
+    document.addEventListener("click", function (e) {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.classList.remove("active");
+        }
+        if (!buscarCliente.contains(e.target) && !clienteSearchResults.contains(e.target)) {
+            clienteSearchResults.classList.remove("active");
+        }
+    });
+
+    // ==========================================
+    // FUNCIONES DEL CARRITO
+    // ==========================================
+    function agregarAlCarrito(id, nombre, precio, stockMaximo) {
+        const existente = carrito.find((item) => item.id === id);
+        if (existente) {
+            if (existente.cantidad < stockMaximo) {
+                existente.cantidad++;
+            } else {
+                alert("Stock insuficiente");
+                return;
+            }
+        } else {
+            carrito.push({ id, nombre, precio, cantidad: 1, maxStock: stockMaximo });
+        }
         actualizarCarrito();
         searchResults.classList.remove("active");
         searchInput.value = "";
-      }
+    }
 
-      // Actualizar carrito
-      function actualizarCarrito() {
+    function actualizarCarrito() {
         if (carrito.length === 0) {
-          cartBody.innerHTML = `
-            <tr>
-              <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
-                <span class="material-symbols-outlined text-4xl mb-2">shopping_cart</span>
-                <p>El carrito está vacío</p>
-                <p class="text-label-sm">Busque y agregue medicamentos</p>
-              </td>
-            </tr>
-          `;
-          cartCount.innerText = "0 items";
-          registrarBtn.disabled = true;
-          calcularTotal();
-          return;
+            cartBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
+                        <span class="material-symbols-outlined text-4xl mb-2">shopping_cart</span>
+                        <p>El carrito está vacío</p>
+                        <p class="text-label-sm">Busque y agregue medicamentos</p>
+                    </td>
+                </tr>
+            `;
+            cartCount.innerText = "0 items";
+            calcularTotal();
+            return;
         }
 
-        cartBody.innerHTML = carrito
-          .map(
-            (item, index) => `
-          <tr class="cart-item">
-            <td class="px-6 py-4">
-              <div>
-                <p class="font-bold">${item.nombre}</p>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-center">
-              <div class="flex items-center justify-center gap-2">
-                <button onclick="cambiarCantidad(${index}, -1)" class="w-8 h-8 rounded-full bg-surface-container hover:bg-primary-container transition-colors">
-                  <span class="material-symbols-outlined text-sm">remove</span>
-                </button>
-                <span class="w-12 text-center font-bold">${item.cantidad}</span>
-                <button onclick="cambiarCantidad(${index}, 1)" class="w-8 h-8 rounded-full bg-surface-container hover:bg-primary-container transition-colors">
-                  <span class="material-symbols-outlined text-sm">add</span>
-                </button>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-right">S/ ${item.precio.toFixed(2)}</td>
-            <td class="px-6 py-4 text-right font-bold">S/ ${(item.precio * item.cantidad).toFixed(2)}</td>
-            <td class="px-6 py-4 text-center">
-              <button onclick="eliminarDelCarrito(${index})" class="text-error hover:bg-error-container p-2 rounded transition-colors">
-                <span class="material-symbols-outlined">delete</span>
-              </button>
-            </td>
-          </tr>
-        `,
-          )
-          .join("");
+        cartBody.innerHTML = carrito.map((item, index) => `
+            <tr class="cart-item">
+                <td class="px-6 py-4">
+                    <div>
+                        <p class="font-bold">${item.nombre}</p>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                        <button onclick="cambiarCantidad(${index}, -1)" class="w-8 h-8 rounded-full bg-surface-container hover:bg-primary-container transition-colors">
+                            <span class="material-symbols-outlined text-sm">remove</span>
+                        </button>
+                        <span class="w-12 text-center font-bold">${item.cantidad}</span>
+                        <button onclick="cambiarCantidad(${index}, 1)" class="w-8 h-8 rounded-full bg-surface-container hover:bg-primary-container transition-colors">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                        </button>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-right">S/ ${item.precio.toFixed(2)}</td>
+                <td class="px-6 py-4 text-right font-bold">S/ ${(item.precio * item.cantidad).toFixed(2)}</td>
+                <td class="px-6 py-4 text-center">
+                    <button onclick="eliminarDelCarrito(${index})" class="text-error hover:bg-error-container p-2 rounded transition-colors">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </td>
+            </tr>
+        `).join("");
 
-        const totalItems = carrito.reduce(
-          (sum, item) => sum + item.cantidad,
-          0,
-        );
+        const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
         cartCount.innerText = `${totalItems} items`;
-        registrarBtn.disabled = false;
         calcularTotal();
-        
-        const tieneItems = carrito.length > 0;
-        document.getElementById("btnComprobante").disabled = !tieneItems;
-      }
+    }
 
-      // Cambiar cantidad
-      function cambiarCantidad(index, cambio) {
+    function cambiarCantidad(index, cambio) {
         const item = carrito[index];
         const nuevaCantidad = item.cantidad + cambio;
-
         if (nuevaCantidad < 1) {
-          eliminarDelCarrito(index);
+            eliminarDelCarrito(index);
         } else if (nuevaCantidad <= item.maxStock) {
-          item.cantidad = nuevaCantidad;
-          actualizarCarrito();
+            item.cantidad = nuevaCantidad;
+            actualizarCarrito();
         } else {
-          alert(`Stock máximo disponible: ${item.maxStock}`);
+            alert(`Stock máximo disponible: ${item.maxStock}`);
         }
-      }
+    }
 
-      // Eliminar del carrito
-      function eliminarDelCarrito(index) {
+    function eliminarDelCarrito(index) {
         carrito.splice(index, 1);
         actualizarCarrito();
-      }
+    }
 
-      // Calcular total
-      function calcularTotal() {
-        const total = carrito.reduce(
-          (sum, item) => sum + item.precio * item.cantidad,
-          0,
-        );
-        totalPagar.innerText = total.toFixed(2);
-        subtotal.innerText = `S/ ${total.toFixed(2)}`;
-        totalNeto.innerText = `S/ ${total.toFixed(2)}`;
-        totalInput.value = total.toFixed(2);
+    // ==========================================
+    // CALCULAR TOTAL (CORREGIDO)
+    // ==========================================
+    function calcularTotal() {
+    // 1. CALCULAR SUBTOTAL (suma de todos los medicamentos)
+    const subtotalValue = carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+    
+    // 2. VERIFICAR DESCUENTO (solo si la PRÓXIMA compra tiene descuento)
+    const compras = parseInt(document.getElementById("clienteSeleccionadoCompras").textContent) || 0;
+    // El descuento aplica cuando (compras + 1) es múltiplo de 5
+    const tieneDescuento = clienteSeleccionadoId > 0 && (compras + 1) % 5 === 0;
+    
+    // 3. CALCULAR DESCUENTO
+    let montoDescuento = 0;
+    let totalConDescuentoValue = subtotalValue;
+    
+    if (tieneDescuento) {
+        montoDescuento = subtotalValue * 0.05;
+        totalConDescuentoValue = subtotalValue - montoDescuento;
+        
+        // Mostrar elementos de descuento
+        descuentoBadge.classList.remove("hidden");
+        descuentoRow.classList.remove("hidden");
+        descuentoMonto.textContent = `-S/ ${montoDescuento.toFixed(2)}`;
+        totalConDescuento.textContent = `S/ ${totalConDescuentoValue.toFixed(2)}`;
+        
+        // Actualizar badge para mostrar que es la compra con descuento
+        const badge = document.getElementById("clienteSeleccionadoBadge");
+        badge.innerHTML = `
+            <span class="badge-frecuente" style="background-color: #fbbf24; color: #000; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: bold;">
+                ⭐ ¡Compra N° ${compras + 1} - 5% DESCUENTO!
+            </span>
+        `;
+    } else {
+        descuentoBadge.classList.add("hidden");
+        descuentoRow.classList.add("hidden");
+        descuentoMonto.textContent = "-S/ 0.00";
+        totalConDescuento.textContent = `S/ ${subtotalValue.toFixed(2)}`;
+    }
+    
+    // 4. EL TOTAL A PAGAR ES EL SUBTOTAL CON DESCUENTO (si aplica)
+    const totalFinal = totalConDescuentoValue;
+    
+    // 5. CALCULAR IGV (SOLO INFORMATIVO - 18% del total con descuento)
+    const igvCalculado = totalConDescuentoValue * 0.18;
+    
+    // 6. ACTUALIZAR UI
+    totalPagar.textContent = totalFinal.toFixed(2);
+    subtotal.textContent = `S/ ${subtotalValue.toFixed(2)}`;
+    igvElement.textContent = `S/ ${igvCalculado.toFixed(2)}`;
+    totalNeto.textContent = `S/ ${totalFinal.toFixed(2)}`;
+    
+    // 7. ACTUALIZAR CAMPOS OCULTOS
+    document.getElementById("subtotalInput").value = subtotalValue.toFixed(2);
+    document.getElementById("igvInput").value = igvCalculado.toFixed(2);
+    document.getElementById("totalInput").value = totalFinal.toFixed(2);
+    document.getElementById("descuentoInput").value = montoDescuento.toFixed(2);
+    
+    // 8. PREPARAR DETALLES PARA EL BACKEND
+    const detalles = carrito.map((item) => ({
+        medicamentoId: item.id,
+        cantidad: item.cantidad,
+        precioUnitario: item.precio,
+        subtotal: item.precio * item.cantidad,
+    }));
+    document.getElementById("detallesVenta").value = JSON.stringify(detalles);
+    
+    // 9. HABILITAR/DESABILITAR BOTÓN DE REGISTRO
+    const tieneItems = carrito.length > 0;
+    registrarBtn.disabled = !tieneItems;
+    document.getElementById("btnComprobante").disabled = !tieneItems;
+}
 
-        // Preparar detalles para enviar
-        const detalles = carrito.map((item) => ({
-          medicamentoId: item.id,
-          cantidad: item.cantidad,
-          precioUnitario: item.precio,
-          subtotal: item.precio * item.cantidad,
-        }));
-
-        detallesVenta.value = JSON.stringify(detalles);
-      }
-
-      // Modificar el submit del formulario
-      document
-        .getElementById("ventaForm")
-        .addEventListener("submit", function (e) {
-          if (carrito.length === 0) {
+    // ==========================================
+    // ENVÍO DEL FORMULARIO
+    // ==========================================
+    document.getElementById("ventaForm").addEventListener("submit", function (e) {
+        if (carrito.length === 0) {
             e.preventDefault();
             alert("Agregue productos al carrito");
             return false;
-          }
+        }
 
-          const clienteNombre = document
-            .getElementById("clienteNombre")
-            .value.trim();
-          if (!clienteNombre) {
+        const nombre = document.getElementById("clienteNombre").value.trim();
+        if (!nombre) {
             e.preventDefault();
             alert("Ingrese el nombre del cliente");
             return false;
-          }
+        }
 
-          const metodoPago = document.getElementById("metodoPago").value;
-          document.getElementById("metodoPagoInput").value = metodoPago;
-          document.getElementById("clienteNombreInput").value = clienteNombre;
+        const metodoPago = document.getElementById("metodoPago").value;
+        document.getElementById("metodoPagoInput").value = metodoPago;
+        document.getElementById("clienteNombreInput").value = nombre;
 
-          if (
-            !confirm(
-              `Confirmar venta para ${clienteNombre}\nTotal: S/ ${document.getElementById("totalPagar").innerText}`,
-            )
-          ) {
+        const tieneDescuento = clienteSeleccionadoId > 0 && 
+                              parseInt(document.getElementById("clienteSeleccionadoCompras").textContent) >= 5;
+        
+        let mensaje = `Confirmar venta para ${nombre}`;
+        if (clienteSeleccionadoId > 0) {
+            mensaje += ` (Cliente registrado)`;
+            if (tieneDescuento) {
+                mensaje += `\n🎉 5% de descuento aplicado`;
+            }
+        } else {
+            mensaje += ` (Anónimo)`;
+        }
+        mensaje += `\nTotal: S/ ${document.getElementById("totalPagar").innerText}`;
+
+        if (!confirm(mensaje)) {
             e.preventDefault();
             return false;
-          }
-        });
+        }
+    });
 
-      // Función para generar comprobante PDF
-      async function generarComprobante() {
+    // ==========================================
+    // GENERAR COMPROBANTE
+    // ==========================================
+    async function generarComprobante() {
         if (carrito.length === 0) {
-          alert("No hay productos en el carrito");
-          return;
+            alert("No hay productos en el carrito");
+            return;
         }
 
-        const clienteNombre = document
-          .getElementById("clienteNombre")
-          .value.trim();
-        if (!clienteNombre) {
-          alert("Ingrese el nombre del cliente");
-          return;
+        const nombre = document.getElementById("clienteNombre").value.trim();
+        if (!nombre) {
+            alert("Ingrese el nombre del cliente");
+            return;
         }
 
-        const metodoPago =
-          document.getElementById("metodoPago").options[
+        const metodoPago = document.getElementById("metodoPago").options[
             document.getElementById("metodoPago").selectedIndex
-          ].text;
-        const subtotal = parseFloat(
-          document.getElementById("subtotalInput").value,
-        );
-        const igv = parseFloat(document.getElementById("igvInput").value);
-        const total = parseFloat(document.getElementById("totalInput").value);
+        ].text;
+        
+        const subtotalValue = parseFloat(document.getElementById("subtotalInput").value) || 0;
+        const descuentoValue = parseFloat(document.getElementById("descuentoInput").value) || 0;
+        const totalValue = parseFloat(document.getElementById("totalInput").value) || 0;
+        const igvValue = parseFloat(document.getElementById("igvInput").value) || 0;
+        
         const fecha = new Date().toLocaleString();
-        const numeroBoleta =
-          "B001-" + String(Math.floor(Math.random() * 100000)).padStart(5, "0");
+        const numeroBoleta = "B001-" + String(Math.floor(Math.random() * 100000)).padStart(5, "0");
 
-        // Crear contenido HTML para el PDF
         const contenidoHTML = `
         <!DOCTYPE html>
         <html>
@@ -827,85 +1106,23 @@
             <meta charset="UTF-8">
             <title>Comprobante de Venta</title>
             <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 20px;
-                }
-                .ticket {
-                    max-width: 400px;
-                    margin: 0 auto;
-                    border: 1px solid #ddd;
-                    padding: 20px;
-                    border-radius: 10px;
-                }
-                .header {
-                    text-align: center;
-                    border-bottom: 2px dashed #333;
-                    padding-bottom: 10px;
-                    margin-bottom: 15px;
-                }
-                .header h1 {
-                    margin: 0;
-                    font-size: 18px;
-                    color: #0059bb;
-                }
-                .header p {
-                    margin: 5px 0;
-                    font-size: 12px;
-                    color: #666;
-                }
-                .info-cliente {
-                    margin-bottom: 15px;
-                    padding: 10px;
-                    background: #f5f5f5;
-                    border-radius: 5px;
-                    font-size: 12px;
-                }
-                .info-cliente p {
-                    margin: 3px 0;
-                }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 15px;
-                    font-size: 12px;
-                }
-                th, td {
-                    border-bottom: 1px solid #ddd;
-                    padding: 8px;
-                    text-align: left;
-                }
-                th {
-                    background: #f0f0f0;
-                }
-                .text-right {
-                    text-align: right;
-                }
-                .totales {
-                    border-top: 2px solid #333;
-                    padding-top: 10px;
-                    margin-top: 10px;
-                }
-                .totales p {
-                    margin: 5px 0;
-                    font-size: 12px;
-                    display: flex;
-                    justify-content: space-between;
-                }
-                .total-final {
-                    font-size: 16px;
-                    font-weight: bold;
-                    color: #0059bb;
-                }
-                .footer {
-                    text-align: center;
-                    margin-top: 20px;
-                    padding-top: 10px;
-                    border-top: 2px dashed #333;
-                    font-size: 10px;
-                    color: #666;
-                }
+                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                .ticket { max-width: 400px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px; }
+                .header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 10px; margin-bottom: 15px; }
+                .header h1 { margin: 0; font-size: 18px; color: #0059bb; }
+                .header p { margin: 5px 0; font-size: 12px; color: #666; }
+                .info-cliente { margin-bottom: 15px; padding: 10px; background: #f5f5f5; border-radius: 5px; font-size: 12px; }
+                .info-cliente p { margin: 3px 0; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
+                th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+                th { background: #f0f0f0; }
+                .text-right { text-align: right; }
+                .totales { border-top: 2px solid #333; padding-top: 10px; margin-top: 10px; }
+                .totales p { margin: 5px 0; font-size: 12px; display: flex; justify-content: space-between; }
+                .total-final { font-size: 16px; font-weight: bold; color: #0059bb; }
+                .descuento { color: #d97706; }
+                .footer { text-align: center; margin-top: 20px; padding-top: 10px; border-top: 2px dashed #333; font-size: 10px; color: #666; }
+                .igv-info { font-size: 10px; color: #999; text-align: right; margin-top: 5px; }
             </style>
         </head>
         <body>
@@ -918,13 +1135,11 @@
                     <h3>BOLETA ELECTRÓNICA</h3>
                     <p><strong>N° ${numeroBoleta}</strong></p>
                 </div>
-                
                 <div class="info-cliente">
-                    <p><strong>Cliente:</strong> ${clienteNombre}</p>
+                    <p><strong>Cliente:</strong> ${nombre}</p>
                     <p><strong>Fecha:</strong> ${fecha}</p>
                     <p><strong>Método de Pago:</strong> ${metodoPago}</p>
                 </div>
-                
                 <table>
                     <thead>
                         <tr>
@@ -935,44 +1150,157 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${carrito
-                          .map(
-                            (item) => `
+                        ${carrito.map((item) => `
                             <tr>
                                 <td>${item.nombre}</td>
                                 <td class="text-right">${item.cantidad}</td>
                                 <td class="text-right">S/ ${item.precio.toFixed(2)}</td>
                                 <td class="text-right">S/ ${(item.precio * item.cantidad).toFixed(2)}</td>
                             </tr>
-                        `,
-                          )
-                          .join("")}
+                        `).join("")}
                     </tbody>
                 </table>
-                
                 <div class="totales">
-                    <p><span>Subtotal:</span><span>S/ ${subtotal.toFixed(2)}</span></p>
-                    <p><span>IGV (18%):</span><span>S/ ${igv.toFixed(2)}</span></p>
-                    <p class="total-final"><span>TOTAL:</span><span>S/ ${total.toFixed(2)}</span></p>
+                    <p><span>Subtotal:</span><span>S/ ${subtotalValue.toFixed(2)}</span></p>
+                    ${descuentoValue > 0 ? `<p class="descuento"><span>Descuento (5%):</span><span>-S/ ${descuentoValue.toFixed(2)}</span></p>` : ''}
+                    ${descuentoValue > 0 ? `<p><span>Total con descuento:</span><span>S/ ${(subtotalValue - descuentoValue).toFixed(2)}</span></p>` : ''}
+                    <p class="total-final"><span>TOTAL:</span><span>S/ ${totalValue.toFixed(2)}</span></p>
                 </div>
-                
+                <div class="igv-info">
+                    <p>IGV (18%): S/ ${igvValue.toFixed(2)} (Informativo)</p>
+                </div>
                 <div class="footer">
                     <p>¡Gracias por su compra!</p>
-                    <p>Este documento es una representación impresa de la boleta electrónica</p>
                     <p>Válido como comprobante de pago</p>
                 </div>
             </div>
         </body>
         </html>
-    `;
+        `;
 
-        // Abrir ventana de impresión para PDF
         const ventana = window.open("", "_blank");
         ventana.document.write(contenidoHTML);
         ventana.document.close();
         ventana.print();
-      }
+    }
 
-    </script>
+    // ==========================================
+    // NOTIFICACIONES
+    // ==========================================
+    function mostrarNotificacion(mensaje, tipo) {
+        const notificacion = document.createElement("div");
+        notificacion.className = `fixed top-20 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transform transition-all duration-500 ${
+            tipo === 'success' ? 'bg-green-500 text-white' :
+            tipo === 'error' ? 'bg-red-500 text-white' :
+            'bg-blue-500 text-white'
+        }`;
+        notificacion.innerHTML = `
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined">
+                    ${tipo === 'success' ? 'check_circle' :
+                      tipo === 'error' ? 'error' :
+                      'info'}
+                </span>
+                <span class="font-label-lg">${mensaje}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 hover:opacity-80">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+        `;
+        document.body.appendChild(notificacion);
+        setTimeout(() => {
+            if (notificacion.parentElement) {
+                notificacion.style.opacity = "0";
+                notificacion.style.transform = "translateX(100%)";
+                setTimeout(() => {
+                    if (notificacion.parentElement) {
+                        notificacion.remove();
+                    }
+                }, 500);
+            }
+        }, 5000);
+    }
+
+    // ==========================================
+    // TECLADO: Cerrar resultados con ESC
+    // ==========================================
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            searchResults.classList.remove("active");
+            searchResults.innerHTML = "";
+            searchInput.blur();
+            clienteSearchResults.classList.remove("active");
+            clienteSearchResults.innerHTML = "";
+            buscarCliente.blur();
+        }
+    });
+
+    // ==========================================
+    // TECLADO: Navegación con flechas
+    // ==========================================
+    searchInput.addEventListener("keydown", function(e) {
+        const items = searchResults.querySelectorAll(".search-result-item");
+        if (items.length === 0) return;
+        
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            updateSelection(items);
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, 0);
+            updateSelection(items);
+        } else if (e.key === "Enter" && selectedIndex >= 0) {
+            e.preventDefault();
+            const item = items[selectedIndex];
+            if (item) item.click();
+        }
+    });
+
+    function updateSelection(items) {
+        items.forEach((item, index) => {
+            if (index === selectedIndex) {
+                item.style.backgroundColor = "#d8e2ff";
+                item.scrollIntoView({ block: "nearest" });
+            } else {
+                item.style.backgroundColor = "";
+            }
+        });
+    }
+
+    // Resetear selección cuando se ocultan los resultados
+    const observer = new MutationObserver(() => {
+        if (!searchResults.classList.contains("active")) {
+            selectedIndex = -1;
+        }
+    });
+    observer.observe(searchResults, { attributes: true, attributeFilter: ["class"] });
+
+    // ==========================================
+    // INICIALIZACIÓN
+    // ==========================================
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("success")) {
+            mostrarNotificacion("✅ Venta registrada exitosamente", "success");
+        }
+        if (urlParams.has("error")) {
+            mostrarNotificacion("❌ Error: " + urlParams.get("error"), "error");
+        }
+        
+        // Enfocar buscador al cargar
+        setTimeout(() => searchInput.focus(), 100);
+    });
+
+    // ==========================================
+    // FUNCIÓN PARA ESCAPAR HTML
+    // ==========================================
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+</script>
   </body>
 </html>

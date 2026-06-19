@@ -1,10 +1,12 @@
 package com.java.boticaintegrador.controller;
 
 import com.java.boticaintegrador.model.Medicamento;
+import com.java.boticaintegrador.model.Paciente;
 import com.java.boticaintegrador.model.Usuario;
 import com.java.boticaintegrador.model.Venta;
 import com.java.boticaintegrador.model.DetalleVenta;
 import com.java.boticaintegrador.service.MedicamentoService;
+import com.java.boticaintegrador.service.PacienteService;
 import com.java.boticaintegrador.service.VentaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +36,15 @@ public class VentaController {
     private VentaService ventaService;
 
     @Autowired
+    private PacienteService pacienteService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @GetMapping
     public String mostrarVenta(Model model) {
         return "registrarVenta";
     }
-
-    
 
     @GetMapping("/buscar")
     @ResponseBody
@@ -66,6 +69,57 @@ public class VentaController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/buscar-pacientes")
+    @ResponseBody
+    public List<Map<String, Object>> buscarPacientes(@RequestParam String query) {
+        try {
+            List<Paciente> pacientes = pacienteService.buscarPorNombre(query);
+            return pacientes.stream().map(p -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", p.getId());
+                map.put("nombre", p.getNombre());
+                map.put("apellido", p.getApellido());
+                map.put("nombreCompleto", p.getNombre() + " " + p.getApellido());
+                map.put("dni", p.getDni());
+                map.put("telefono", p.getTelefono());
+                map.put("genero", p.getGenero());
+                map.put("estado", p.getEstado());
+                map.put("comprasRealizadas", p.getComprasRealizadas());
+                // Verificar si la PRÓXIMA compra tiene descuento
+                map.put("tieneDescuento", p.tieneDescuentoEnProximaCompra());
+                map.put("comprasFaltantes", p.comprasFaltantesParaDescuento());
+                return map;
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
+    @GetMapping("/paciente/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> obtenerPaciente(@PathVariable Long id) {
+        Paciente paciente = pacienteService.buscarPorId(id);
+        if (paciente == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", paciente.getId());
+        response.put("nombre", paciente.getNombre());
+        response.put("apellido", paciente.getApellido());
+        response.put("nombreCompleto", paciente.getNombre() + " " + paciente.getApellido());
+        response.put("dni", paciente.getDni());
+        response.put("telefono", paciente.getTelefono());
+        response.put("genero", paciente.getGenero());
+        response.put("estado", paciente.getEstado());
+        response.put("comprasRealizadas", paciente.getComprasRealizadas());
+        response.put("tieneDescuento", paciente.tieneDescuentoEnProximaCompra());
+        response.put("comprasFaltantes", paciente.comprasFaltantesParaDescuento());
+        
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/registrar")
     public String registrarVenta(
             @RequestParam("detalles") String detallesJson,
@@ -74,13 +128,13 @@ public class VentaController {
             @RequestParam("igv") BigDecimal igv,
             @RequestParam("metodoPago") String metodoPago,
             @RequestParam("clienteNombre") String clienteNombre,
+            @RequestParam(value = "pacienteId", required = false) Long pacienteId,
+            @RequestParam(value = "descuento", required = false) BigDecimal descuento,
             Authentication authentication) {
         
         try {
-            // Obtener usuario actual
             Usuario usuario = ventaService.obtenerUsuarioPorUsername(authentication.getName());
             
-            // Crear venta
             Venta venta = new Venta();
             venta.setUsuario(usuario);
             venta.setTotal(total);
@@ -88,30 +142,29 @@ public class VentaController {
             venta.setClienteAnonimoNombre(clienteNombre);
             venta.setFechaVenta(LocalDate.now());
             
-            // Parsear detalles
+            // Si hay paciente seleccionado, incrementar sus compras
+            if (pacienteId != null && pacienteId > 0) {
+                pacienteService.incrementarCompras(pacienteId);
+            }
+            
             ObjectMapper objectMapper = new ObjectMapper();
             List<Map<String, Object>> detallesList = objectMapper.readValue(detallesJson, List.class);
             
-            // Procesar cada detalle
             for (Map<String, Object> detalleMap : detallesList) {
                 Long medicamentoId = Long.valueOf(detalleMap.get("medicamentoId").toString());
                 Integer cantidad = Integer.valueOf(detalleMap.get("cantidad").toString());
                 BigDecimal precioUnitario = new BigDecimal(detalleMap.get("precioUnitario").toString());
                 BigDecimal subtotalDetalle = new BigDecimal(detalleMap.get("subtotal").toString());
                 
-                // Obtener medicamento
                 Medicamento medicamento = medicamentoService.buscarPorId(medicamentoId);
                 
-                // Validar stock
                 if (medicamento.getStock() < cantidad) {
                     throw new RuntimeException("Stock insuficiente para: " + medicamento.getNombre());
                 }
                 
-                // Actualizar stock
                 medicamento.setStock(medicamento.getStock() - cantidad);
                 medicamentoService.guardar(medicamento);
                 
-                // Crear detalle
                 DetalleVenta detalle = new DetalleVenta();
                 detalle.setMedicamento(medicamento);
                 detalle.setCantidad(cantidad);
@@ -122,7 +175,6 @@ public class VentaController {
                 venta.getDetalles().add(detalle);
             }
             
-            // Guardar venta
             ventaService.guardar(venta);
             
             return "redirect:/ventas?success";
@@ -139,7 +191,6 @@ public class VentaController {
         
         List<Venta> ventas = ventaService.buscarPorFecha(fechaFiltro);
         
-        // Procesar ventas para la vista
         List<Map<String, Object>> ventasDTO = ventas.stream().map(v -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", v.getId());
@@ -163,9 +214,6 @@ public class VentaController {
         
         model.addAttribute("ventas", ventasDTO);
         model.addAttribute("fechaSeleccionada", fechaFiltro.toString());
-        // Quitar esta línea si da error:
-        // model.addAttribute("usuarioNombre", obtenerNombreUsuario());
-        // O poner un valor fijo:
         model.addAttribute("usuarioNombre", "Administrador");
         
         return "ventasDiarias";
