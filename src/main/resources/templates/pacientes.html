@@ -1,0 +1,1127 @@
+<!doctype html>
+<html class="light" lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Botica Control - Gestión de Clientes</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#0070ea",
+              "surface-dim": "#d7d9e5",
+              "on-secondary-fixed": "#191c1d",
+              "on-secondary-fixed-variant": "#454748",
+              "on-error-container": "#93000a",
+              "inverse-on-surface": "#eef0fb",
+              "on-surface-variant": "#414754",
+              surface: "#f9f9ff",
+              "primary-fixed": "#d8e2ff",
+              "error-container": "#ffdad6",
+              "tertiary-container": "#c64f00",
+              tertiary: "#9e3d00",
+              "on-primary": "#ffffff",
+              "on-secondary-container": "#626566",
+              "on-secondary": "#ffffff",
+              "secondary-container": "#e1e3e4",
+              outline: "#717786",
+              "tertiary-fixed-dim": "#ffb695",
+              "inverse-surface": "#2d3039",
+              "on-primary-container": "#fefcff",
+              "surface-variant": "#e0e2ed",
+              secondary: "#5c5f60",
+              "on-primary-fixed": "#001a41",
+              "tertiary-fixed": "#ffdbcc",
+              "on-error": "#ffffff",
+              "secondary-fixed": "#e1e3e4",
+              "surface-container-high": "#e6e8f3",
+              "primary-fixed-dim": "#adc7ff",
+              "on-primary-fixed-variant": "#004493",
+              "on-tertiary-fixed": "#351000",
+              "on-tertiary-container": "#fffbff",
+              "surface-container-low": "#f1f3fe",
+              "on-background": "#181c23",
+              background: "#f9f9ff",
+              "surface-tint": "#005bc0",
+              "surface-container": "#ebedf9",
+              "on-tertiary-fixed-variant": "#7c2e00",
+              "outline-variant": "#c1c6d7",
+              "on-tertiary": "#ffffff",
+              primary: "#0059bb",
+              "surface-bright": "#f9f9ff",
+              "surface-container-highest": "#e0e2ed",
+              "secondary-fixed-dim": "#c5c7c8",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#181c23",
+              error: "#ba1a1a",
+              "inverse-primary": "#adc7ff",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "container-padding-desktop": "2.5rem",
+              unit: "8px",
+              gutter: "1.5rem",
+              "sidebar-width": "280px",
+              "container-padding-mobile": "1rem",
+            },
+            fontFamily: {
+              "body-md": ["Inter"],
+              "headline-sm": ["Inter"],
+              "body-lg": ["Inter"],
+              "display-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "label-sm": ["Inter"],
+              "label-lg": ["Inter"],
+              "display-lg-mobile": ["Inter"],
+            },
+            fontSize: {
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-sm": [
+                "20px",
+                { lineHeight: "28px", fontWeight: "600" },
+              ],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "display-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }],
+              "headline-md": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+              "label-lg": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "display-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .modal-overlay {
+        background-color: rgba(24, 28, 35, 0.4);
+        backdrop-filter: blur(4px);
+      }
+      .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #e0e2ed;
+        border-radius: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 50;
+        display: none;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      }
+      .search-results.active {
+        display: block;
+      }
+      .search-result-item {
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid #e0e2ed;
+        transition: background-color 0.2s;
+      }
+      .search-result-item:hover {
+        background-color: #f1f3fe;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface">
+    <!-- SideNavBar -->
+    <aside
+      class="fixed left-0 top-0 h-screen w-[280px] z-50 bg-surface-container-low border-r border-outline-variant flex flex-col py-8"
+    >
+      <div class="px-6 mb-10 flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary"
+        >
+          <span class="material-symbols-outlined">health_and_safety</span>
+        </div>
+        <div>
+          <h1 class="font-headline-md text-headline-md text-primary font-bold">
+            Botica Control
+          </h1>
+          <p class="text-label-sm text-on-surface-variant">
+            Gestión Farmacéutica
+          </p>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 space-y-1">
+        <a
+          th:href="@{/}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">home</span>
+          Inicio
+        </a>
+        <a
+          th:href="@{/medicamentos}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">inventory_2</span>
+          Inventario
+        </a>
+        <a
+          th:href="@{/ventas}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">point_of_sale</span>
+          Registrar Venta
+        </a>
+        <a
+          th:href="@{/ventas/diarias}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">receipt_long</span> Ventas
+          Diarias
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">bar_chart</span>
+          Reportes
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">group</span>
+          Usuarios
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container border-l-4 border-primary font-bold font-label-lg text-label-lg rounded-lg"
+          th:href="@{/pacientes}"
+        >
+          <span class="material-symbols-outlined">group</span> Clientes
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">history</span>
+          Historial de Acciones
+        </a>
+      </nav>
+      <div class="px-4 mt-auto">
+        <a
+          th:href="@{/logout}"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">logout</span>
+          Cerrar Sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- TopAppBar -->
+    <header
+      class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 z-40 bg-surface border-b border-outline-variant"
+    >
+      <div class="flex justify-between items-center px-gutter w-full h-full">
+        <div class="flex items-center gap-4 flex-1 max-w-md">
+          <div class="relative w-full">
+            <span
+              class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]"
+              >search</span
+            >
+            <input
+              id="searchPaciente"
+              class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-full text-label-lg w-full focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              placeholder="Buscar clientes por nombre o DNI..."
+              type="text"
+            />
+            <!-- Resultados de búsqueda -->
+            <div id="searchResults" class="search-results"></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-2">
+            <button
+              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button
+              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <span class="material-symbols-outlined">settings</span>
+            </button>
+          </div>
+          <div
+            class="flex items-center gap-3 ml-2 border-l border-outline-variant pl-6"
+          >
+            <div class="text-right">
+              <p class="font-label-lg text-label-lg leading-none">
+                Dr. Ricardo Pérez
+              </p>
+              <p class="text-[12px] text-on-surface-variant">
+                Farmacéutico Jefe
+              </p>
+            </div>
+            <img
+              alt="Avatar del Farmacéutico"
+              class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA80n2oKDsA5z5f8Gd4fQvLsgvezITVxm0FpqD4RdK0UGzmKql1RPkJDHroyl-wjabRtWYkxIVzuj66yU-o0qlGyKcF0WtWthQtTualcLRPhkT_sPZfARO2JaW2veVJIKM2RCBLHhucAS5zoI2GUEKBWKRD6H_3Z4bwHO09zlhbbgXZqNkEIFNycb5c5Lw0hg0tQKXHRxSAFbmAtRjjW-GZ9kEe6tfDfSlGqEOpThSwzKmDGia9RXyAyxZe7wpEyBI5X7jDjNODcdU5"
+            />
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="ml-[280px] p-10 min-h-screen pt-20">
+      <!-- Page Header Section -->
+      <div
+        class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10"
+      >
+        <div>
+          <h2 class="font-headline-md text-headline-md text-on-surface">
+            Gestión de Clientes
+          </h2>
+          <p class="text-body-md text-secondary mt-1">
+            Administra la base de datos de pacientes y compradores frecuentes.
+          </p>
+        </div>
+        <button
+          class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-label-lg hover:shadow-lg transition-all active:scale-95 h-12"
+          onclick="toggleModal(true)"
+        >
+          <span class="material-symbols-outlined text-[20px]">person_add</span>
+          <span>Agregar Cliente</span>
+        </button>
+      </div>
+
+      <!-- Dashboard Stats Summary - Datos dinámicos desde BD -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div
+          class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)]"
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-secondary font-label-sm">Total Clientes</span>
+            <div class="p-2 bg-primary-fixed rounded-lg text-primary">
+              <span class="material-symbols-outlined text-[20px]">groups</span>
+            </div>
+          </div>
+          <p class="text-headline-md font-bold mt-2" th:text="${totalClientes}">
+            0
+          </p>
+        </div>
+        <div
+          class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)]"
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-secondary font-label-sm">Nuevos (Hoy)</span>
+            <div class="p-2 bg-tertiary-fixed rounded-lg text-tertiary">
+              <span class="material-symbols-outlined text-[20px]"
+                >person_add</span
+              >
+            </div>
+          </div>
+          <p class="text-headline-md font-bold mt-2" th:text="${nuevosHoy}">
+            0
+          </p>
+        </div>
+        <div
+          class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)]"
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-secondary font-label-sm">Activos</span>
+            <div class="p-2 bg-green-100 rounded-lg text-green-700">
+              <span class="material-symbols-outlined text-[20px]"
+                >check_circle</span
+              >
+            </div>
+          </div>
+          <p class="text-headline-md font-bold mt-2" th:text="${activos}">0</p>
+        </div>
+        <div
+          class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)]"
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-secondary font-label-sm"
+              >Clientes Frecuentes</span
+            >
+            <div class="p-2 bg-secondary-fixed rounded-lg text-secondary">
+              <span class="material-symbols-outlined text-[20px]">star</span>
+            </div>
+          </div>
+          <p class="text-headline-md font-bold mt-2" th:text="${frecuentes}">
+            0
+          </p>
+          <p
+            class="text-secondary text-[12px] font-medium flex items-center gap-1 mt-1"
+          >
+            5+ compras
+          </p>
+        </div>
+      </div>
+
+      <!-- Customers Table - Datos dinámicos desde BD -->
+      <div
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.02)]"
+      >
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr
+                class="bg-surface-container text-on-surface-variant font-label-lg text-label-lg border-b border-outline-variant"
+              >
+                <th class="px-6 py-4 font-bold">Nombre Completo</th>
+                <th class="px-6 py-4 font-bold">DNI</th>
+                <th class="px-6 py-4 font-bold">Teléfono</th>
+                <th class="px-6 py-4 font-bold">Género</th>
+                <th class="px-6 py-4 font-bold text-center">Compras</th>
+                <th class="px-6 py-4 font-bold">Estado</th>
+                <th class="px-6 py-4 font-bold text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody
+              class="divide-y divide-outline-variant/30"
+              id="pacientesBody"
+            >
+              <tr
+                th:each="paciente : ${pacientes}"
+                class="hover:bg-surface-container-low transition-colors group"
+              >
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-10 h-10 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold text-label-lg"
+                      th:text="${#strings.substring(paciente.nombre, 0, 1)} + ${#strings.substring(paciente.apellido, 0, 1)}"
+                    >
+                      ML
+                    </div>
+                    <div>
+                      <p
+                        class="text-body-md font-semibold text-on-surface"
+                        th:text="${paciente.nombre} + ' ' + ${paciente.apellido}"
+                      >
+                        María López
+                      </p>
+                      <p class="text-label-sm text-secondary">
+                        Registrado:
+                        <span
+                          th:text="${#temporals.format(paciente.createdAt, 'dd/MM/yyyy')}"
+                          >12 May 2023</span
+                        >
+                      </p>
+                    </div>
+                  </div>
+                </td>
+                <td
+                  class="px-6 py-4 text-body-md text-on-surface-variant"
+                  th:text="${paciente.dni}"
+                >
+                  72190344
+                </td>
+                <td
+                  class="px-6 py-4 text-body-md text-on-surface-variant"
+                  th:text="${paciente.telefono}"
+                >
+                  987 654 321
+                </td>
+                <td class="px-6 py-4">
+                  <span
+                    class="px-3 py-1 bg-surface-container rounded-full text-label-sm text-secondary"
+                    th:text="${paciente.genero}"
+                  >
+                    Femenino
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <span
+                      class="text-body-md font-bold"
+                      th:text="${paciente.comprasRealizadas}"
+                      >0</span
+                    >
+                    <span
+                      th:if="${paciente.comprasRealizadas >= 5}"
+                      class="text-yellow-600"
+                    >
+                      <span class="material-symbols-outlined text-[18px]"
+                        >star</span
+                      >
+                    </span>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <span
+                    th:if="${paciente.estado == 'ACTIVO'}"
+                    class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-label-sm"
+                    >Activo</span
+                  >
+                  <span
+                    th:if="${paciente.estado != 'ACTIVO'}"
+                    class="px-3 py-1 bg-error-container text-error rounded-full text-label-sm"
+                    >Inactivo</span
+                  >
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <button
+                      th:data-id="${paciente.id}"
+                      onclick="editarPaciente(this)"
+                      class="p-2 hover:bg-surface-container-high rounded-full text-primary transition-colors"
+                    >
+                      <span class="material-symbols-outlined text-[20px]"
+                        >edit</span
+                      >
+                    </button>
+                    <button
+                      th:data-id="${paciente.id}"
+                      onclick="eliminarPaciente(this)"
+                      class="p-2 hover:bg-error-container rounded-full text-error transition-colors"
+                    >
+                      <span class="material-symbols-outlined text-[20px]"
+                        >delete</span
+                      >
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(pacientes)}">
+                <td
+                  colspan="7"
+                  class="px-6 py-12 text-center text-on-surface-variant"
+                >
+                  <span class="material-symbols-outlined text-4xl mb-2"
+                    >group</span
+                  >
+                  <p>No hay clientes registrados</p>
+                  <p class="text-label-sm">
+                    Agregue su primer cliente usando el botón "Agregar Cliente"
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination -->
+        <div
+          class="px-6 py-4 bg-surface-container-low flex items-center justify-between"
+        >
+          <p class="text-label-sm text-on-surface-variant">
+            Mostrando <span th:text="${pacientes.size()}">0</span> clientes
+          </p>
+          <div class="flex gap-1">
+            <button
+              class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant disabled:opacity-30"
+              disabled=""
+            >
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <button
+              class="w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded text-label-sm font-bold"
+            >
+              1
+            </button>
+            <button
+              class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant"
+            >
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal Form - Crear/Editar Paciente -->
+    <div
+      class="fixed inset-0 z-[60] flex items-center justify-center modal-overlay opacity-0 pointer-events-none transition-all duration-300"
+      id="modal-container"
+    >
+      <div
+        class="bg-surface-container-lowest w-full max-w-md mx-4 rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-all duration-300"
+        id="modal-content"
+      >
+        <div
+          class="p-6 border-b border-outline-variant flex items-center justify-between bg-surface-container-low"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center"
+            >
+              <span class="material-symbols-outlined">person_add</span>
+            </div>
+            <h3 class="font-headline-sm text-headline-sm" id="modalTitle">
+              Nuevo Cliente
+            </h3>
+          </div>
+          <button
+            class="p-2 hover:bg-surface-container-high rounded-full transition-colors"
+            onclick="toggleModal(false)"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form
+          class="p-6 space-y-5"
+          th:action="@{/pacientes/guardar}"
+          method="post"
+          id="pacienteForm"
+        >
+          <input type="hidden" id="pacienteId" name="id" value="0" />
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label
+                class="font-label-lg text-label-lg text-on-surface-variant block"
+                >Nombre</label
+              >
+              <input
+                id="nombre"
+                name="nombre"
+                class="w-full px-4 py-3 bg-surface border border-outline rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none"
+                placeholder="Ej. Ana María"
+                required=""
+                type="text"
+              />
+            </div>
+            <div class="space-y-1">
+              <label
+                class="font-label-lg text-label-lg text-on-surface-variant block"
+                >Apellido</label
+              >
+              <input
+                id="apellido"
+                name="apellido"
+                class="w-full px-4 py-3 bg-surface border border-outline rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none"
+                placeholder="Ej. García"
+                required=""
+                type="text"
+              />
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="font-label-lg text-label-lg text-on-surface-variant block"
+              >DNI (Documento Nacional de Identidad)</label
+            >
+            <input
+              id="dni"
+              name="dni"
+              class="w-full px-4 py-3 bg-surface border border-outline rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none [appearance:textfield] [&amp;::-webkit-outer-spin-button]:appearance-none [&amp;::-webkit-inner-spin-button]:appearance-none"
+              placeholder="Ingresa los 8 dígitos"
+              required=""
+              type="number"
+              maxlength="8"
+            />
+          </div>
+          <div class="space-y-1">
+            <label
+              class="font-label-lg text-label-lg text-on-surface-variant block"
+              >Teléfono</label
+            >
+            <input
+              id="telefono"
+              name="telefono"
+              class="w-full px-4 py-3 bg-surface border border-outline rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none"
+              placeholder="9xx xxx xxx"
+              required=""
+              type="tel"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              class="font-label-lg text-label-lg text-on-surface-variant block"
+              >Género</label
+            >
+            <div class="grid grid-cols-3 gap-3">
+              <label class="cursor-pointer">
+                <input
+                  class="hidden peer"
+                  name="genero"
+                  type="radio"
+                  value="Masculino"
+                />
+                <div
+                  class="px-2 py-3 text-center border border-outline rounded-xl peer-checked:bg-primary-container peer-checked:border-primary peer-checked:text-on-primary-container transition-all hover:bg-surface-container-high"
+                >
+                  <span class="text-label-lg font-semibold">Masculino</span>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input
+                  class="hidden peer"
+                  name="genero"
+                  type="radio"
+                  value="Femenino"
+                />
+                <div
+                  class="px-2 py-3 text-center border border-outline rounded-xl peer-checked:bg-primary-container peer-checked:border-primary peer-checked:text-on-primary-container transition-all hover:bg-surface-container-high"
+                >
+                  <span class="text-label-lg font-semibold">Femenino</span>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input
+                  class="hidden peer"
+                  name="genero"
+                  type="radio"
+                  value="Otro"
+                />
+                <div
+                  class="px-2 py-3 text-center border border-outline rounded-xl peer-checked:bg-primary-container peer-checked:border-primary peer-checked:text-on-primary-container transition-all hover:bg-surface-container-high"
+                >
+                  <span class="text-label-lg font-semibold">Otro</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="font-label-lg text-label-lg text-on-surface-variant block"
+              >Estado</label
+            >
+            <select
+              id="estado"
+              name="estado"
+              class="w-full px-4 py-3 bg-surface border border-outline rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none"
+            >
+              <option value="ACTIVO">Activo</option>
+              <option value="INACTIVO">Inactivo</option>
+            </select>
+          </div>
+          <div class="pt-4 flex gap-3">
+            <button
+              class="flex-1 px-6 py-3 border border-outline-variant text-secondary rounded-xl font-label-lg hover:bg-surface-container transition-colors"
+              onclick="toggleModal(false)"
+              type="button"
+            >
+              Cancelar
+            </button>
+            <button
+              class="flex-1 px-6 py-3 bg-primary text-on-primary rounded-xl font-label-lg hover:shadow-lg transition-all active:scale-95"
+              type="submit"
+            >
+              Guardar Cliente
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div
+      class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#f1f3fe_0%,_#f9f9ff_100%)] pointer-events-none"
+    ></div>
+
+    <script>
+      // Modal functions
+      function toggleModal(show) {
+        const container = document.getElementById("modal-container");
+        const content = document.getElementById("modal-content");
+        if (show) {
+          container.classList.remove("opacity-0", "pointer-events-none");
+          content.classList.remove("scale-95");
+          content.classList.add("scale-100");
+          // Resetear formulario para nuevo cliente
+          document.getElementById("pacienteForm").reset();
+          document.getElementById("pacienteId").value = "0";
+          document.getElementById("modalTitle").innerText = "Nuevo Cliente";
+          // Resetear radios
+          document
+            .querySelectorAll('input[name="genero"]')
+            .forEach((r) => (r.checked = false));
+        } else {
+          container.classList.add("opacity-0", "pointer-events-none");
+          content.classList.remove("scale-100");
+          content.classList.add("scale-95");
+        }
+      }
+
+      // Editar paciente
+      function editarPaciente(button) {
+        const id = button.getAttribute("data-id");
+        fetch(`/pacientes/${id}`)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Error al obtener el paciente");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.error) {
+              alert("Error: " + data.error);
+              return;
+            }
+            document.getElementById("pacienteId").value = data.id;
+            document.getElementById("nombre").value = data.nombre;
+            document.getElementById("apellido").value = data.apellido;
+            document.getElementById("dni").value = data.dni;
+            document.getElementById("telefono").value = data.telefono;
+            document.getElementById("estado").value = data.estado;
+
+            // Seleccionar género
+            document.querySelectorAll('input[name="genero"]').forEach((r) => {
+              r.checked = r.value === data.genero;
+            });
+
+            document.getElementById("modalTitle").innerText = "Editar Cliente";
+            toggleModal(true);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error al cargar los datos del cliente");
+          });
+      }
+
+      // Eliminar paciente
+      function eliminarPaciente(button) {
+        const id = button.getAttribute("data-id");
+        if (confirm("¿Estás seguro de eliminar este cliente?")) {
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = "/pacientes/eliminar";
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = "id";
+          input.value = id;
+          form.appendChild(input);
+          document.body.appendChild(form);
+          form.submit();
+        }
+      }
+
+      // ==========================================
+      // BUSCADOR DE PACIENTES EN TIEMPO REAL
+      // ==========================================
+
+      const searchInput = document.getElementById("searchPaciente");
+      const searchResults = document.getElementById("searchResults");
+      let timeoutId = null;
+      let isSearching = false;
+
+      // Evento de búsqueda mientras se escribe
+      searchInput.addEventListener("input", function () {
+        const query = this.value.trim();
+
+        // Limpiar el timeout anterior si existe
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+
+        // Si la consulta tiene 3 o más caracteres, buscar
+        if (query.length >= 3) {
+          timeoutId = setTimeout(() => {
+            buscarPacientes(query);
+          }, 300);
+        } else {
+          // Si tiene menos de 3 caracteres, ocultar resultados
+          searchResults.classList.remove("active");
+          searchResults.innerHTML = "";
+        }
+      });
+
+      // Cerrar resultados al hacer clic fuera
+      document.addEventListener("click", function (e) {
+        if (
+          !searchInput.contains(e.target) &&
+          !searchResults.contains(e.target)
+        ) {
+          searchResults.classList.remove("active");
+          searchResults.innerHTML = "";
+        }
+      });
+
+      // Función para buscar pacientes
+      async function buscarPacientes(query) {
+        // Evitar búsquedas duplicadas
+        if (isSearching) return;
+
+        try {
+          isSearching = true;
+
+          // Mostrar indicador de carga
+          searchResults.innerHTML = `
+                <div class="search-result-item text-center text-on-surface-variant">
+                    <span class="material-symbols-outlined animate-spin">refresh</span>
+                    Buscando...
+                </div>
+            `;
+          searchResults.classList.add("active");
+
+          // Realizar la petición
+          const response = await fetch(
+            `/pacientes/buscar?query=${encodeURIComponent(query)}`,
+          );
+
+          if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+          }
+
+          const pacientes = await response.json();
+
+          // Verificar si la búsqueda sigue siendo relevante
+          const currentQuery = searchInput.value.trim();
+          if (currentQuery !== query) {
+            // Si el usuario escribió algo más, ignorar estos resultados
+            return;
+          }
+
+          // Mostrar resultados
+          if (pacientes.length === 0) {
+            searchResults.innerHTML = `
+                    <div class="search-result-item text-center text-on-surface-variant">
+                        No se encontraron clientes con "${query}"
+                    </div>
+                `;
+            searchResults.classList.add("active");
+            return;
+          }
+
+          // Construir HTML de resultados
+          searchResults.innerHTML = pacientes
+            .map(
+              (p) => `
+                <div class="search-result-item" onclick="seleccionarPaciente(${p.id}, '${p.nombre} ${p.apellido}')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="font-bold">${escapeHtml(p.nombre)} ${escapeHtml(p.apellido)}</span>
+                            <span class="text-label-sm text-on-surface-variant ml-2">DNI: ${escapeHtml(p.dni)}</span>
+                            ${p.telefono ? `<span class="text-label-sm text-on-surface-variant ml-2">📱 ${escapeHtml(p.telefono)}</span>` : ""}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-label-sm">${p.comprasRealizadas} compras</span>
+                            ${p.comprasRealizadas >= 5 ? '<span class="text-yellow-600">⭐</span>' : ""}
+                        </div>
+                    </div>
+                    <div class="text-label-sm text-on-surface-variant mt-1">
+                        ${p.estado === "ACTIVO" ? "🟢 Activo" : "🔴 Inactivo"}
+                        ${p.genero ? `| ${p.genero}` : ""}
+                    </div>
+                    <div class="text-xs text-on-surface-variant/60 mt-1">
+                        ${highlightMatch(escapeHtml(p.nombre + " " + p.apellido + " " + p.dni), query)}
+                    </div>
+                </div>
+            `,
+            )
+            .join("");
+
+          searchResults.classList.add("active");
+        } catch (error) {
+          console.error("Error al buscar pacientes:", error);
+          searchResults.innerHTML = `
+                <div class="search-result-item text-center text-error">
+                    ❌ Error al buscar: ${error.message}
+                </div>
+            `;
+          searchResults.classList.add("active");
+        } finally {
+          isSearching = false;
+        }
+      }
+
+      // Función para seleccionar un paciente de los resultados
+      function seleccionarPaciente(id, nombreCompleto) {
+        // Mostrar mensaje de confirmación
+        if (nombreCompleto) {
+          alert(
+            `✅ Cliente seleccionado: ${nombreCompleto}\n\nPuedes ver sus detalles en la tabla principal.`,
+          );
+        }
+
+        // Limpiar y cerrar resultados
+        searchResults.classList.remove("active");
+        searchResults.innerHTML = "";
+        searchInput.value = "";
+
+        // Opcional: Recargar la tabla para mostrar el cliente seleccionado destacado
+        // o redirigir a los detalles del cliente
+        // window.location.href = `/pacientes/${id}`;
+      }
+
+      // Función auxiliar para escapar HTML y prevenir XSS
+      function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Función auxiliar para resaltar coincidencias
+      function highlightMatch(text, query) {
+        if (!text || !query) return text;
+        const regex = new RegExp(`(${escapeRegex(query)})`, "gi");
+        return text.replace(
+          regex,
+          '<span class="bg-yellow-200 px-1 rounded">$1</span>',
+        );
+      }
+
+      // Función auxiliar para escapar caracteres especiales en regex
+      function escapeRegex(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      // ==========================================
+      // MENSAJES DE ÉXITO/ERROR
+      // ==========================================
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.has("success")) {
+          mostrarNotificacion("✅ Cliente guardado exitosamente", "success");
+        }
+        if (urlParams.has("error")) {
+          mostrarNotificacion("❌ Error: " + urlParams.get("error"), "error");
+        }
+        if (urlParams.has("deleted")) {
+          mostrarNotificacion("🗑️ Cliente eliminado correctamente", "info");
+        }
+
+        // Enfocar el buscador al cargar la página
+        if (searchInput) {
+          setTimeout(() => searchInput.focus(), 100);
+        }
+      });
+
+      // Función para mostrar notificaciones
+      function mostrarNotificacion(mensaje, tipo) {
+        // Crear elemento de notificación
+        const notificacion = document.createElement("div");
+        notificacion.className = `fixed top-20 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transform transition-all duration-500 ${
+          tipo === "success"
+            ? "bg-green-500 text-white"
+            : tipo === "error"
+              ? "bg-red-500 text-white"
+              : "bg-blue-500 text-white"
+        }`;
+        notificacion.innerHTML = `
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined">
+                    ${
+                      tipo === "success"
+                        ? "check_circle"
+                        : tipo === "error"
+                          ? "error"
+                          : "info"
+                    }
+                </span>
+                <span class="font-label-lg">${mensaje}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 hover:opacity-80">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(notificacion);
+
+        // Auto-cerrar después de 5 segundos
+        setTimeout(() => {
+          if (notificacion.parentElement) {
+            notificacion.style.opacity = "0";
+            notificacion.style.transform = "translateX(100%)";
+            setTimeout(() => {
+              if (notificacion.parentElement) {
+                notificacion.remove();
+              }
+            }, 500);
+          }
+        }, 5000);
+      }
+
+      // ==========================================
+      // TECLADO: Cerrar resultados con ESC
+      // ==========================================
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          searchResults.classList.remove("active");
+          searchResults.innerHTML = "";
+          searchInput.blur();
+        }
+      });
+
+      // ==========================================
+      // TECLADO: Navegación con flechas (opcional)
+      // ==========================================
+
+      let selectedIndex = -1;
+
+      searchInput.addEventListener("keydown", function (e) {
+        const items = searchResults.querySelectorAll(".search-result-item");
+
+        if (items.length === 0) return;
+
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+          updateSelection(items);
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          selectedIndex = Math.max(selectedIndex - 1, 0);
+          updateSelection(items);
+        } else if (e.key === "Enter" && selectedIndex >= 0) {
+          e.preventDefault();
+          const item = items[selectedIndex];
+          if (item) {
+            item.click();
+          }
+        }
+      });
+
+      function updateSelection(items) {
+        items.forEach((item, index) => {
+          if (index === selectedIndex) {
+            item.style.backgroundColor = "#d8e2ff";
+            item.scrollIntoView({ block: "nearest" });
+          } else {
+            item.style.backgroundColor = "";
+          }
+        });
+      }
+
+      // Resetear selección cuando se ocultan los resultados
+      const observer = new MutationObserver(() => {
+        if (!searchResults.classList.contains("active")) {
+          selectedIndex = -1;
+        }
+      });
+      observer.observe(searchResults, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    </script>
+  </body>
+</html>
