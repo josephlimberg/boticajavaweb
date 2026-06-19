@@ -45,4 +45,21 @@ public class Paciente {
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
+
+    // Método para verificar si la PRÓXIMA compra tiene descuento
+    // El descuento aplica en la compra número 5, 10, 15, 20, etc.
+    public boolean tieneDescuentoEnProximaCompra() {
+        if (this.comprasRealizadas == null) return false;
+        // Si ya tiene 4 compras, la próxima (la 5) tiene descuento
+        // Si ya tiene 9 compras, la próxima (la 10) tiene descuento
+        // etc.
+        return (this.comprasRealizadas + 1) % 5 == 0;
+    }
+
+    // Método para obtener el número de compras que faltan para el próximo descuento
+    public int comprasFaltantesParaDescuento() {
+        if (this.comprasRealizadas == null) return 5;
+        int siguienteDescuento = ((this.comprasRealizadas / 5) + 1) * 5;
+        return siguienteDescuento - this.comprasRealizadas;
+    }
 }
