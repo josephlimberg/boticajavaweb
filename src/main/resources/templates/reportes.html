@@ -231,8 +231,8 @@
           Reportes
         </a>
         <a
+          th:href="@{/usuarios}"
           class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">group</span>
           Usuarios
@@ -556,21 +556,6 @@
                 <div th:if="${#maps.isEmpty(resumenMensual)}">
                   <p class="text-center text-on-surface-variant py-8">No hay datos disponibles para este año</p>
                 </div>
-              </div>
-              
-              <!-- Quick Insight -->
-              <div class="mt-6 p-4 rounded-lg bg-inverse-surface text-inverse-on-surface relative overflow-hidden">
-                <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[80px] opacity-10">insights</span>
-                <h4 class="font-label-lg text-label-lg mb-1">Quick Insight</h4>
-                <p class="text-sm opacity-90">
-                  La categoría de "<span th:text="${categoriaDestacada}">-</span>" 
-                  representa el <span th:text="${porcentajeCategoria}">0</span>% 
-                  del total de unidades vendidas este mes.
-                </p>
-                <a th:href="@{/medicamentos}" 
-                   class="inline-block mt-2 bg-primary text-on-primary px-3 py-1 rounded-lg text-xs hover:opacity-90 transition-opacity no-print">
-                  Ver Detalles
-                </a>
               </div>
             </div>
           </div>
