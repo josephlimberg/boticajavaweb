@@ -44,3 +44,7 @@ yarn-error.log*
 ### Archivos del Sistema Operativo ###
 .DS_Store
 Thumbs.db
+
+# Credenciales
+src/main/resources/application.properties
+src/main/resources/application.yml
