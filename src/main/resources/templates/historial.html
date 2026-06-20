@@ -1,0 +1,867 @@
+<!doctype html>
+<html class="light" lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Historial | Botica Control</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#0070ea",
+              "surface-dim": "#d7d9e5",
+              "on-secondary-fixed": "#191c1d",
+              "on-secondary-fixed-variant": "#454748",
+              "on-error-container": "#ffdad6",
+              "inverse-on-surface": "#eef0fb",
+              "on-surface-variant": "#414754",
+              surface: "#f9f9ff",
+              "primary-fixed": "#d8e2ff",
+              "error-container": "#ffdad6",
+              "tertiary-container": "#c64f00",
+              tertiary: "#9e3d00",
+              "on-primary": "#ffffff",
+              "on-secondary-container": "#626566",
+              "on-secondary": "#ffffff",
+              "secondary-container": "#e1e3e4",
+              outline: "#717786",
+              "tertiary-fixed-dim": "#ffb695",
+              "inverse-surface": "#2d3039",
+              "on-primary-container": "#fefcff",
+              "surface-variant": "#e0e2ed",
+              secondary: "#5c5f60",
+              "on-primary-fixed": "#001a41",
+              "tertiary-fixed": "#ffdbcc",
+              "on-error": "#ffffff",
+              "secondary-fixed": "#e1e3e4",
+              "surface-container-high": "#e6e8f3",
+              "primary-fixed-dim": "#adc7ff",
+              "on-primary-fixed-variant": "#004493",
+              "on-tertiary-fixed": "#351000",
+              "on-tertiary-container": "#fffbff",
+              "surface-container-low": "#f1f3fe",
+              "on-background": "#181c23",
+              background: "#f9f9ff",
+              "surface-tint": "#005bc0",
+              "surface-container": "#ebedf9",
+              "on-tertiary-fixed-variant": "#7c2e00",
+              "outline-variant": "#c1c6d7",
+              "on-tertiary": "#ffffff",
+              primary: "#0059bb",
+              "surface-bright": "#f9f9ff",
+              "surface-container-highest": "#e0e2ed",
+              "secondary-fixed-dim": "#c5c7c8",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#181c23",
+              error: "#ba1a1a",
+              "inverse-primary": "#adc7ff",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "container-padding-desktop": "2.5rem",
+              unit: "8px",
+              gutter: "1.5rem",
+              "sidebar-width": "280px",
+              "container-padding-mobile": "1rem",
+            },
+            fontFamily: {
+              "body-md": ["Inter"],
+              "headline-sm": ["Inter"],
+              "body-lg": ["Inter"],
+              "display-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "label-sm": ["Inter"],
+              "label-lg": ["Inter"],
+              "display-lg-mobile": ["Inter"],
+            },
+            fontSize: {
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-sm": [
+                "20px",
+                { lineHeight: "28px", fontWeight: "600" },
+              ],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "display-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }],
+              "headline-md": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+              "label-lg": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "display-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+        vertical-align: middle;
+      }
+      .badge-tipo {
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .badge-creacion {
+        background: #d8e2ff;
+        color: #004493;
+      }
+      .badge-modificacion {
+        background: #ffdbcc;
+        color: #7c2e00;
+      }
+      .badge-eliminacion {
+        background: #ffdad6;
+        color: #93000a;
+      }
+      .badge-sistema {
+        background: #e1e3e4;
+        color: #454748;
+      }
+      .toast {
+        transition: all 0.3s ease;
+      }
+    </style>
+  </head>
+  <body class="bg-background font-body-md text-on-surface">
+    <!-- SideNavBar -->
+    <aside
+      class="fixed left-0 top-0 h-screen w-[280px] z-50 bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-8"
+    >
+      <div class="px-6 mb-10 flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-on-primary"
+        >
+          <span class="material-symbols-outlined">health_and_safety</span>
+        </div>
+        <div>
+          <h1 class="font-headline-md text-headline-md text-primary font-bold">
+            Botica Control
+          </h1>
+          <p class="text-label-sm text-on-surface-variant">
+            Gestión Farmacéutica
+          </p>
+        </div>
+      </div>
+      <nav class="flex-1 overflow-y-auto px-4 space-y-1">
+        <a
+          th:href="@{/}"
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">home</span>
+          Inicio
+        </a>
+        <a
+          th:href="@{/medicamentos}"
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">inventory_2</span>
+          Inventario
+        </a>
+        <a
+          th:href="@{/ventas}"
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">point_of_sale</span>
+          Registrar Venta
+        </a>
+        <a
+          th:href="@{/ventas/diarias}"
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">receipt_long</span>
+          Ventas Diarias
+        </a>
+        <a
+          th:href="@{/reportes}"
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">bar_chart</span>
+          Reportes
+        </a>
+        <a
+          th:href="@{/usuarios}"
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">group</span>
+          Usuarios
+        </a>
+        <a
+          th:href="@{/pacientes}"
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">group</span>
+          Clientes
+        </a>
+        <a
+          th:href="@{/historial}"
+          class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container border-l-4 border-primary font-bold rounded-lg font-label-lg text-label-lg"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >history</span
+          >
+          Historial de Acciones
+        </a>
+      </nav>
+      <div class="px-4 mt-auto pt-6 border-t border-outline-variant">
+        <a
+          th:href="@{/logout}"
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors rounded-lg font-label-lg text-label-lg"
+        >
+          <span class="material-symbols-outlined">logout</span>
+          Cerrar Sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- TopAppBar -->
+    <header
+      class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 z-40 bg-surface border-b border-outline-variant flex justify-between items-center px-10"
+    >
+      <div
+        class="flex items-center bg-surface-container rounded-full px-4 py-1.5 w-96"
+      >
+        <span class="material-symbols-outlined text-outline mr-2">search</span>
+        <input
+          class="bg-transparent border-none focus:ring-0 text-body-md w-full placeholder-on-surface-variant"
+          placeholder="Buscar en el historial..."
+          type="text"
+          id="buscarHistorial"
+        />
+      </div>
+      <div class="flex items-center gap-4">
+        <div
+          class="flex items-center gap-3 pl-4 border-l border-outline-variant"
+        >
+          <div class="text-right">
+            <p
+              class="font-label-lg text-label-lg text-on-surface"
+              th:text="${nombreUsuario}"
+            >
+              Dr. Ricardo Pérez
+            </p>
+            <p
+              class="text-[10px] uppercase tracking-wider text-outline"
+              th:text="${rolUsuario}"
+            >
+              Administrador
+            </p>
+          </div>
+          <img
+            alt="Avatar del Farmacéutico"
+            class="w-10 h-10 rounded-full border border-outline-variant bg-surface-container"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCivfE-EVV7Z375eyD66b7eC-zCWcc8UvX3Wmw6Ppqq8rTruJlP2La1yF8UGhQIuZiDsLt4R24bXpz3iRBEAr7o5qQUeXLvMopC6yIKqRupCy95BqOKZsOHGEMTP3U_fJPsOIG2G5zc9h3ev5tzXD4ak4JOEHxSL9HxmZ6Fv-LtX31m4A6oweEX2JVt2gZ8naTuIZ6Az08ht7KQzQsvY6PEH4Zz4AeeCHBywXOztJfgSG5CfTXHnhls_xg5y4ZNS-HlRYsrBj42CPVz"
+          />
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="ml-[280px] pt-16 min-h-screen">
+      <div class="p-10 max-w-[1400px] mx-auto">
+        <!-- Mostrar error si existe -->
+        <div
+          th:if="${error}"
+          class="bg-error-container text-on-error-container p-4 rounded-xl border border-error mb-6"
+        >
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-error">error</span>
+            <p th:text="${error.mensaje}">Error desconocido</p>
+          </div>
+        </div>
+
+        <!-- Header Section -->
+        <div
+          class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4"
+        >
+          <div>
+            <h2 class="font-display-lg text-display-lg text-on-surface mb-2">
+              Historial de Actividad
+            </h2>
+            <p class="text-body-lg text-on-surface-variant">
+              Registro detallado de acciones realizadas por el personal en el
+              sistema.
+            </p>
+          </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div
+          class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant mb-8 flex flex-wrap gap-6 items-center"
+        >
+          <div class="flex-1 min-w-[200px]">
+            <label
+              class="block font-label-lg text-label-lg mb-2 text-on-surface-variant"
+              >Filtrar por Usuario</label
+            >
+            <div class="relative">
+              <select
+                id="filtroUsuario"
+                class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary focus:border-primary appearance-none"
+              >
+                <option value="">Todos los usuarios</option>
+                <option
+                  th:each="usuario : ${usuarios}"
+                  th:value="${usuario.id}"
+                  th:text="${usuario.nombreCompleto} + ' (' + ${usuario.rol} + ')'"
+                ></option>
+              </select>
+              <span
+                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant"
+                >expand_more</span
+              >
+            </div>
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <label
+              class="block font-label-lg text-label-lg mb-2 text-on-surface-variant"
+              >Desde</label
+            >
+            <input
+              id="filtroDesde"
+              class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary focus:border-primary"
+              type="date"
+              th:value="${fechaActual}"
+            />
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <label
+              class="block font-label-lg text-label-lg mb-2 text-on-surface-variant"
+              >Hasta</label
+            >
+            <input
+              id="filtroHasta"
+              class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary focus:border-primary"
+              type="date"
+              th:value="${fechaActual}"
+            />
+          </div>
+          <div class="flex-1 min-w-[150px]">
+            <label
+              class="block font-label-lg text-label-lg mb-2 text-on-surface-variant"
+              >Tipo</label
+            >
+            <div class="relative">
+              <select
+                id="filtroTipo"
+                class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary focus:border-primary appearance-none"
+              >
+                <option value="">Todos</option>
+                <option value="CREACIÓN">Creación</option>
+                <option value="MODIFICACIÓN">Modificación</option>
+                <option value="ELIMINACIÓN">Eliminación</option>
+                <option value="SISTEMA">Sistema</option>
+              </select>
+              <span
+                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant"
+                >expand_more</span
+              >
+            </div>
+          </div>
+          <div class="flex items-end h-full">
+            <button
+              onclick="aplicarFiltros()"
+              class="h-[46px] px-8 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg hover:opacity-90 active:scale-95 transition-all"
+            >
+              Aplicar Filtros
+            </button>
+            <button
+              onclick="limpiarFiltros()"
+              class="h-[46px] px-4 ml-2 border border-outline-variant text-on-surface-variant rounded-lg font-label-lg text-label-lg hover:bg-surface-container-high transition-all"
+            >
+              <span class="material-symbols-outlined">clear</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-primary border-t border-r border-b border-outline-variant shadow-sm"
+          >
+            <p
+              class="text-label-sm text-on-surface-variant uppercase tracking-wider font-bold mb-2"
+            >
+              Acciones Hoy
+            </p>
+            <p class="text-display-lg text-primary" th:text="${totalHoy}">0</p>
+          </div>
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-tertiary border-t border-r border-b border-outline-variant shadow-sm"
+          >
+            <p
+              class="text-label-sm text-on-surface-variant uppercase tracking-wider font-bold mb-2"
+            >
+              Modificaciones
+            </p>
+            <p
+              class="text-display-lg text-tertiary"
+              th:text="${modificacionesHoy}"
+            >
+              0
+            </p>
+          </div>
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-error border-t border-r border-b border-outline-variant shadow-sm"
+          >
+            <p
+              class="text-label-sm text-on-surface-variant uppercase tracking-wider font-bold mb-2"
+            >
+              Eliminaciones
+            </p>
+            <p class="text-display-lg text-error" th:text="${eliminacionesHoy}">
+              0
+            </p>
+          </div>
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-secondary border-t border-r border-b border-outline-variant shadow-sm"
+          >
+            <p
+              class="text-label-sm text-on-surface-variant uppercase tracking-wider font-bold mb-2"
+            >
+              Total Registros
+            </p>
+            <p
+              class="text-display-lg text-secondary"
+              th:text="${totalRegistros}"
+            >
+              0
+            </p>
+          </div>
+        </div>
+
+        <!-- Data Table -->
+        <div
+          class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden"
+          id="tablaHistorial"
+        >
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="bg-surface-container-high border-b border-outline-variant"
+                >
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface"
+                  >
+                    Usuario
+                  </th>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface"
+                  >
+                    Tipo de Acción
+                  </th>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface"
+                  >
+                    Fecha y Hora
+                  </th>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface"
+                  >
+                    Descripción
+                  </th>
+                  <th
+                    class="px-6 py-4 font-label-lg text-label-lg text-on-surface text-right"
+                  >
+                    Módulo
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant" id="historialBody">
+                <tr
+                  th:each="accion : ${acciones}"
+                  class="hover:bg-surface-container transition-colors"
+                >
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold"
+                        th:text="${accion.usuarioIniciales}"
+                      >
+                        AG
+                      </div>
+                      <span
+                        class="font-label-lg text-label-lg"
+                        th:text="${accion.usuarioNombre}"
+                        >-</span
+                      >
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span
+                      class="badge-tipo"
+                      th:class="${accion.colorTipo}"
+                      th:text="${accion.tipoAccion}"
+                      >CREACIÓN</span
+                    >
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="font-body-md text-body-md text-on-surface">
+                      <span
+                        th:text="${#temporals.format(accion.fechaHora, 'dd MMM yyyy')}"
+                        >-</span
+                      >
+                    </p>
+                    <p class="text-label-sm text-on-surface-variant">
+                      <span
+                        th:text="${#temporals.format(accion.fechaHora, 'HH:mm:ss')}"
+                        >-</span
+                      >
+                    </p>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p
+                      class="font-body-md text-body-md"
+                      th:text="${accion.descripcion}"
+                    >
+                      -
+                    </p>
+                    <p
+                      class="text-label-sm text-on-surface-variant"
+                      th:if="${accion.detalles}"
+                      th:text="${accion.detalles}"
+                    >
+                      -
+                    </p>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <span
+                      class="text-label-sm px-2 py-1 bg-surface-container-high rounded text-on-surface-variant"
+                      th:text="${accion.modulo}"
+                      >-</span
+                    >
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(acciones)}">
+                  <td
+                    colspan="5"
+                    class="px-6 py-12 text-center text-on-surface-variant"
+                  >
+                    <span class="material-symbols-outlined text-4xl mb-2"
+                      >history</span
+                    >
+                    <p>No hay registros de actividad</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div
+            class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex items-center justify-between"
+          >
+            <p class="text-label-sm text-on-surface-variant">
+              Mostrando
+              <span th:text="${#lists.size(acciones)}">0</span> registros
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // ==========================================
+      // VARIABLES GLOBALES
+      // ==========================================
+      let timeoutId = null;
+      let filtrosAplicados = false;
+
+      // ==========================================
+      // APLICAR FILTROS
+      // ==========================================
+      function aplicarFiltros() {
+        const usuarioId = document.getElementById("filtroUsuario").value;
+        const desde = document.getElementById("filtroDesde").value;
+        const hasta = document.getElementById("filtroHasta").value;
+        const tipoAccion = document.getElementById("filtroTipo").value;
+
+        // Validar que las fechas sean correctas
+        if (desde && hasta && desde > hasta) {
+          mostrarToast(
+            "Error",
+            'La fecha "Desde" no puede ser mayor que "Hasta"',
+          );
+          return;
+        }
+
+        let url = `/historial/filtrar?`;
+        if (desde) url += `desde=${desde}&`;
+        if (hasta) url += `hasta=${hasta}&`;
+        if (usuarioId) url += `usuarioId=${usuarioId}&`;
+        if (tipoAccion) url += `tipoAccion=${tipoAccion}`;
+
+        mostrarToast("Cargando...", "Aplicando filtros...");
+
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Error en la respuesta del servidor");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              actualizarTabla(data.acciones);
+              filtrosAplicados = true;
+              mostrarToast(
+                "Filtros aplicados",
+                `${data.total} registros encontrados`,
+              );
+            } else {
+              mostrarToast("Error", data.error || "Error al aplicar filtros");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            mostrarToast("Error", "Error al conectar con el servidor");
+          });
+      }
+
+      // ==========================================
+      // LIMPIAR FILTROS
+      // ==========================================
+      function limpiarFiltros() {
+        document.getElementById("filtroUsuario").value = "";
+        document.getElementById("filtroDesde").value = "";
+        document.getElementById("filtroHasta").value = "";
+        document.getElementById("filtroTipo").value = "";
+        filtrosAplicados = false;
+
+        // Recargar la página para mostrar todos los registros
+        window.location.href = "/historial";
+      }
+
+      // ==========================================
+      // ACTUALIZAR TABLA
+      // ==========================================
+      function actualizarTabla(acciones) {
+        const tbody = document.getElementById("historialBody");
+
+        if (!acciones || acciones.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
+                <span class="material-symbols-outlined text-4xl mb-2">history</span>
+                <p>No hay registros que coincidan con los filtros</p>
+              </td>
+            </tr>
+          `;
+          // Actualizar el contador
+          document.querySelector(".text-label-sm span").textContent = "0";
+          return;
+        }
+
+        let html = "";
+        acciones.forEach((a) => {
+          const fecha = new Date(a.fechaHora);
+          const fechaStr = fecha.toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
+          const horaStr = fecha.toLocaleTimeString("es-ES", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+
+          // Determinar el color del badge
+          let badgeClass = "";
+          switch (a.tipoAccion) {
+            case "CREACIÓN":
+              badgeClass = "badge-creacion";
+              break;
+            case "MODIFICACIÓN":
+              badgeClass = "badge-modificacion";
+              break;
+            case "ELIMINACIÓN":
+              badgeClass = "badge-eliminacion";
+              break;
+            case "SISTEMA":
+              badgeClass = "badge-sistema";
+              break;
+            default:
+              badgeClass = "";
+          }
+
+          html += `
+            <tr class="hover:bg-surface-container transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold">${a.usuarioIniciales || "??"}</div>
+                  <span class="font-label-lg text-label-lg">${a.usuarioNombre || "Usuario"}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="badge-tipo ${badgeClass}">${a.tipoAccion || "SISTEMA"}</span>
+              </td>
+              <td class="px-6 py-4">
+                <p class="font-body-md text-body-md text-on-surface">${fechaStr}</p>
+                <p class="text-label-sm text-on-surface-variant">${horaStr}</p>
+              </td>
+              <td class="px-6 py-4">
+                <p class="font-body-md text-body-md">${a.descripcion || "-"}</p>
+                ${a.detalles ? `<p class="text-label-sm text-on-surface-variant">${a.detalles}</p>` : ""}
+              </td>
+              <td class="px-6 py-4 text-right">
+                <span class="text-label-sm px-2 py-1 bg-surface-container-high rounded text-on-surface-variant">${a.modulo || "Sistema"}</span>
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = html;
+
+        // Actualizar el contador
+        const contador = document.querySelector(".text-label-sm span");
+        if (contador) {
+          contador.textContent = acciones.length;
+        }
+      }
+
+      // ==========================================
+      // BÚSQUEDA EN TIEMPO REAL
+      // ==========================================
+      const buscarInput = document.getElementById("buscarHistorial");
+
+      buscarInput.addEventListener("input", function () {
+        const query = this.value.trim();
+        if (timeoutId) clearTimeout(timeoutId);
+
+        if (query.length >= 2) {
+          timeoutId = setTimeout(() => {
+            const rows = document.querySelectorAll("#historialBody tr");
+            let visibleCount = 0;
+
+            rows.forEach((row) => {
+              const text = row.textContent.toLowerCase();
+              const isVisible = text.includes(query.toLowerCase());
+              row.style.display = isVisible ? "" : "none";
+              if (isVisible) visibleCount++;
+            });
+
+            // Actualizar contador de búsqueda
+            const contador = document.querySelector(".text-label-sm span");
+            if (contador && !filtrosAplicados) {
+              contador.textContent = visibleCount;
+            }
+          }, 300);
+        } else {
+          document.querySelectorAll("#historialBody tr").forEach((row) => {
+            row.style.display = "";
+          });
+          // Restaurar contador si no hay filtros
+          if (!filtrosAplicados) {
+            const contador = document.querySelector(".text-label-sm span");
+            if (contador) {
+              const total = document.querySelectorAll(
+                '#historialBody tr:not([style*="display: none"])',
+              ).length;
+              contador.textContent = total;
+            }
+          }
+        }
+      });
+
+      // ==========================================
+      // EXPORTAR LOG
+      // ==========================================
+      function exportarLog() {
+        mostrarToast("Exportando...", "Generando archivo de log...");
+        setTimeout(() => {
+          mostrarToast("Éxito", "Log exportado correctamente");
+        }, 2000);
+      }
+
+      // ==========================================
+      // TOAST NOTIFICACIONES
+      // ==========================================
+      function mostrarToast(titulo, mensaje) {
+        const toast = document.getElementById("toastNotificacion");
+        document.getElementById("toastTitulo").textContent = titulo;
+        document.getElementById("toastMensaje").textContent = mensaje;
+        toast.classList.remove("hidden");
+        toast.style.opacity = "1";
+        toast.style.transform = "translateX(0)";
+
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateX(100px)";
+          setTimeout(() => {
+            toast.classList.add("hidden");
+          }, 300);
+        }, 5000);
+      }
+
+      // ==========================================
+      // AUTO-ACTUALIZAR FILTROS CON ENTER
+      // ==========================================
+      document
+        .querySelectorAll(
+          "#filtroUsuario, #filtroDesde, #filtroHasta, #filtroTipo",
+        )
+        .forEach((el) => {
+          el.addEventListener("change", function () {
+            // Auto-aplicar filtros cuando cambia un campo
+            aplicarFiltros();
+          });
+          el.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              aplicarFiltros();
+            }
+          });
+        });
+
+      // ==========================================
+      // INICIALIZACIÓN
+      // ==========================================
+      document.addEventListener("DOMContentLoaded", function () {
+        mostrarToast(
+          "Logs sincronizados",
+          "Última actualización: hace 2 minutos",
+        );
+      });
+    </script>
+  </body>
+</html>

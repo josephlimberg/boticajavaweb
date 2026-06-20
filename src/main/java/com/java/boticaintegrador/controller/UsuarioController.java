@@ -3,15 +3,19 @@ package com.java.boticaintegrador.controller;
 import com.java.boticaintegrador.dto.ErrorResponse;
 import com.java.boticaintegrador.dto.UsuarioDTO;
 import com.java.boticaintegrador.model.Usuario;
+import com.java.boticaintegrador.service.AccionService;
 import com.java.boticaintegrador.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +28,26 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private AccionService accionService;
+
     @GetMapping
-    public String listarUsuarios(Model model) {
+    public String listarUsuarios(Model model, HttpServletRequest request) {
         try {
+            // Obtener usuario autenticado
+            String nombreUsuario = obtenerNombreUsuario();
+            String rolUsuario = obtenerRolUsuario();
+            model.addAttribute("nombreUsuario", nombreUsuario);
+            model.addAttribute("rolUsuario", rolUsuario);
+
+            accionService.registrarAccion(
+                "SISTEMA",
+                "Visualizó lista de usuarios",
+                "Usuarios",
+                "Usuario: " + nombreUsuario,
+                request.getRemoteAddr()
+            );
+
             List<Usuario> usuarios = usuarioService.listarTodos();
             
             long total = usuarioService.contarTotal();
@@ -41,6 +62,8 @@ public class UsuarioController {
             return "usuarios";
         } catch (Exception e) {
             e.printStackTrace();
+            model.addAttribute("nombreUsuario", "Usuario");
+            model.addAttribute("rolUsuario", "Rol");
             model.addAttribute("usuarios", List.of());
             model.addAttribute("totalUsuarios", 0L);
             model.addAttribute("activos", 0L);
@@ -102,8 +125,11 @@ public class UsuarioController {
     }
 
     @PostMapping("/guardar")
-    public String guardarUsuario(@ModelAttribute UsuarioDTO dto, RedirectAttributes redirectAttributes) {
+    public String guardarUsuario(@ModelAttribute UsuarioDTO dto, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
+            // Obtener usuario autenticado para el registro
+            String nombreUsuarioAutenticado = obtenerNombreUsuario();
+            
             System.out.println("=== GUARDANDO USUARIO ===");
             System.out.println("ID: " + dto.getId());
             System.out.println("Username: " + dto.getUsername());
@@ -111,7 +137,6 @@ public class UsuarioController {
             System.out.println("Rol: " + dto.getRol());
             System.out.println("Estado: " + dto.getEstado());
             
-            // Validar campos obligatorios
             if (dto.getUsername() == null || dto.getUsername().trim().isEmpty()) {
                 redirectAttributes.addAttribute("error", "El nombre de usuario es obligatorio");
                 return "redirect:/usuarios";
@@ -127,15 +152,15 @@ public class UsuarioController {
                 return "redirect:/usuarios";
             }
             
-            // Validar username único
             Usuario existente = usuarioService.buscarPorUsername(dto.getUsername());
             if (existente != null && !existente.getId().equals(dto.getId())) {
                 redirectAttributes.addAttribute("error", "El nombre de usuario ya existe: " + dto.getUsername());
                 return "redirect:/usuarios";
             }
             
-            // Si es nuevo usuario, validar contraseña
-            if (dto.getId() == null || dto.getId() == 0) {
+            boolean esNuevo = (dto.getId() == null || dto.getId() == 0);
+            
+            if (esNuevo) {
                 if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
                     redirectAttributes.addAttribute("error", "La contraseña es obligatoria");
                     return "redirect:/usuarios";
@@ -153,8 +178,22 @@ public class UsuarioController {
                 }
             }
             
-            // Guardar usuario
             usuarioService.guardarDesdeDTO(dto);
+            
+            String tipoAccion = esNuevo ? "CREACIÓN" : "MODIFICACIÓN";
+            String descripcion = esNuevo ? 
+                "Creó nuevo usuario: " + dto.getUsername() : 
+                "Modificó usuario: " + dto.getUsername();
+            String detalles = "Nombre: " + dto.getNombreCompleto() + ", Rol: " + dto.getRol() + 
+                              ", Realizado por: " + nombreUsuarioAutenticado;
+            
+            accionService.registrarAccion(
+                tipoAccion,
+                descripcion,
+                "Usuarios",
+                detalles,
+                request.getRemoteAddr()
+            );
             
             redirectAttributes.addAttribute("success", "Usuario guardado exitosamente");
             
@@ -167,9 +206,22 @@ public class UsuarioController {
     }
 
     @PostMapping("/eliminar")
-    public String eliminarUsuario(@RequestParam Long id, RedirectAttributes redirectAttributes) {
+    public String eliminarUsuario(@RequestParam Long id, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
+            Usuario usuario = usuarioService.buscarPorId(id);
+            String nombreUsuario = usuario != null ? usuario.getUsername() : "ID: " + id;
+            String nombreUsuarioAutenticado = obtenerNombreUsuario();
+            
             usuarioService.eliminar(id);
+            
+            accionService.registrarAccion(
+                "ELIMINACIÓN",
+                "Eliminó usuario: " + nombreUsuario,
+                "Usuarios",
+                "ID eliminado: " + id + ", Realizado por: " + nombreUsuarioAutenticado,
+                request.getRemoteAddr()
+            );
+            
             redirectAttributes.addAttribute("deleted", "Usuario eliminado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
@@ -180,9 +232,22 @@ public class UsuarioController {
 
     @PostMapping("/cambiar-estado")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> cambiarEstado(@RequestParam Long id, @RequestParam String estado) {
+    public ResponseEntity<Map<String, Object>> cambiarEstado(@RequestParam Long id, @RequestParam String estado, HttpServletRequest request) {
         try {
+            Usuario usuario = usuarioService.buscarPorId(id);
+            String nombreUsuario = usuario != null ? usuario.getUsername() : "ID: " + id;
+            String nombreUsuarioAutenticado = obtenerNombreUsuario();
+            
             usuarioService.cambiarEstado(id, estado);
+            
+            accionService.registrarAccion(
+                "MODIFICACIÓN",
+                "Cambió estado del usuario: " + nombreUsuario + " a " + estado,
+                "Usuarios",
+                "Nuevo estado: " + estado + ", Realizado por: " + nombreUsuarioAutenticado,
+                request.getRemoteAddr()
+            );
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("estado", estado);
@@ -205,5 +270,34 @@ public class UsuarioController {
             return partes[0].substring(0, Math.min(2, partes[0].length())).toUpperCase();
         }
         return (partes[0].charAt(0) + "" + partes[partes.length - 1].charAt(0)).toUpperCase();
+    }
+
+    // Métodos auxiliares para obtener el usuario autenticado
+    private String obtenerNombreUsuario() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                String username = auth.getName();
+                Usuario usuario = usuarioService.buscarPorUsername(username);
+                return usuario != null ? usuario.getNombreCompleto() : username;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Usuario";
+    }
+
+    private String obtenerRolUsuario() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                String username = auth.getName();
+                Usuario usuario = usuarioService.buscarPorUsername(username);
+                return usuario != null ? usuario.getRol() : "Rol";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Rol";
     }
 }

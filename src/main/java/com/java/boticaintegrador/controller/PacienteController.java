@@ -1,13 +1,19 @@
 package com.java.boticaintegrador.controller;
 
 import com.java.boticaintegrador.model.Paciente;
+import com.java.boticaintegrador.model.Usuario;
+import com.java.boticaintegrador.service.AccionService;
 import com.java.boticaintegrador.service.PacienteService;
+import com.java.boticaintegrador.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +26,31 @@ public class PacienteController {
     @Autowired
     private PacienteService pacienteService;
 
+    @Autowired
+    private AccionService accionService;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
     @GetMapping
-    public String listarPacientes(Model model) {
+    public String listarPacientes(Model model, HttpServletRequest request) {
         try {
+            // Obtener usuario autenticado
+            String nombreUsuario = obtenerNombreUsuario();
+            String rolUsuario = obtenerRolUsuario();
+            model.addAttribute("nombreUsuario", nombreUsuario);
+            model.addAttribute("rolUsuario", rolUsuario);
+
+            accionService.registrarAccion(
+                "SISTEMA",
+                "Visualizó lista de pacientes",
+                "Pacientes",
+                "Usuario: " + nombreUsuario,
+                request.getRemoteAddr()
+            );
+
             List<Paciente> pacientes = pacienteService.listarTodos();
             
-            // Estadísticas
             long total = pacienteService.contarTotal();
             long activos = pacienteService.contarActivos();
             long frecuentes = pacienteService.contarFrecuentes();
@@ -41,6 +66,8 @@ public class PacienteController {
             
         } catch (Exception e) {
             e.printStackTrace();
+            model.addAttribute("nombreUsuario", "Usuario");
+            model.addAttribute("rolUsuario", "Rol");
             model.addAttribute("pacientes", List.of());
             model.addAttribute("totalClientes", 0L);
             model.addAttribute("activos", 0L);
@@ -113,19 +140,19 @@ public class PacienteController {
             @RequestParam("telefono") String telefono,
             @RequestParam(value = "genero", required = false) String genero,
             @RequestParam(value = "estado", required = false) String estado,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request) {
         try {
+            // Obtener usuario autenticado para el registro
+            String nombreUsuarioAutenticado = obtenerNombreUsuario();
+            
             System.out.println("=== GUARDANDO PACIENTE ===");
             System.out.println("ID: " + id);
             System.out.println("Nombre: " + nombre);
             System.out.println("Apellido: " + apellido);
             System.out.println("DNI: " + dni);
-            System.out.println("Teléfono: " + telefono);
-            System.out.println("Género: " + genero);
-            System.out.println("Estado: " + estado);
             System.out.println("==========================");
             
-            // Validar campos obligatorios
             if (nombre == null || nombre.trim().isEmpty()) {
                 redirectAttributes.addAttribute("error", "El nombre es obligatorio");
                 return "redirect:/pacientes";
@@ -141,44 +168,55 @@ public class PacienteController {
                 return "redirect:/pacientes";
             }
             
-            // Crear o buscar paciente
             Paciente paciente;
+            boolean esNuevo = false;
             if (id != null && id > 0) {
-                // Editar paciente existente
                 paciente = pacienteService.buscarPorId(id);
                 if (paciente == null) {
                     redirectAttributes.addAttribute("error", "Paciente no encontrado");
                     return "redirect:/pacientes";
                 }
             } else {
-                // Nuevo paciente
                 paciente = new Paciente();
                 paciente.setComprasRealizadas(0);
+                esNuevo = true;
             }
             
-            // Llenar datos
             paciente.setNombre(nombre.trim());
             paciente.setApellido(apellido.trim());
             paciente.setDni(dni.trim());
             paciente.setTelefono(telefono.trim());
             paciente.setGenero(genero);
             
-            // Establecer estado por defecto si viene vacío
             if (estado == null || estado.trim().isEmpty()) {
                 paciente.setEstado("ACTIVO");
             } else {
                 paciente.setEstado(estado);
             }
             
-            // Verificar DNI duplicado
             Paciente existente = pacienteService.buscarPorDni(dni.trim());
             if (existente != null && !existente.getId().equals(paciente.getId())) {
                 redirectAttributes.addAttribute("error", "Ya existe un paciente con el DNI: " + dni);
                 return "redirect:/pacientes";
             }
             
-            // Guardar paciente
             pacienteService.guardar(paciente);
+            
+            String tipoAccion = esNuevo ? "CREACIÓN" : "MODIFICACIÓN";
+            String descripcion = esNuevo ? 
+                "Creó nuevo paciente: " + nombre + " " + apellido : 
+                "Modificó paciente: " + nombre + " " + apellido;
+            String detalles = "DNI: " + dni + ", Teléfono: " + telefono + 
+                              ", Realizado por: " + nombreUsuarioAutenticado;
+            
+            accionService.registrarAccion(
+                tipoAccion,
+                descripcion,
+                "Pacientes",
+                detalles,
+                request.getRemoteAddr()
+            );
+            
             redirectAttributes.addAttribute("success", "Cliente guardado exitosamente");
             
         } catch (Exception e) {
@@ -190,14 +228,56 @@ public class PacienteController {
     }
 
     @PostMapping("/eliminar")
-    public String eliminarPaciente(@RequestParam Long id, RedirectAttributes redirectAttributes) {
+    public String eliminarPaciente(@RequestParam Long id, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
+            Paciente paciente = pacienteService.buscarPorId(id);
+            String nombrePaciente = paciente != null ? paciente.getNombre() + " " + paciente.getApellido() : "ID: " + id;
+            String nombreUsuarioAutenticado = obtenerNombreUsuario();
+            
             pacienteService.eliminar(id);
+            
+            accionService.registrarAccion(
+                "ELIMINACIÓN",
+                "Eliminó paciente: " + nombrePaciente,
+                "Pacientes",
+                "ID eliminado: " + id + ", Realizado por: " + nombreUsuarioAutenticado,
+                request.getRemoteAddr()
+            );
+            
             redirectAttributes.addAttribute("deleted", "Cliente eliminado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addAttribute("error", "Error al eliminar: " + e.getMessage());
         }
         return "redirect:/pacientes";
+    }
+
+    // Métodos auxiliares para obtener el usuario autenticado
+    private String obtenerNombreUsuario() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                String username = auth.getName();
+                Usuario usuario = usuarioService.buscarPorUsername(username);
+                return usuario != null ? usuario.getNombreCompleto() : username;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Usuario";
+    }
+
+    private String obtenerRolUsuario() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                String username = auth.getName();
+                Usuario usuario = usuarioService.buscarPorUsername(username);
+                return usuario != null ? usuario.getRol() : "Rol";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Rol";
     }
 }

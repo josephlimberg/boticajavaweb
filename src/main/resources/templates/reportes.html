@@ -133,7 +133,9 @@
         vertical-align: middle;
       }
       .stat-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
       }
       .stat-card:hover {
         transform: translateY(-2px);
@@ -174,7 +176,6 @@
     </style>
   </head>
   <body class="bg-background text-on-surface">
-
     <!-- SideNavBar -->
     <aside
       class="fixed left-0 top-0 h-screen w-[280px] z-50 bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-8"
@@ -227,7 +228,11 @@
           th:href="@{/reportes}"
           class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container border-l-4 border-primary font-bold font-label-lg text-label-lg"
         >
-          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">bar_chart</span>
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >bar_chart</span
+          >
           Reportes
         </a>
         <a
@@ -245,8 +250,8 @@
           Clientes
         </a>
         <a
+          th:href="@{/historial}"
           class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">history</span>
           Historial de Acciones
@@ -269,46 +274,31 @@
     >
       <div class="flex justify-between items-center px-gutter w-full h-full">
         <div class="flex items-center gap-4 flex-1 max-w-xl">
-          <div class="relative w-full">
-            <span
-              class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
-              >search</span
-            >
-            <input
-              class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-primary text-body-md font-body-md"
-              placeholder="Buscar reportes o datos..."
-              type="text"
-            />
-          </div>
+          <div class="relative w-full"></div>
         </div>
         <div class="flex items-center gap-6">
-          <div class="flex items-center gap-2">
-            <span
-              class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-              >notifications</span
-            >
-            <span
-              class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-              >settings</span
-            >
-          </div>
+          <div class="flex items-center gap-2"></div>
           <div
             class="flex items-center gap-3 pl-4 border-l border-outline-variant"
           >
-            <div class="text-right hidden sm:block">
-              <p class="font-label-lg text-label-lg leading-tight">
-                Dr. Garcia
+            <div class="text-right">
+              <p
+                class="font-label-lg text-label-lg text-on-surface"
+                th:text="${nombreUsuario}"
+              >
+                Dr. Ricardo Pérez
               </p>
               <p
-                class="text-[10px] text-on-surface-variant uppercase tracking-wider"
+                class="text-[10px] uppercase tracking-wider text-outline"
+                th:text="${rolUsuario}"
               >
                 Administrador
               </p>
             </div>
             <img
               alt="Avatar del Farmacéutico"
-              class="w-10 h-10 rounded-full object-cover border border-outline-variant"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC2C1dp65bVSXdngonrroKCyS2ZhCcWqhsermUsDkK5f1OwAMs3i5EmAcY1Sb1kCpJ7UfOS8Iueu6mvhrdv60iTZoOLIcDgg4SeTwuLMA545cfQJBlGbo_x6DfB8c5kEKdipNbtMmMbywLKM-LnWAunv5GA-yQlp4psePhrauy-tXG2j_8-il8CwIe-xjlg0jqUFjgwWzAnOreycjF6zZ73uoqOOheSiWAmrwRVSxxBgZPkyVGDIwX5MCs2Vn8d7FITRK-CJcc14DU"
+              class="w-10 h-10 rounded-full border border-outline-variant bg-surface-container"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCivfE-EVV7Z375eyD66b7eC-zCWcc8UvX3Wmw6Ppqq8rTruJlP2La1yF8UGhQIuZiDsLt4R24bXpz3iRBEAr7o5qQUeXLvMopC6yIKqRupCy95BqOKZsOHGEMTP3U_fJPsOIG2G5zc9h3ev5tzXD4ak4JOEHxSL9HxmZ6Fv-LtX31m4A6oweEX2JVt2gZ8naTuIZ6Az08ht7KQzQsvY6PEH4Zz4AeeCHBywXOztJfgSG5CfTXHnhls_xg5y4ZNS-HlRYsrBj42CPVz"
             />
           </div>
         </div>
@@ -317,23 +307,34 @@
 
     <!-- Main Content -->
     <main class="ml-[280px] pt-16 min-h-screen p-10 bg-background">
-
       <!-- Mostrar error si existe -->
-      <div th:if="${error}" 
-           class="bg-error-container text-on-error-container p-4 rounded-xl border border-error mb-6 no-print">
+      <div
+        th:if="${error}"
+        class="bg-error-container text-on-error-container p-4 rounded-xl border border-error mb-6 no-print"
+      >
         <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-error text-[24px]">error</span>
+          <span class="material-symbols-outlined text-error text-[24px]"
+            >error</span
+          >
           <div class="flex-1">
             <p class="font-bold text-error">Error al cargar los reportes</p>
             <p class="text-sm" th:text="${error.mensaje}">Error desconocido</p>
             <div class="text-xs opacity-70 mt-1 flex flex-wrap gap-3">
               <span>Código: <span th:text="${error.codigo}">500</span></span>
               <span>|</span>
-              <span>Timestamp: <span th:text="${#dates.format(error.timestamp, 'dd/MM/yyyy HH:mm:ss')}">-</span></span>
+              <span
+                >Timestamp:
+                <span
+                  th:text="${#dates.format(error.timestamp, 'dd/MM/yyyy HH:mm:ss')}"
+                  >-</span
+                ></span
+              >
             </div>
           </div>
-          <button onclick="this.parentElement.parentElement.remove()" 
-                  class="hover:bg-error-container/50 p-1 rounded-full transition-colors">
+          <button
+            onclick="this.parentElement.parentElement.remove()"
+            class="hover:bg-error-container/50 p-1 rounded-full transition-colors"
+          >
             <span class="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
@@ -342,7 +343,7 @@
       <!-- Header Section con Filtros -->
       <div class="flex justify-between items-end mb-8 flex-wrap gap-4 no-print">
         <div>
-          <h2 class="font-display-lg text-display-lg text-on-surface mb-1">
+          <h2 class="font-display-lg text-display-lg text-on-surface mb-1 mt-4">
             Módulo de Reportes
           </h2>
           <p class="font-body-md text-body-md text-on-surface-variant">
@@ -351,11 +352,17 @@
         </div>
         <div class="flex items-center gap-4 flex-wrap">
           <!-- Selector de Mes -->
-          <form th:action="@{/reportes}" method="get" class="flex items-center gap-3">
-            <label class="text-label-lg text-on-surface-variant font-label-lg">Mes:</label>
-            <input 
-              type="month" 
-              name="mes" 
+          <form
+            th:action="@{/reportes}"
+            method="get"
+            class="flex items-center gap-3"
+          >
+            <label class="text-label-lg text-on-surface-variant font-label-lg"
+              >Mes:</label
+            >
+            <input
+              type="month"
+              name="mes"
               th:value="${mesSeleccionado}"
               class="px-4 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white"
               onchange="this.form.submit()"
@@ -376,78 +383,139 @@
         <!-- Cabecera del PDF (solo visible en impresión) -->
         <div class="print-only text-center mb-8">
           <h1 class="text-3xl font-bold text-primary">Botica Control</h1>
-          <p class="text-on-surface-variant">Reporte de Ventas - <span th:text="${nombreMes}">Mes actual</span></p>
-          <p class="text-sm text-on-surface-variant">Fecha de generación: <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">-</span></p>
+          <p class="text-on-surface-variant">
+            Reporte de Ventas - <span th:text="${nombreMes}">Mes actual</span>
+          </p>
+          <p class="text-sm text-on-surface-variant">
+            Fecha de generación:
+            <span
+              th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}"
+              >-</span
+            >
+          </p>
           <hr class="my-4 border-outline-variant" />
         </div>
 
         <!-- Mostrar nombre del mes -->
         <div class="text-sm text-on-surface-variant mb-6">
-          Mostrando reportes para: <span class="font-bold" th:text="${nombreMes}">Mes actual</span>
+          Mostrando reportes para:
+          <span class="font-bold" th:text="${nombreMes}">Mes actual</span>
         </div>
 
         <!-- Dashboard Stats Summary -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <!-- Card 1: Ventas Totales -->
-          <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-t-4 border-t-primary shadow-sm stat-card">
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-t-4 border-t-primary shadow-sm stat-card"
+          >
             <div class="flex items-center justify-between">
-              <span class="text-label-sm font-label-sm text-on-surface-variant uppercase">Ventas Totales</span>
+              <span
+                class="text-label-sm font-label-sm text-on-surface-variant uppercase"
+                >Ventas Totales</span
+              >
               <div class="p-2 bg-primary-fixed rounded-lg text-primary">
-                <span class="material-symbols-outlined text-[20px]">attach_money</span>
+                <span class="material-symbols-outlined text-[20px]"
+                  >attach_money</span
+                >
               </div>
             </div>
             <p class="text-headline-md font-headline-md mt-2">
               S/ <span th:text="${ventasTotalesMes}">0.00</span>
             </p>
-            <p th:if="${crecimiento >= 0}" class="text-green-600 text-[12px] font-bold mt-1 flex items-center gap-1">
-              <span class="material-symbols-outlined text-[14px]">trending_up</span>
+            <p
+              th:if="${crecimiento >= 0}"
+              class="text-green-600 text-[12px] font-bold mt-1 flex items-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[14px]"
+                >trending_up</span
+              >
               +<span th:text="${crecimiento}">0.0</span>% vs mes anterior
             </p>
-            <p th:if="${crecimiento < 0}" class="text-red-600 text-[12px] font-bold mt-1 flex items-center gap-1">
-              <span class="material-symbols-outlined text-[14px]">trending_down</span>
+            <p
+              th:if="${crecimiento < 0}"
+              class="text-red-600 text-[12px] font-bold mt-1 flex items-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[14px]"
+                >trending_down</span
+              >
               <span th:text="${crecimiento}">0.0</span>% vs mes anterior
             </p>
           </div>
 
           <!-- Card 2: Clientes Frecuentes -->
-          <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-t-4 border-t-tertiary shadow-sm stat-card">
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-t-4 border-t-tertiary shadow-sm stat-card"
+          >
             <div class="flex items-center justify-between">
-              <span class="text-label-sm font-label-sm text-on-surface-variant uppercase">Clientes Frecuentes</span>
+              <span
+                class="text-label-sm font-label-sm text-on-surface-variant uppercase"
+                >Clientes Frecuentes</span
+              >
               <div class="p-2 bg-tertiary-fixed rounded-lg text-tertiary">
                 <span class="material-symbols-outlined text-[20px]">star</span>
               </div>
             </div>
-            <p class="text-headline-md font-headline-md mt-2" th:text="${clientesFrecuentes}">0</p>
-            <p class="text-on-surface-variant text-[12px] mt-1">Clientes con 5+ compras</p>
+            <p
+              class="text-headline-md font-headline-md mt-2"
+              th:text="${clientesFrecuentes}"
+            >
+              0
+            </p>
+            <p class="text-on-surface-variant text-[12px] mt-1">
+              Clientes con 5+ compras
+            </p>
           </div>
 
           <!-- Card 3: Stock Crítico -->
-          <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-t-4 border-t-error shadow-sm stat-card">
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-t-4 border-t-error shadow-sm stat-card"
+          >
             <div class="flex items-center justify-between">
-              <span class="text-label-sm font-label-sm text-on-surface-variant uppercase">Stock Crítico</span>
+              <span
+                class="text-label-sm font-label-sm text-on-surface-variant uppercase"
+                >Stock Crítico</span
+              >
               <div class="p-2 bg-error-container rounded-lg text-error">
-                <span class="material-symbols-outlined text-[20px]">warning</span>
+                <span class="material-symbols-outlined text-[20px]"
+                  >warning</span
+                >
               </div>
             </div>
-            <p class="text-headline-md font-headline-md mt-2" th:text="${stockCritico}">0</p>
-            <p class="text-error text-[12px] font-bold mt-1 flex items-center gap-1">
+            <p
+              class="text-headline-md font-headline-md mt-2"
+              th:text="${stockCritico}"
+            >
+              0
+            </p>
+            <p
+              class="text-error text-[12px] font-bold mt-1 flex items-center gap-1"
+            >
               <span class="material-symbols-outlined text-[14px]">warning</span>
               Reposición inmediata
             </p>
           </div>
 
           <!-- Card 4: Ticket Promedio -->
-          <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-t-4 border-t-primary-container shadow-sm stat-card">
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-t-4 border-t-primary-container shadow-sm stat-card"
+          >
             <div class="flex items-center justify-between">
-              <span class="text-label-sm font-label-sm text-on-surface-variant uppercase">Ticket Promedio</span>
+              <span
+                class="text-label-sm font-label-sm text-on-surface-variant uppercase"
+                >Ticket Promedio</span
+              >
               <div class="p-2 bg-secondary-fixed rounded-lg text-secondary">
-                <span class="material-symbols-outlined text-[20px]">receipt</span>
+                <span class="material-symbols-outlined text-[20px]"
+                  >receipt</span
+                >
               </div>
             </div>
             <p class="text-headline-md font-headline-md mt-2">
               S/ <span th:text="${ticketPromedio}">0.00</span>
             </p>
-            <p class="text-on-surface-variant text-[12px] mt-1">Por venta realizada</p>
+            <p class="text-on-surface-variant text-[12px] mt-1">
+              Por venta realizada
+            </p>
           </div>
         </div>
 
@@ -455,56 +523,124 @@
         <div class="grid grid-cols-12 gap-6">
           <!-- Columna Izquierda: Productos Más Vendidos -->
           <div class="col-span-12 lg:col-span-7">
-            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden h-full">
-              <div class="p-6 border-b border-outline-variant flex justify-between items-center bg-white flex-wrap gap-2">
-                <h3 class="font-headline-sm text-headline-sm flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary">star</span>
+            <div
+              class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden h-full"
+            >
+              <div
+                class="p-6 border-b border-outline-variant flex justify-between items-center bg-white flex-wrap gap-2"
+              >
+                <h3
+                  class="font-headline-sm text-headline-sm flex items-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-primary"
+                    >star</span
+                  >
                   Productos Más Vendidos
                 </h3>
-                <span class="text-label-sm font-label-sm bg-surface-container px-3 py-1 rounded-full text-on-surface-variant" 
-                      th:text="${nombreMes}">Mes actual</span>
+                <span
+                  class="text-label-sm font-label-sm bg-surface-container px-3 py-1 rounded-full text-on-surface-variant"
+                  th:text="${nombreMes}"
+                  >Mes actual</span
+                >
               </div>
               <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                   <thead>
-                    <tr class="bg-surface-container-low border-b border-outline-variant">
-                      <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant">Medicación</th>
-                      <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant">Categoría</th>
-                      <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant text-center">Unidades</th>
-                      <th class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant text-right">Ingresos</th>
+                    <tr
+                      class="bg-surface-container-low border-b border-outline-variant"
+                    >
+                      <th
+                        class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant"
+                      >
+                        Medicación
+                      </th>
+                      <th
+                        class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant"
+                      >
+                        Categoría
+                      </th>
+                      <th
+                        class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant text-center"
+                      >
+                        Unidades
+                      </th>
+                      <th
+                        class="px-6 py-4 font-label-lg text-label-lg text-on-surface-variant text-right"
+                      >
+                        Ingresos
+                      </th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-outline-variant">
-                    <tr th:each="producto : ${productosMasVendidos}" 
-                        class="hover:bg-surface-container-low transition-colors">
+                    <tr
+                      th:each="producto : ${productosMasVendidos}"
+                      class="hover:bg-surface-container-low transition-colors"
+                    >
                       <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
-                          <div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center">
-                            <span class="material-symbols-outlined text-primary text-[18px]">pill</span>
+                          <div
+                            class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center"
+                          >
+                            <span
+                              class="material-symbols-outlined text-primary text-[18px]"
+                              >pill</span
+                            >
                           </div>
                           <div>
-                            <p class="font-label-lg text-label-lg" th:text="${producto.nombre}">-</p>
-                            <p class="text-[12px] text-on-surface-variant" th:text="${producto.proveedor}">-</p>
+                            <p
+                              class="font-label-lg text-label-lg"
+                              th:text="${producto.nombre}"
+                            >
+                              -
+                            </p>
+                            <p
+                              class="text-[12px] text-on-surface-variant"
+                              th:text="${producto.proveedor}"
+                            >
+                              -
+                            </p>
                           </div>
                         </div>
                       </td>
-                      <td class="px-6 py-4 font-body-md text-body-md" th:text="${producto.categoria}">-</td>
-                      <td class="px-6 py-4 font-body-md text-body-md text-center" th:text="${producto.unidades}">0</td>
-                      <td class="px-6 py-4 font-body-md text-body-md text-right">
+                      <td
+                        class="px-6 py-4 font-body-md text-body-md"
+                        th:text="${producto.categoria}"
+                      >
+                        -
+                      </td>
+                      <td
+                        class="px-6 py-4 font-body-md text-body-md text-center"
+                        th:text="${producto.unidades}"
+                      >
+                        0
+                      </td>
+                      <td
+                        class="px-6 py-4 font-body-md text-body-md text-right"
+                      >
                         S/ <span th:text="${producto.ingresos}">0.00</span>
                       </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(productosMasVendidos)}">
-                      <td colspan="4" class="px-6 py-12 text-center text-on-surface-variant">
-                        <span class="material-symbols-outlined text-4xl mb-2">bar_chart</span>
+                      <td
+                        colspan="4"
+                        class="px-6 py-12 text-center text-on-surface-variant"
+                      >
+                        <span class="material-symbols-outlined text-4xl mb-2"
+                          >bar_chart</span
+                        >
                         <p>No hay datos de ventas disponibles para este mes</p>
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-              <div class="p-4 bg-surface-container-lowest border-t border-outline-variant text-center no-print">
-                <a th:href="@{/medicamentos}" class="text-primary font-label-lg text-label-lg hover:underline transition-all">
+              <div
+                class="p-4 bg-surface-container-lowest border-t border-outline-variant text-center no-print"
+              >
+                <a
+                  th:href="@{/medicamentos}"
+                  class="text-primary font-label-lg text-label-lg hover:underline transition-all"
+                >
                   Ver inventario completo
                 </a>
               </div>
@@ -513,48 +649,72 @@
 
           <!-- Columna Derecha: Resumen Mensual del Año -->
           <div class="col-span-12 lg:col-span-5">
-            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 h-full">
-              <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
-                <h3 class="font-headline-sm text-headline-sm flex items-center gap-2">
-                  <span class="material-symbols-outlined text-tertiary">calendar_month</span>
+            <div
+              class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 h-full"
+            >
+              <div
+                class="flex items-center justify-between mb-6 flex-wrap gap-2"
+              >
+                <h3
+                  class="font-headline-sm text-headline-sm flex items-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-tertiary"
+                    >calendar_month</span
+                  >
                   Resumen Mensual
                 </h3>
                 <!-- Selector de Año -->
-                <form th:action="@{/reportes}" method="get" class="flex items-center gap-2">
-                  <label class="text-sm text-on-surface-variant font-medium">Año:</label>
-                  <select name="anio" 
-                          class="px-3 py-1.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white text-sm"
-                          onchange="this.form.submit()">
-                    <option th:each="year : ${#numbers.sequence(2022, 2026)}" 
-                            th:value="${year}" 
-                            th:text="${year}"
-                            th:selected="${year == anioSeleccionado}">
-                    </option>
+                <form
+                  th:action="@{/reportes}"
+                  method="get"
+                  class="flex items-center gap-2"
+                >
+                  <label class="text-sm text-on-surface-variant font-medium"
+                    >Año:</label
+                  >
+                  <select
+                    name="anio"
+                    class="px-3 py-1.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white text-sm"
+                    onchange="this.form.submit()"
+                  >
+                    <option
+                      th:each="year : ${#numbers.sequence(2022, 2026)}"
+                      th:value="${year}"
+                      th:text="${year}"
+                      th:selected="${year == anioSeleccionado}"
+                    ></option>
                   </select>
                 </form>
               </div>
-              
+
               <!-- Scroll para los meses -->
               <div class="scrollable-meses">
                 <div th:if="${not #maps.isEmpty(resumenMensual)}">
                   <div class="space-y-3" th:each="entry : ${resumenMensual}">
                     <div>
                       <div class="flex justify-between mb-1">
-                        <span class="text-sm font-medium" th:text="${entry.key}">-</span>
+                        <span class="text-sm font-medium" th:text="${entry.key}"
+                          >-</span
+                        >
                         <span class="text-sm font-bold">
                           S/ <span th:text="${entry.value}">0.00</span>
                         </span>
                       </div>
-                      <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
-                        <div class="bg-primary h-full rounded-full transition-all duration-500"
-                             th:style="'width: ' + ${maxVentaAnual > 0 ? entry.value.doubleValue() / maxVentaAnual * 100 : 0} + '%'">
-                        </div>
+                      <div
+                        class="w-full bg-surface-container h-2 rounded-full overflow-hidden"
+                      >
+                        <div
+                          class="bg-primary h-full rounded-full transition-all duration-500"
+                          th:style="'width: ' + ${maxVentaAnual > 0 ? entry.value.doubleValue() / maxVentaAnual * 100 : 0} + '%'"
+                        ></div>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div th:if="${#maps.isEmpty(resumenMensual)}">
-                  <p class="text-center text-on-surface-variant py-8">No hay datos disponibles para este año</p>
+                  <p class="text-center text-on-surface-variant py-8">
+                    No hay datos disponibles para este año
+                  </p>
                 </div>
               </div>
             </div>
@@ -563,8 +723,9 @@
       </div>
 
       <!-- Fondo decorativo -->
-      <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#f1f3fe_0%,_#f9f9ff_100%)] pointer-events-none"></div>
-
+      <div
+        class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#f1f3fe_0%,_#f9f9ff_100%)] pointer-events-none"
+      ></div>
     </main>
 
     <script>
@@ -573,29 +734,45 @@
       // ==========================================
       function exportarPDF() {
         // Obtener datos del reporte desde el DOM
-        const ventasTotales = document.querySelector('[th\\:text="${ventasTotalesMes}"]')?.textContent || '0.00';
-        const clientesFrecuentes = document.querySelector('[th\\:text="${clientesFrecuentes}"]')?.textContent || '0';
-        const stockCritico = document.querySelector('[th\\:text="${stockCritico}"]')?.textContent || '0';
-        const ticketPromedio = document.querySelector('[th\\:text="${ticketPromedio}"]')?.textContent || '0.00';
-        const nombreMes = document.querySelector('[th\\:text="${nombreMes}"]')?.textContent || 'Mes actual';
-        const categoriaDestacada = document.querySelector('[th\\:text="${categoriaDestacada}"]')?.textContent || 'Sin datos';
-        const porcentajeCategoria = document.querySelector('[th\\:text="${porcentajeCategoria}"]')?.textContent || '0';
+        const ventasTotales =
+          document.querySelector('[th\\:text="${ventasTotalesMes}"]')
+            ?.textContent || "0.00";
+        const clientesFrecuentes =
+          document.querySelector('[th\\:text="${clientesFrecuentes}"]')
+            ?.textContent || "0";
+        const stockCritico =
+          document.querySelector('[th\\:text="${stockCritico}"]')
+            ?.textContent || "0";
+        const ticketPromedio =
+          document.querySelector('[th\\:text="${ticketPromedio}"]')
+            ?.textContent || "0.00";
+        const nombreMes =
+          document.querySelector('[th\\:text="${nombreMes}"]')?.textContent ||
+          "Mes actual";
+        const categoriaDestacada =
+          document.querySelector('[th\\:text="${categoriaDestacada}"]')
+            ?.textContent || "Sin datos";
+        const porcentajeCategoria =
+          document.querySelector('[th\\:text="${porcentajeCategoria}"]')
+            ?.textContent || "0";
 
         // Obtener productos más vendidos
-        const productosRows = document.querySelectorAll('#reporteContent tbody tr');
-        let productosHTML = '';
+        const productosRows = document.querySelectorAll(
+          "#reporteContent tbody tr",
+        );
+        let productosHTML = "";
         let productosEncontrados = false;
-        
-        productosRows.forEach(row => {
-            if (row.querySelector('td[colspan]')) return; // Saltar fila de "No hay datos"
-            const celdas = row.querySelectorAll('td');
-            if (celdas.length >= 4) {
-                productosEncontrados = true;
-                const nombre = celdas[0]?.textContent?.trim() || '-';
-                const categoria = celdas[1]?.textContent?.trim() || '-';
-                const unidades = celdas[2]?.textContent?.trim() || '0';
-                const ingresos = celdas[3]?.textContent?.trim() || '0.00';
-                productosHTML += `
+
+        productosRows.forEach((row) => {
+          if (row.querySelector("td[colspan]")) return; // Saltar fila de "No hay datos"
+          const celdas = row.querySelectorAll("td");
+          if (celdas.length >= 4) {
+            productosEncontrados = true;
+            const nombre = celdas[0]?.textContent?.trim() || "-";
+            const categoria = celdas[1]?.textContent?.trim() || "-";
+            const unidades = celdas[2]?.textContent?.trim() || "0";
+            const ingresos = celdas[3]?.textContent?.trim() || "0.00";
+            productosHTML += `
                     <tr>
                         <td style="padding: 8px 12px; border-bottom: 1px solid #eee;">${nombre}</td>
                         <td style="padding: 8px 12px; border-bottom: 1px solid #eee;">${categoria}</td>
@@ -603,17 +780,24 @@
                         <td style="padding: 8px 12px; border-bottom: 1px solid #eee; text-align: right;">S/ ${ingresos}</td>
                     </tr>
                 `;
-            }
+          }
         });
 
         // Obtener resumen mensual
-        const mesesItems = document.querySelectorAll('.scrollable-meses .space-y-3 > div');
-        let mesesHTML = '';
-        mesesItems.forEach(item => {
-            const label = item.querySelector('.text-sm.font-medium')?.textContent || '-';
-            const valor = item.querySelector('.text-sm.font-bold')?.textContent?.replace('S/ ', '') || '0.00';
-            const barra = item.querySelector('.bg-primary.h-full')?.style?.width || '0%';
-            mesesHTML += `
+        const mesesItems = document.querySelectorAll(
+          ".scrollable-meses .space-y-3 > div",
+        );
+        let mesesHTML = "";
+        mesesItems.forEach((item) => {
+          const label =
+            item.querySelector(".text-sm.font-medium")?.textContent || "-";
+          const valor =
+            item
+              .querySelector(".text-sm.font-bold")
+              ?.textContent?.replace("S/ ", "") || "0.00";
+          const barra =
+            item.querySelector(".bg-primary.h-full")?.style?.width || "0%";
+          mesesHTML += `
                 <div style="margin-bottom: 12px;">
                     <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
                         <span>${label}</span>
@@ -627,7 +811,8 @@
         });
 
         const fecha = new Date().toLocaleString();
-        const numeroReporte = "RPT-" + String(Math.floor(Math.random() * 100000)).padStart(5, "0");
+        const numeroReporte =
+          "RPT-" + String(Math.floor(Math.random() * 100000)).padStart(5, "0");
 
         // Construir HTML del PDF
         const contenidoHTML = `
@@ -904,18 +1089,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${productosEncontrados ? productosHTML : `
+                        ${
+                          productosEncontrados
+                            ? productosHTML
+                            : `
                             <tr>
                                 <td colspan="4" style="text-align:center;padding:30px;color:#717786;">
                                     No hay datos de ventas disponibles para este mes
                                 </td>
                             </tr>
-                        `}
+                        `
+                        }
                     </tbody>
                 </table>
 
                 <!-- RESUMEN MENSUAL -->
-                <div class="section-title"><span>Resumen Mensual</span> <span style="font-size:14px;font-weight:400;color:#717786;">${document.querySelector('[name="anio"]')?.value || '2026'}</span></div>
+                <div class="section-title"><span>Resumen Mensual</span> <span style="font-size:14px;font-weight:400;color:#717786;">${document.querySelector('[name="anio"]')?.value || "2026"}</span></div>
                 <div class="meses-grid">
                     ${mesesHTML || '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#717786;">No hay datos disponibles</div>'}
                 </div>
@@ -927,21 +1116,20 @@
         // Abrir nueva ventana y imprimir
         const ventana = window.open("", "_blank", "width=1000,height=800");
         if (!ventana) {
-            alert("Por favor, permita ventanas emergentes para generar el PDF.");
-            return;
+          alert("Por favor, permita ventanas emergentes para generar el PDF.");
+          return;
         }
-        
+
         ventana.document.write(contenidoHTML);
         ventana.document.close();
-        
-        // Esperar a que cargue y luego imprimir
-        ventana.onload = function() {
-            setTimeout(() => {
-                ventana.print();
-            }, 500);
-        };
-    }
-    </script>
 
+        // Esperar a que cargue y luego imprimir
+        ventana.onload = function () {
+          setTimeout(() => {
+            ventana.print();
+          }, 500);
+        };
+      }
+    </script>
   </body>
 </html>
