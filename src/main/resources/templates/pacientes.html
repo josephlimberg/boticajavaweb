@@ -161,6 +161,25 @@
       .search-result-item:hover {
         background-color: #f1f3fe;
       }
+      /* Estilos para validación */
+      .error-border {
+        border-color: #ba1a1a !important;
+        border-width: 2px !important;
+      }
+      .error-message {
+        color: #ba1a1a;
+        font-size: 12px;
+        margin-top: 4px;
+        display: block;
+      }
+      .input-group {
+        position: relative;
+      }
+      .input-group .error-message {
+        position: absolute;
+        bottom: -20px;
+        left: 0;
+      }
     </style>
   </head>
   <body class="bg-background text-on-surface">
@@ -233,8 +252,8 @@
           <span class="material-symbols-outlined">group</span> Clientes
         </a>
         <a
+          th:href="@{/historial}"
           class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">history</span>
           Historial de Acciones
@@ -273,33 +292,28 @@
           </div>
         </div>
         <div class="flex items-center gap-6">
-          <div class="flex items-center gap-2">
-            <button
-              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
-            >
-              <span class="material-symbols-outlined">notifications</span>
-            </button>
-            <button
-              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
-            >
-              <span class="material-symbols-outlined">settings</span>
-            </button>
-          </div>
+          <div class="flex items-center gap-2"></div>
           <div
-            class="flex items-center gap-3 ml-2 border-l border-outline-variant pl-6"
+            class="flex items-center gap-3 pl-4 border-l border-outline-variant"
           >
             <div class="text-right">
-              <p class="font-label-lg text-label-lg leading-none">
+              <p
+                class="font-label-lg text-label-lg text-on-surface"
+                th:text="${nombreUsuario}"
+              >
                 Dr. Ricardo Pérez
               </p>
-              <p class="text-[12px] text-on-surface-variant">
-                Farmacéutico Jefe
+              <p
+                class="text-[10px] uppercase tracking-wider text-outline"
+                th:text="${rolUsuario}"
+              >
+                Administrador
               </p>
             </div>
             <img
               alt="Avatar del Farmacéutico"
-              class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA80n2oKDsA5z5f8Gd4fQvLsgvezITVxm0FpqD4RdK0UGzmKql1RPkJDHroyl-wjabRtWYkxIVzuj66yU-o0qlGyKcF0WtWthQtTualcLRPhkT_sPZfARO2JaW2veVJIKM2RCBLHhucAS5zoI2GUEKBWKRD6H_3Z4bwHO09zlhbbgXZqNkEIFNycb5c5Lw0hg0tQKXHRxSAFbmAtRjjW-GZ9kEe6tfDfSlGqEOpThSwzKmDGia9RXyAyxZe7wpEyBI5X7jDjNODcdU5"
+              class="w-10 h-10 rounded-full border border-outline-variant bg-surface-container"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCivfE-EVV7Z375eyD66b7eC-zCWcc8UvX3Wmw6Ppqq8rTruJlP2La1yF8UGhQIuZiDsLt4R24bXpz3iRBEAr7o5qQUeXLvMopC6yIKqRupCy95BqOKZsOHGEMTP3U_fJPsOIG2G5zc9h3ev5tzXD4ak4JOEHxSL9HxmZ6Fv-LtX31m4A6oweEX2JVt2gZ8naTuIZ6Az08ht7KQzQsvY6PEH4Zz4AeeCHBywXOztJfgSG5CfTXHnhls_xg5y4ZNS-HlRYsrBj42CPVz"
             />
           </div>
         </div>
@@ -598,6 +612,7 @@
           th:action="@{/pacientes/guardar}"
           method="post"
           id="pacienteForm"
+          novalidate
         >
           <input type="hidden" id="pacienteId" name="id" value="0" />
 
@@ -644,7 +659,10 @@
               required=""
               type="number"
               maxlength="8"
+              min="10000000"
+              max="99999999"
             />
+            <span class="error-message" id="dniError"></span>
           </div>
           <div class="space-y-1">
             <label
@@ -658,7 +676,9 @@
               placeholder="9xx xxx xxx"
               required=""
               type="tel"
+              maxlength="15"
             />
+            <span class="error-message" id="telefonoError"></span>
           </div>
           <div class="space-y-2">
             <label
@@ -745,7 +765,159 @@
     ></div>
 
     <script>
+      // ==========================================
+      // FUNCIONES DE VALIDACIÓN
+      // ==========================================
+
+      function limpiarError(campoId, errorId) {
+        const campo = document.getElementById(campoId);
+        const error = document.getElementById(errorId);
+        if (campo) campo.classList.remove("error-border");
+        if (error) error.textContent = "";
+      }
+
+      function mostrarError(campoId, errorId, mensaje) {
+        const campo = document.getElementById(campoId);
+        const error = document.getElementById(errorId);
+        if (campo) campo.classList.add("error-border");
+        if (error) error.textContent = mensaje;
+      }
+
+      function validarDNI(dni) {
+        const dniStr = String(dni).trim();
+        // DNI debe tener entre 8 y 10 dígitos
+        const regex = /^\d{8,10}$/;
+        return regex.test(dniStr);
+      }
+
+      function validarTelefono(telefono) {
+        const telStr = String(telefono).trim();
+        // Teléfono debe tener menos de 15 caracteres
+        // Permite números, espacios, guiones y paréntesis
+        const regex = /^[\d\s\-\(\)\+]{1,15}$/;
+        return regex.test(telStr) && telStr.replace(/\D/g, "").length <= 15;
+      }
+
+      function validarFormularioPaciente() {
+        let esValido = true;
+
+        // Validar DNI (8-10 números)
+        const dni = document.getElementById("dni").value.trim();
+        if (!validarDNI(dni)) {
+          mostrarError("dni", "dniError", "El DNI debe tener entre 8 y 10 dígitos numéricos");
+          esValido = false;
+        } else {
+          limpiarError("dni", "dniError");
+        }
+
+        // Validar Teléfono (menos de 15 caracteres)
+        const telefono = document.getElementById("telefono").value.trim();
+        if (telefono && !validarTelefono(telefono)) {
+          mostrarError("telefono", "telefonoError", "El teléfono debe tener menos de 15 caracteres");
+          esValido = false;
+        } else if (telefono && telefono.replace(/\D/g, "").length < 6) {
+          mostrarError("telefono", "telefonoError", "El teléfono debe tener al menos 6 dígitos");
+          esValido = false;
+        } else {
+          limpiarError("telefono", "telefonoError");
+        }
+
+        return esValido;
+      }
+
+      // ==========================================
+      // VALIDACIONES EN TIEMPO REAL
+      // ==========================================
+
+      // DNI - validar al perder el foco
+      document.getElementById("dni").addEventListener("blur", function() {
+        const dni = this.value.trim();
+        if (dni && !validarDNI(dni)) {
+          mostrarError("dni", "dniError", "El DNI debe tener entre 8 y 10 dígitos numéricos");
+        } else {
+          limpiarError("dni", "dniError");
+        }
+      });
+
+      // DNI - validar mientras se escribe (solo números)
+      document.getElementById("dni").addEventListener("input", function() {
+        // Limpiar caracteres no numéricos
+        this.value = this.value.replace(/\D/g, "");
+        // Limitar a 10 dígitos
+        if (this.value.length > 10) {
+          this.value = this.value.slice(0, 10);
+        }
+        // Si hay error visible y ahora es válido, limpiar error
+        if (this.classList.contains("error-border") && validarDNI(this.value)) {
+          limpiarError("dni", "dniError");
+        }
+      });
+
+      // Teléfono - validar al perder el foco
+      document.getElementById("telefono").addEventListener("blur", function() {
+        const telefono = this.value.trim();
+        if (telefono) {
+          if (!validarTelefono(telefono)) {
+            mostrarError("telefono", "telefonoError", "El teléfono debe tener menos de 15 caracteres");
+          } else if (telefono.replace(/\D/g, "").length < 6) {
+            mostrarError("telefono", "telefonoError", "El teléfono debe tener al menos 6 dígitos");
+          } else {
+            limpiarError("telefono", "telefonoError");
+          }
+        }
+      });
+
+      // Teléfono - validar mientras se escribe
+      document.getElementById("telefono").addEventListener("input", function() {
+        // Limitar a 15 caracteres
+        if (this.value.length > 15) {
+          this.value = this.value.slice(0, 15);
+        }
+        if (this.classList.contains("error-border")) {
+          const tel = this.value.trim();
+          if (tel && validarTelefono(tel) && tel.replace(/\D/g, "").length >= 6) {
+            limpiarError("telefono", "telefonoError");
+          }
+        }
+      });
+
+      // ==========================================
+      // INTERCEPTAR ENVÍO DEL FORMULARIO
+      // ==========================================
+
+      document.getElementById("pacienteForm").addEventListener("submit", function(e) {
+        if (!validarFormularioPaciente()) {
+          e.preventDefault();
+          // Mostrar mensaje de error general
+          const errorMsg = document.createElement("div");
+          errorMsg.className = "text-error text-label-sm text-center mb-2 p-2 bg-error-container rounded-lg";
+          errorMsg.id = "formErrorGeneral";
+          errorMsg.textContent = "❌ Por favor, corrija los errores en el formulario antes de guardar.";
+
+          // Eliminar mensaje anterior si existe
+          const oldError = document.getElementById("formErrorGeneral");
+          if (oldError) oldError.remove();
+
+          // Insertar mensaje antes del botón de guardar
+          const form = document.getElementById("pacienteForm");
+          const buttonsDiv = form.querySelector(".pt-4");
+          if (buttonsDiv) {
+            buttonsDiv.parentNode.insertBefore(errorMsg, buttonsDiv);
+          }
+
+          // Hacer scroll al primer campo con error
+          const firstError = document.querySelector(".error-border");
+          if (firstError) {
+            firstError.focus();
+            firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }
+      });
+
+      // ==========================================
       // Modal functions
+      // ==========================================
+
       function toggleModal(show) {
         const container = document.getElementById("modal-container");
         const content = document.getElementById("modal-content");
@@ -761,6 +933,11 @@
           document
             .querySelectorAll('input[name="genero"]')
             .forEach((r) => (r.checked = false));
+          // Limpiar errores
+          document.querySelectorAll(".error-border").forEach(el => el.classList.remove("error-border"));
+          document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+          const generalError = document.getElementById("formErrorGeneral");
+          if (generalError) generalError.remove();
         } else {
           container.classList.add("opacity-0", "pointer-events-none");
           content.classList.remove("scale-100");
@@ -768,7 +945,10 @@
         }
       }
 
+      // ==========================================
       // Editar paciente
+      // ==========================================
+
       function editarPaciente(button) {
         const id = button.getAttribute("data-id");
         fetch(`/pacientes/${id}`)
@@ -796,6 +976,12 @@
             });
 
             document.getElementById("modalTitle").innerText = "Editar Cliente";
+            // Limpiar errores al editar
+            document.querySelectorAll(".error-border").forEach(el => el.classList.remove("error-border"));
+            document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+            const generalError = document.getElementById("formErrorGeneral");
+            if (generalError) generalError.remove();
+
             toggleModal(true);
           })
           .catch((error) => {
@@ -804,7 +990,10 @@
           });
       }
 
+      // ==========================================
       // Eliminar paciente
+      // ==========================================
+
       function eliminarPaciente(button) {
         const id = button.getAttribute("data-id");
         if (confirm("¿Estás seguro de eliminar este cliente?")) {
@@ -834,19 +1023,16 @@
       searchInput.addEventListener("input", function () {
         const query = this.value.trim();
 
-        // Limpiar el timeout anterior si existe
         if (timeoutId) {
           clearTimeout(timeoutId);
           timeoutId = null;
         }
 
-        // Si la consulta tiene 3 o más caracteres, buscar
         if (query.length >= 3) {
           timeoutId = setTimeout(() => {
             buscarPacientes(query);
           }, 300);
         } else {
-          // Si tiene menos de 3 caracteres, ocultar resultados
           searchResults.classList.remove("active");
           searchResults.innerHTML = "";
         }
@@ -865,13 +1051,10 @@
 
       // Función para buscar pacientes
       async function buscarPacientes(query) {
-        // Evitar búsquedas duplicadas
         if (isSearching) return;
 
         try {
           isSearching = true;
-
-          // Mostrar indicador de carga
           searchResults.innerHTML = `
                 <div class="search-result-item text-center text-on-surface-variant">
                     <span class="material-symbols-outlined animate-spin">refresh</span>
@@ -880,7 +1063,6 @@
             `;
           searchResults.classList.add("active");
 
-          // Realizar la petición
           const response = await fetch(
             `/pacientes/buscar?query=${encodeURIComponent(query)}`,
           );
@@ -891,14 +1073,11 @@
 
           const pacientes = await response.json();
 
-          // Verificar si la búsqueda sigue siendo relevante
           const currentQuery = searchInput.value.trim();
           if (currentQuery !== query) {
-            // Si el usuario escribió algo más, ignorar estos resultados
             return;
           }
 
-          // Mostrar resultados
           if (pacientes.length === 0) {
             searchResults.innerHTML = `
                     <div class="search-result-item text-center text-on-surface-variant">
@@ -909,11 +1088,10 @@
             return;
           }
 
-          // Construir HTML de resultados
           searchResults.innerHTML = pacientes
             .map(
               (p) => `
-                <div class="search-result-item" onclick="seleccionarPaciente(${p.id}, '${p.nombre} ${p.apellido}')">
+                <div class="search-result-item" onclick="seleccionarPaciente(${p.id}, '${escapeHtml(p.nombre)} ${escapeHtml(p.apellido)}')">
                     <div class="flex justify-between items-center">
                         <div>
                             <span class="font-bold">${escapeHtml(p.nombre)} ${escapeHtml(p.apellido)}</span>
@@ -928,9 +1106,6 @@
                     <div class="text-label-sm text-on-surface-variant mt-1">
                         ${p.estado === "ACTIVO" ? "🟢 Activo" : "🔴 Inactivo"}
                         ${p.genero ? `| ${p.genero}` : ""}
-                    </div>
-                    <div class="text-xs text-on-surface-variant/60 mt-1">
-                        ${highlightMatch(escapeHtml(p.nombre + " " + p.apellido + " " + p.dni), query)}
                     </div>
                 </div>
             `,
@@ -953,21 +1128,14 @@
 
       // Función para seleccionar un paciente de los resultados
       function seleccionarPaciente(id, nombreCompleto) {
-        // Mostrar mensaje de confirmación
         if (nombreCompleto) {
           alert(
             `✅ Cliente seleccionado: ${nombreCompleto}\n\nPuedes ver sus detalles en la tabla principal.`,
           );
         }
-
-        // Limpiar y cerrar resultados
         searchResults.classList.remove("active");
         searchResults.innerHTML = "";
         searchInput.value = "";
-
-        // Opcional: Recargar la tabla para mostrar el cliente seleccionado destacado
-        // o redirigir a los detalles del cliente
-        // window.location.href = `/pacientes/${id}`;
       }
 
       // Función auxiliar para escapar HTML y prevenir XSS
@@ -976,21 +1144,6 @@
         const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
-      }
-
-      // Función auxiliar para resaltar coincidencias
-      function highlightMatch(text, query) {
-        if (!text || !query) return text;
-        const regex = new RegExp(`(${escapeRegex(query)})`, "gi");
-        return text.replace(
-          regex,
-          '<span class="bg-yellow-200 px-1 rounded">$1</span>',
-        );
-      }
-
-      // Función auxiliar para escapar caracteres especiales en regex
-      function escapeRegex(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       }
 
       // ==========================================
@@ -1010,7 +1163,6 @@
           mostrarNotificacion("🗑️ Cliente eliminado correctamente", "info");
         }
 
-        // Enfocar el buscador al cargar la página
         if (searchInput) {
           setTimeout(() => searchInput.focus(), 100);
         }
@@ -1018,7 +1170,6 @@
 
       // Función para mostrar notificaciones
       function mostrarNotificacion(mensaje, tipo) {
-        // Crear elemento de notificación
         const notificacion = document.createElement("div");
         notificacion.className = `fixed top-20 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transform transition-all duration-500 ${
           tipo === "success"
@@ -1047,7 +1198,6 @@
 
         document.body.appendChild(notificacion);
 
-        // Auto-cerrar después de 5 segundos
         setTimeout(() => {
           if (notificacion.parentElement) {
             notificacion.style.opacity = "0";
@@ -1074,7 +1224,7 @@
       });
 
       // ==========================================
-      // TECLADO: Navegación con flechas (opcional)
+      // TECLADO: Navegación con flechas
       // ==========================================
 
       let selectedIndex = -1;
@@ -1112,7 +1262,6 @@
         });
       }
 
-      // Resetear selección cuando se ocultan los resultados
       const observer = new MutationObserver(() => {
         if (!searchResults.classList.contains("active")) {
           selectedIndex = -1;

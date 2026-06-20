@@ -2,13 +2,18 @@ package com.java.boticaintegrador.controller;
 
 import com.java.boticaintegrador.dto.ErrorResponse;
 import com.java.boticaintegrador.model.Medicamento;
+import com.java.boticaintegrador.model.Usuario;
 import com.java.boticaintegrador.model.Venta;
 import com.java.boticaintegrador.model.DetalleVenta;
+import com.java.boticaintegrador.service.AccionService;
 import com.java.boticaintegrador.service.MedicamentoService;
 import com.java.boticaintegrador.service.PacienteService;
+import com.java.boticaintegrador.service.UsuarioService;
 import com.java.boticaintegrador.service.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +42,12 @@ public class ReportesController {
     @Autowired
     private PacienteService pacienteService;
 
+    @Autowired
+    private AccionService accionService;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
     @GetMapping
     public String mostrarReportes(
             @RequestParam(required = false) String mes,
@@ -49,7 +60,20 @@ public class ReportesController {
         System.out.println("Año seleccionado: " + anio);
         
         try {
-            // Procesar fecha seleccionada
+            // Obtener usuario autenticado
+            String nombreUsuario = obtenerNombreUsuario();
+            String rolUsuario = obtenerRolUsuario();
+            model.addAttribute("nombreUsuario", nombreUsuario);
+            model.addAttribute("rolUsuario", rolUsuario);
+
+            accionService.registrarAccion(
+                "SISTEMA",
+                "Visualizó reportes",
+                "Reportes",
+                "Mes: " + mes + ", Año: " + anio + ", Usuario: " + nombreUsuario,
+                request.getRemoteAddr()
+            );
+
             LocalDate fechaSeleccionada;
             if (mes != null && !mes.isEmpty()) {
                 try {
@@ -63,7 +87,6 @@ public class ReportesController {
             
             System.out.println("Fecha procesada: " + fechaSeleccionada);
             
-            // Obtener el año seleccionado
             Integer anioSeleccionado;
             try {
                 anioSeleccionado = anio != null ? Integer.parseInt(anio) : LocalDate.now().getYear();
@@ -73,31 +96,25 @@ public class ReportesController {
             System.out.println("Año seleccionado: " + anioSeleccionado);
             model.addAttribute("anioSeleccionado", anioSeleccionado);
             
-            // 1. Obtener ventas del mes
             LocalDate inicio = fechaSeleccionada.withDayOfMonth(1);
             LocalDate fin = fechaSeleccionada.withDayOfMonth(fechaSeleccionada.lengthOfMonth());
-            System.out.println("Rango: " + inicio + " - " + fin);
             
             List<Venta> ventasMes = new ArrayList<>();
             try {
                 ventasMes = ventaService.buscarPorRangoFechas(inicio, fin);
-                System.out.println("Ventas encontradas: " + ventasMes.size());
             } catch (Exception e) {
                 System.out.println("Error al buscar ventas: " + e.getMessage());
                 ventasMes = new ArrayList<>();
             }
             
-            // 2. Calcular ventas totales
             BigDecimal ventasTotalesMes = BigDecimal.ZERO;
             for (Venta v : ventasMes) {
                 if (v.getTotal() != null) {
                     ventasTotalesMes = ventasTotalesMes.add(v.getTotal());
                 }
             }
-            System.out.println("ventasTotalesMes: " + ventasTotalesMes);
             model.addAttribute("ventasTotalesMes", ventasTotalesMes);
 
-            // 3. Calcular crecimiento
             Double crecimiento = 0.0;
             try {
                 LocalDate mesAnterior = fechaSeleccionada.minusMonths(1);
@@ -118,33 +135,27 @@ public class ReportesController {
                             .multiply(BigDecimal.valueOf(100))
                             .doubleValue();
                 }
-                System.out.println("crecimiento: " + crecimiento);
             } catch (Exception e) {
                 System.out.println("Error al calcular crecimiento: " + e.getMessage());
             }
             model.addAttribute("crecimiento", crecimiento);
 
-            // 4. Clientes Frecuentes
             long clientesFrecuentes = 0;
             try {
                 clientesFrecuentes = pacienteService.contarFrecuentes();
             } catch (Exception e) {
                 System.out.println("Error al contar clientes frecuentes: " + e.getMessage());
             }
-            System.out.println("clientesFrecuentes: " + clientesFrecuentes);
             model.addAttribute("clientesFrecuentes", clientesFrecuentes);
 
-            // 5. Stock Crítico
             long stockCritico = 0;
             try {
                 stockCritico = contarStockCritico();
             } catch (Exception e) {
                 System.out.println("Error al contar stock crítico: " + e.getMessage());
             }
-            System.out.println("stockCritico: " + stockCritico);
             model.addAttribute("stockCritico", stockCritico);
 
-            // 6. Ticket Promedio
             BigDecimal ticketPromedio = BigDecimal.ZERO;
             try {
                 if (!ventasMes.isEmpty()) {
@@ -159,21 +170,16 @@ public class ReportesController {
             } catch (Exception e) {
                 System.out.println("Error al calcular ticket promedio: " + e.getMessage());
             }
-            System.out.println("ticketPromedio: " + ticketPromedio);
             model.addAttribute("ticketPromedio", ticketPromedio);
 
-            // 7. Productos Más Vendidos
             List<Map<String, Object>> productosMasVendidos = new ArrayList<>();
             try {
                 productosMasVendidos = obtenerProductosMasVendidos(ventasMes);
             } catch (Exception e) {
                 System.out.println("Error al obtener productos más vendidos: " + e.getMessage());
-                e.printStackTrace();
             }
-            System.out.println("productosMasVendidos size: " + productosMasVendidos.size());
             model.addAttribute("productosMasVendidos", productosMasVendidos);
 
-            // 8. Resumen Trimestral
             Map<String, BigDecimal> resumenTrimestral = new LinkedHashMap<>();
             try {
                 resumenTrimestral = obtenerResumenTrimestral(fechaSeleccionada);
@@ -182,7 +188,6 @@ public class ReportesController {
             }
             model.addAttribute("resumenTrimestral", resumenTrimestral);
 
-            // 9. Resumen Mensual del Año (todos los meses)
             Map<String, BigDecimal> resumenMensual = new LinkedHashMap<>();
             BigDecimal maxVentaAnual = BigDecimal.ZERO;
             try {
@@ -207,15 +212,12 @@ public class ReportesController {
                         maxVentaAnual = total;
                     }
                 }
-                System.out.println("resumenMensual: " + resumenMensual.size() + " meses");
-                System.out.println("maxVentaAnual: " + maxVentaAnual);
             } catch (Exception e) {
                 System.out.println("Error al obtener resumen mensual: " + e.getMessage());
             }
             model.addAttribute("resumenMensual", resumenMensual);
             model.addAttribute("maxVentaAnual", maxVentaAnual);
 
-            // 10. Proyección
             BigDecimal proyeccion = BigDecimal.ZERO;
             try {
                 if (!resumenTrimestral.isEmpty()) {
@@ -228,10 +230,8 @@ public class ReportesController {
             } catch (Exception e) {
                 System.out.println("Error al calcular proyección: " + e.getMessage());
             }
-            System.out.println("proyeccion: " + proyeccion);
             model.addAttribute("proyeccion", proyeccion);
 
-            // 11. Categoría más vendida
             String categoriaDestacada = "Sin datos";
             Double porcentajeCategoria = 0.0;
             try {
@@ -243,7 +243,6 @@ public class ReportesController {
             model.addAttribute("categoriaDestacada", categoriaDestacada);
             model.addAttribute("porcentajeCategoria", porcentajeCategoria);
 
-            // 12. Datos del mes
             String mesSeleccionado = fechaSeleccionada.format(DateTimeFormatter.ofPattern("yyyy-MM"));
             model.addAttribute("mesSeleccionado", mesSeleccionado);
             
@@ -257,7 +256,10 @@ public class ReportesController {
             System.out.println("=== ERROR EN REPORTES ===");
             e.printStackTrace();
             
-            // Crear ErrorResponse
+            // Valores por defecto
+            model.addAttribute("nombreUsuario", "Usuario");
+            model.addAttribute("rolUsuario", "Rol");
+            
             ErrorResponse error = new ErrorResponse(
                 "Error al cargar los reportes: " + e.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -265,7 +267,6 @@ public class ReportesController {
                 System.currentTimeMillis()
             );
             
-            // Valores por defecto
             model.addAttribute("ventasTotalesMes", BigDecimal.ZERO);
             model.addAttribute("crecimiento", 0.0);
             model.addAttribute("clientesFrecuentes", 0L);
@@ -438,5 +439,34 @@ public class ReportesController {
             System.out.println("Error en obtenerPorcentajeCategoria: " + e.getMessage());
             return 0.0;
         }
+    }
+
+    // Métodos auxiliares para obtener el usuario autenticado
+    private String obtenerNombreUsuario() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                String username = auth.getName();
+                Usuario usuario = usuarioService.buscarPorUsername(username);
+                return usuario != null ? usuario.getNombreCompleto() : username;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Usuario";
+    }
+
+    private String obtenerRolUsuario() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                String username = auth.getName();
+                Usuario usuario = usuarioService.buscarPorUsername(username);
+                return usuario != null ? usuario.getRol() : "Rol";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Rol";
     }
 }

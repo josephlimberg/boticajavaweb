@@ -180,7 +180,11 @@
         <div
           class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary"
         >
-          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">health_and_safety</span>
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >health_and_safety</span
+          >
         </div>
         <div>
           <h1 class="font-headline-md text-headline-md text-primary font-bold">
@@ -231,7 +235,11 @@
           th:href="@{/usuarios}"
           class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container border-l-4 border-primary font-bold font-label-lg text-label-lg"
         >
-          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">group</span>
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >group</span
+          >
           Usuarios
         </a>
         <a
@@ -242,8 +250,8 @@
           Clientes
         </a>
         <a
+          th:href="@{/historial}"
           class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">history</span>
           Historial de Acciones
@@ -282,33 +290,28 @@
           </div>
         </div>
         <div class="flex items-center gap-6">
-          <div class="flex items-center gap-2">
-            <span
-              class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-              >notifications</span
-            >
-            <span
-              class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-              >settings</span
-            >
-          </div>
+          <div class="flex items-center gap-2"></div>
           <div
             class="flex items-center gap-3 pl-4 border-l border-outline-variant"
           >
-            <div class="text-right hidden sm:block">
-              <p class="font-label-lg text-label-lg leading-tight">
-                Dr. Garcia
+            <div class="text-right">
+              <p
+                class="font-label-lg text-label-lg text-on-surface"
+                th:text="${nombreUsuario}"
+              >
+                Dr. Ricardo Pérez
               </p>
               <p
-                class="text-[10px] text-on-surface-variant uppercase tracking-wider"
+                class="text-[10px] uppercase tracking-wider text-outline"
+                th:text="${rolUsuario}"
               >
                 Administrador
               </p>
             </div>
             <img
               alt="Avatar del Farmacéutico"
-              class="w-10 h-10 rounded-full object-cover border border-outline-variant"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC2C1dp65bVSXdngonrroKCyS2ZhCcWqhsermUsDkK5f1OwAMs3i5EmAcY1Sb1kCpJ7UfOS8Iueu6mvhrdv60iTZoOLIcDgg4SeTwuLMA545cfQJBlGbo_x6DfB8c5kEKdipNbtMmMbywLKM-LnWAunv5GA-yQlp4psePhrauy-tXG2j_8-il8CwIe-xjlg0jqUFjgwWzAnOreycjF6zZ73uoqOOheSiWAmrwRVSxxBgZPkyVGDIwX5MCs2Vn8d7FITRK-CJcc14DU"
+              class="w-10 h-10 rounded-full border border-outline-variant bg-surface-container"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCivfE-EVV7Z375eyD66b7eC-zCWcc8UvX3Wmw6Ppqq8rTruJlP2La1yF8UGhQIuZiDsLt4R24bXpz3iRBEAr7o5qQUeXLvMopC6yIKqRupCy95BqOKZsOHGEMTP3U_fJPsOIG2G5zc9h3ev5tzXD4ak4JOEHxSL9HxmZ6Fv-LtX31m4A6oweEX2JVt2gZ8naTuIZ6Az08ht7KQzQsvY6PEH4Zz4AeeCHBywXOztJfgSG5CfTXHnhls_xg5y4ZNS-HlRYsrBj42CPVz"
             />
           </div>
         </div>
@@ -317,42 +320,55 @@
 
     <!-- Main Content -->
     <main class="ml-[280px] pt-16 min-h-screen p-10 bg-background">
-
       <!-- Mostrar error si existe -->
-      <div th:if="${error}" 
-           class="bg-error-container text-on-error-container p-4 rounded-xl border border-error mb-6">
+      <div
+        th:if="${error}"
+        class="bg-error-container text-on-error-container p-4 rounded-xl border border-error mb-6"
+      >
         <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-error text-[24px]">error</span>
+          <span class="material-symbols-outlined text-error text-[24px]"
+            >error</span
+          >
           <div class="flex-1">
             <p class="font-bold text-error">Error</p>
             <p class="text-sm" th:text="${error.mensaje}">Error desconocido</p>
           </div>
-          <button onclick="this.parentElement.parentElement.remove()" 
-                  class="hover:bg-error-container/50 p-1 rounded-full transition-colors">
+          <button
+            onclick="this.parentElement.parentElement.remove()"
+            class="hover:bg-error-container/50 p-1 rounded-full transition-colors"
+          >
             <span class="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
       </div>
 
       <!-- Mensajes de éxito -->
-      <div th:if="${param.success}" 
-           class="bg-green-100 text-green-800 p-4 rounded-xl border border-green-200 mb-6">
+      <div
+        th:if="${param.success}"
+        class="bg-green-100 text-green-800 p-4 rounded-xl border border-green-200 mb-6"
+      >
         <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-green-600">check_circle</span>
+          <span class="material-symbols-outlined text-green-600"
+            >check_circle</span
+          >
           <p th:text="${param.success[0]}">Usuario guardado exitosamente</p>
         </div>
       </div>
 
-      <div th:if="${param.deleted}" 
-           class="bg-blue-100 text-blue-800 p-4 rounded-xl border border-blue-200 mb-6">
+      <div
+        th:if="${param.deleted}"
+        class="bg-blue-100 text-blue-800 p-4 rounded-xl border border-blue-200 mb-6"
+      >
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-blue-600">info</span>
           <p th:text="${param.deleted[0]}">Usuario eliminado correctamente</p>
         </div>
       </div>
 
-      <div th:if="${param.error}" 
-           class="bg-error-container text-on-error-container p-4 rounded-xl border border-error mb-6">
+      <div
+        th:if="${param.error}"
+        class="bg-error-container text-on-error-container p-4 rounded-xl border border-error mb-6"
+      >
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-error">error</span>
           <p th:text="${param.error[0]}">Error</p>
@@ -361,7 +377,7 @@
 
       <div class="flex justify-between items-end mb-8 flex-wrap gap-4">
         <div>
-          <h2 class="font-display-lg text-display-lg text-on-surface mb-1">
+          <h2 class="font-display-lg text-display-lg text-on-surface mb-1 mt-4">
             Control de Usuarios
           </h2>
           <p class="text-body-md text-on-surface-variant">
@@ -380,200 +396,332 @@
       <!-- Dashboard Layout -->
       <div class="grid grid-cols-12 gap-6">
         <!-- User Table Section -->
-        <div class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
-          <div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center flex-wrap gap-2">
+        <div
+          class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm"
+        >
+          <div
+            class="px-6 py-4 border-b border-outline-variant flex justify-between items-center flex-wrap gap-2"
+          >
             <h3 class="font-headline-sm text-headline-sm text-on-surface">
               Lista de Personal
             </h3>
             <div class="flex gap-2">
-              <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-label-sm font-label-sm">
+              <span
+                class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-label-sm font-label-sm"
+              >
                 Total: <span th:text="${totalUsuarios}">0</span> Usuarios
               </span>
-              <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-label-sm font-label-sm">
+              <span
+                class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-label-sm font-label-sm"
+              >
                 Activos: <span th:text="${activos}">0</span>
               </span>
-              <span class="px-3 py-1 bg-surface-dim text-on-surface-variant rounded-full text-label-sm font-label-sm">
+              <span
+                class="px-3 py-1 bg-surface-dim text-on-surface-variant rounded-full text-label-sm font-label-sm"
+              >
                 Inactivos: <span th:text="${inactivos}">0</span>
               </span>
             </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left">
-              <thead class="bg-surface-container-low text-on-surface-variant border-b border-outline-variant">
+              <thead
+                class="bg-surface-container-low text-on-surface-variant border-b border-outline-variant"
+              >
                 <tr>
                   <th class="px-6 py-4 font-label-lg text-label-lg">Usuario</th>
                   <th class="px-6 py-4 font-label-lg text-label-lg">Rol</th>
                   <th class="px-6 py-4 font-label-lg text-label-lg">Estado</th>
-                  <th class="px-6 py-4 font-label-lg text-label-lg text-right">Acciones</th>
+                  <th class="px-6 py-4 font-label-lg text-label-lg text-right">
+                    Acciones
+                  </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-outline-variant" id="usuariosBody">
-                <tr th:each="usuario : ${usuarios}" class="hover:bg-surface-container transition-colors">
+                <tr
+                  th:each="usuario : ${usuarios}"
+                  class="hover:bg-surface-container transition-colors"
+                >
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-label-sm font-bold"
-                           th:text="${#strings.substring(usuario.nombreCompleto, 0, 1)} + ${#strings.substring(usuario.nombreCompleto, #strings.indexOf(usuario.nombreCompleto, ' ') + 1, 1)}">
+                      <div
+                        class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-label-sm font-bold"
+                        th:text="${#strings.substring(usuario.nombreCompleto, 0, 1)} + ${#strings.substring(usuario.nombreCompleto, #strings.indexOf(usuario.nombreCompleto, ' ') + 1, 1)}"
+                      >
                         AR
                       </div>
                       <div>
-                        <p class="font-label-lg text-on-surface" th:text="${usuario.nombreCompleto}">-</p>
-                        <p class="text-label-sm text-on-surface-variant" th:text="${usuario.username}">-</p>
+                        <p
+                          class="font-label-lg text-on-surface"
+                          th:text="${usuario.nombreCompleto}"
+                        >
+                          -
+                        </p>
+                        <p
+                          class="text-label-sm text-on-surface-variant"
+                          th:text="${usuario.username}"
+                        >
+                          -
+                        </p>
                       </div>
                     </div>
                   </td>
                   <td class="px-6 py-4">
-                    <span class="px-3 py-1 rounded-full text-label-sm font-medium"
-                          th:class="${usuario.rol == 'ADMIN' ? 'bg-primary-container text-on-primary-container' : 'bg-secondary-container text-on-secondary-container'}"
-                          th:text="${usuario.rol}">
+                    <span
+                      class="px-3 py-1 rounded-full text-label-sm font-medium"
+                      th:class="${usuario.rol == 'ADMIN' ? 'bg-primary-container text-on-primary-container' : 'bg-secondary-container text-on-secondary-container'}"
+                      th:text="${usuario.rol}"
+                    >
                       Admin
                     </span>
                   </td>
                   <td class="px-6 py-4">
-                    <span th:if="${usuario.estado == 'ACTIVO'}"
-                          class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-medium bg-green-100 text-green-800">
-                      <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    <span
+                      th:if="${usuario.estado == 'ACTIVO'}"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-medium bg-green-100 text-green-800"
+                    >
+                      <span
+                        class="w-1.5 h-1.5 rounded-full bg-green-500"
+                      ></span>
                       Activo
                     </span>
-                    <span th:if="${usuario.estado == 'INACTIVO'}"
-                          class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-medium bg-surface-dim text-on-surface-variant">
+                    <span
+                      th:if="${usuario.estado == 'INACTIVO'}"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-medium bg-surface-dim text-on-surface-variant"
+                    >
                       <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
                       Inactivo
                     </span>
                   </td>
                   <td class="px-6 py-4 text-right">
-                    <button th:data-id="${usuario.id}"
-                            onclick="editarUsuario(this)"
-                            class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
+                    <button
+                      th:data-id="${usuario.id}"
+                      onclick="editarUsuario(this)"
+                      class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors"
+                    >
                       <span class="material-symbols-outlined">edit</span>
                     </button>
-                    <button th:data-id="${usuario.id}"
-                            onclick="eliminarUsuario(this)"
-                            class="text-error hover:bg-error/10 p-2 rounded-full transition-colors">
+                    <button
+                      th:data-id="${usuario.id}"
+                      onclick="eliminarUsuario(this)"
+                      class="text-error hover:bg-error/10 p-2 rounded-full transition-colors"
+                    >
                       <span class="material-symbols-outlined">delete</span>
                     </button>
-                    <button th:data-id="${usuario.id}"
-                            th:data-estado="${usuario.estado}"
-                            onclick="cambiarEstado(this)"
-                            class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
-                      <span class="material-symbols-outlined"
-                            th:text="${usuario.estado == 'ACTIVO' ? 'toggle_on' : 'toggle_off'}">toggle_on</span>
+                    <button
+                      th:data-id="${usuario.id}"
+                      th:data-estado="${usuario.estado}"
+                      onclick="cambiarEstado(this)"
+                      class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors"
+                    >
+                      <span
+                        class="material-symbols-outlined"
+                        th:text="${usuario.estado == 'ACTIVO' ? 'toggle_on' : 'toggle_off'}"
+                        >toggle_on</span
+                      >
                     </button>
                   </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(usuarios)}">
-                  <td colspan="4" class="px-6 py-12 text-center text-on-surface-variant">
-                    <span class="material-symbols-outlined text-4xl mb-2">group</span>
+                  <td
+                    colspan="4"
+                    class="px-6 py-12 text-center text-on-surface-variant"
+                  >
+                    <span class="material-symbols-outlined text-4xl mb-2"
+                      >group</span
+                    >
                     <p>No hay usuarios registrados</p>
-                    <p class="text-label-sm">Agregue su primer usuario usando el botón "Agregar Usuario"</p>
+                    <p class="text-label-sm">
+                      Agregue su primer usuario usando el botón "Agregar
+                      Usuario"
+                    </p>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
+          <div
+            class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex justify-between items-center"
+          >
             <p class="text-label-sm text-on-surface-variant">
-              Mostrando <span th:text="${#lists.size(usuarios)}">0</span> usuarios
+              Mostrando
+              <span th:text="${#lists.size(usuarios)}">0</span> usuarios
             </p>
           </div>
         </div>
 
         <!-- User Form Section (Side Panel Style) -->
         <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
-          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 shadow-sm">
+          <div
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 shadow-sm"
+          >
             <div class="flex items-center gap-2 mb-6">
-              <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1">person_add</span>
-              <h3 class="font-headline-sm text-headline-sm text-on-surface" id="formTitle">
+              <span
+                class="material-symbols-outlined text-primary"
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >person_add</span
+              >
+              <h3
+                class="font-headline-sm text-headline-sm text-on-surface"
+                id="formTitle"
+              >
                 Nuevo Usuario
               </h3>
             </div>
-            <form class="space-y-5" id="usuarioForm" th:action="@{/usuarios/guardar}" method="post">
+            <form
+              class="space-y-5"
+              id="usuarioForm"
+              th:action="@{/usuarios/guardar}"
+              method="post"
+            >
               <input type="hidden" id="usuarioId" name="id" value="0" />
-              
+
               <div>
-                <label class="block text-label-lg font-label-lg text-on-surface mb-2">Nombre Completo *</label>
-                <input id="nombreCompleto" name="nombreCompleto"
-                       class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md transition-all"
-                       placeholder="Ej. Juan Pérez"
-                       type="text"
-                       required />
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface mb-2"
+                  >Nombre Completo *</label
+                >
+                <input
+                  id="nombreCompleto"
+                  name="nombreCompleto"
+                  class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md transition-all"
+                  placeholder="Ej. Juan Pérez"
+                  type="text"
+                  required
+                />
               </div>
 
               <div>
-                <label class="block text-label-lg font-label-lg text-on-surface mb-2">Usuario *</label>
-                <input id="username" name="username"
-                       class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md transition-all"
-                       placeholder="Ej. jperez"
-                       type="text"
-                       required />
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface mb-2"
+                  >Usuario *</label
+                >
+                <input
+                  id="username"
+                  name="username"
+                  class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md transition-all"
+                  placeholder="Ej. jperez"
+                  type="text"
+                  required
+                />
               </div>
 
               <div>
-                <label class="block text-label-lg font-label-lg text-on-surface mb-2">Contraseña</label>
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface mb-2"
+                  >Contraseña</label
+                >
                 <div class="relative">
-                  <input id="password" name="password"
-                         class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md transition-all"
-                         type="password"
-                         placeholder="Mínimo 12 caracteres..." />
-                  <button type="button"
-                          onclick="togglePasswordVisibility('password')"
-                          class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined" id="passwordIcon">visibility</span>
+                  <input
+                    id="password"
+                    name="password"
+                    class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md transition-all"
+                    type="password"
+                    placeholder="Mínimo 12 caracteres..."
+                  />
+                  <button
+                    type="button"
+                    onclick="togglePasswordVisibility('password')"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                  >
+                    <span class="material-symbols-outlined" id="passwordIcon"
+                      >visibility</span
+                    >
                   </button>
                 </div>
-                <div class="password-requirements mt-1" id="passwordRequirements">
-                  <span id="reqLength" class="invalid">● Mínimo 12 caracteres</span><br/>
-                  <span id="reqMayus" class="invalid">● Al menos una mayúscula</span><br/>
-                  <span id="reqMinus" class="invalid">● Al menos una minúscula</span><br/>
-                  <span id="reqNum" class="invalid">● Al menos un número</span><br/>
-                  <span id="reqSign" class="invalid">● Al menos un signo (@#$%^&+=!)</span>
+                <div
+                  class="password-requirements mt-1"
+                  id="passwordRequirements"
+                >
+                  <span id="reqLength" class="invalid"
+                    >● Mínimo 12 caracteres</span
+                  ><br />
+                  <span id="reqMayus" class="invalid"
+                    >● Al menos una mayúscula</span
+                  ><br />
+                  <span id="reqMinus" class="invalid"
+                    >● Al menos una minúscula</span
+                  ><br />
+                  <span id="reqNum" class="invalid">● Al menos un número</span
+                  ><br />
+                  <span id="reqSign" class="invalid"
+                    >● Al menos un signo (@#$%^&+=!)</span
+                  >
                 </div>
               </div>
 
               <div>
-                <label class="block text-label-lg font-label-lg text-on-surface mb-2">Confirmar Contraseña</label>
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface mb-2"
+                  >Confirmar Contraseña</label
+                >
                 <div class="relative">
-                  <input id="confirmPassword" name="confirmPassword"
-                         class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md transition-all"
-                         type="password"
-                         placeholder="Repite la contraseña..." />
-                  <button type="button"
-                          onclick="togglePasswordVisibility('confirmPassword')"
-                          class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md transition-all"
+                    type="password"
+                    placeholder="Repite la contraseña..."
+                  />
+                  <button
+                    type="button"
+                    onclick="togglePasswordVisibility('confirmPassword')"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                  >
                     <span class="material-symbols-outlined">visibility</span>
                   </button>
                 </div>
                 <div id="passwordMatch" class="text-sm mt-1 hidden">
-                  <span class="material-symbols-outlined text-[16px] align-middle">check_circle</span>
+                  <span
+                    class="material-symbols-outlined text-[16px] align-middle"
+                    >check_circle</span
+                  >
                   <span class="text-green-600">Las contraseñas coinciden</span>
                 </div>
               </div>
 
               <div>
-                <label class="block text-label-lg font-label-lg text-on-surface mb-2">Rol del Sistema *</label>
-                <select id="rol" name="rol"
-                        class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md appearance-none">
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface mb-2"
+                  >Rol del Sistema *</label
+                >
+                <select
+                  id="rol"
+                  name="rol"
+                  class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md appearance-none"
+                >
                   <option value="ADMIN">Administrador</option>
                   <option value="ALMACENERO" selected>Almacenero</option>
                 </select>
               </div>
 
               <div>
-                <label class="block text-label-lg font-label-lg text-on-surface mb-2">Estado</label>
-                <select id="estado" name="estado"
-                        class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md appearance-none">
+                <label
+                  class="block text-label-lg font-label-lg text-on-surface mb-2"
+                  >Estado</label
+                >
+                <select
+                  id="estado"
+                  name="estado"
+                  class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-body-md appearance-none"
+                >
                   <option value="ACTIVO">Activo</option>
                   <option value="INACTIVO">Inactivo</option>
                 </select>
               </div>
 
               <div class="pt-4 flex flex-col gap-3">
-                <button class="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg text-label-lg hover:opacity-90 active:scale-95 transition-all"
-                        type="submit">
+                <button
+                  class="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg text-label-lg hover:opacity-90 active:scale-95 transition-all"
+                  type="submit"
+                >
                   Guardar Usuario
                 </button>
-                <button type="reset"
-                        onclick="resetForm()"
-                        class="w-full bg-surface-container text-on-surface-variant py-4 rounded-lg font-label-lg text-label-lg hover:bg-surface-container-high transition-all">
+                <button
+                  type="reset"
+                  onclick="resetForm()"
+                  class="w-full bg-surface-container text-on-surface-variant py-4 rounded-lg font-label-lg text-label-lg hover:bg-surface-container-high transition-all"
+                >
                   Cancelar
                 </button>
               </div>
@@ -583,8 +731,9 @@
       </div>
 
       <!-- Fondo decorativo -->
-      <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#f1f3fe_0%,_#f9f9ff_100%)] pointer-events-none"></div>
-
+      <div
+        class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#f1f3fe_0%,_#f9f9ff_100%)] pointer-events-none"
+      ></div>
     </main>
 
     <script>
@@ -598,13 +747,18 @@
           document.getElementById("formTitle").textContent = "Nuevo Usuario";
           document.getElementById("usuarioId").value = "0";
           document.getElementById("password").removeAttribute("disabled");
-          document.getElementById("confirmPassword").removeAttribute("disabled");
+          document
+            .getElementById("confirmPassword")
+            .removeAttribute("disabled");
           document.getElementById("password").value = "";
           document.getElementById("confirmPassword").value = "";
-          document.getElementById("passwordRequirements").style.display = "block";
+          document.getElementById("passwordRequirements").style.display =
+            "block";
         }
         // Scroll al formulario
-        document.querySelector('.lg\\:col-span-4').scrollIntoView({ behavior: 'smooth' });
+        document
+          .querySelector(".lg\\:col-span-4")
+          .scrollIntoView({ behavior: "smooth" });
       }
 
       function resetForm() {
@@ -614,18 +768,21 @@
         document.getElementById("passwordRequirements").style.display = "block";
         document.getElementById("passwordMatch").classList.add("hidden");
         // Resetear validación de contraseña
-        document.querySelectorAll('#passwordRequirements span').forEach(el => {
-          el.className = 'invalid';
-        });
+        document
+          .querySelectorAll("#passwordRequirements span")
+          .forEach((el) => {
+            el.className = "invalid";
+          });
       }
 
       function editarUsuario(button) {
         const id = button.getAttribute("data-id");
         fetch(`/usuarios/${id}`)
-          .then(response => response.json())
-          .then(data => {
+          .then((response) => response.json())
+          .then((data) => {
             document.getElementById("usuarioId").value = data.id;
-            document.getElementById("nombreCompleto").value = data.nombreCompleto;
+            document.getElementById("nombreCompleto").value =
+              data.nombreCompleto;
             document.getElementById("username").value = data.username;
             document.getElementById("rol").value = data.rol;
             document.getElementById("estado").value = data.estado;
@@ -633,14 +790,19 @@
             document.getElementById("password").value = "";
             document.getElementById("confirmPassword").value = "";
             document.getElementById("password").removeAttribute("required");
-            document.getElementById("confirmPassword").removeAttribute("required");
-            document.getElementById("passwordRequirements").style.display = "none";
+            document
+              .getElementById("confirmPassword")
+              .removeAttribute("required");
+            document.getElementById("passwordRequirements").style.display =
+              "none";
             document.getElementById("passwordMatch").classList.add("hidden");
-            
+
             // Scroll al formulario
-            document.querySelector('.lg\\:col-span-4').scrollIntoView({ behavior: 'smooth' });
+            document
+              .querySelector(".lg\\:col-span-4")
+              .scrollIntoView({ behavior: "smooth" });
           })
-          .catch(error => console.error("Error:", error));
+          .catch((error) => console.error("Error:", error));
       }
 
       function eliminarUsuario(button) {
@@ -663,20 +825,20 @@
         const id = button.getAttribute("data-id");
         const estadoActual = button.getAttribute("data-estado");
         const nuevoEstado = estadoActual === "ACTIVO" ? "INACTIVO" : "ACTIVO";
-        
+
         if (confirm(`¿Cambiar estado a ${nuevoEstado}?`)) {
           fetch(`/usuarios/cambiar-estado?id=${id}&estado=${nuevoEstado}`, {
-            method: 'POST'
+            method: "POST",
           })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              location.reload();
-            } else {
-              alert("Error al cambiar estado: " + data.error);
-            }
-          })
-          .catch(error => console.error("Error:", error));
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                location.reload();
+              } else {
+                alert("Error al cambiar estado: " + data.error);
+              }
+            })
+            .catch((error) => console.error("Error:", error));
         }
       }
 
@@ -687,13 +849,13 @@
       const passwordInput = document.getElementById("password");
       const confirmInput = document.getElementById("confirmPassword");
 
-      passwordInput.addEventListener("input", function() {
+      passwordInput.addEventListener("input", function () {
         const password = this.value;
         validatePassword(password);
         checkPasswordMatch();
       });
 
-      confirmInput.addEventListener("input", function() {
+      confirmInput.addEventListener("input", function () {
         checkPasswordMatch();
       });
 
@@ -719,14 +881,19 @@
         if (confirm.length > 0) {
           matchDiv.classList.remove("hidden");
           if (password === confirm) {
-            matchDiv.querySelector('span').textContent = "check_circle";
-            matchDiv.querySelector('span').className = "material-symbols-outlined text-[16px] align-middle text-green-600";
-            matchDiv.querySelector('span:last-child').className = "text-green-600";
+            matchDiv.querySelector("span").textContent = "check_circle";
+            matchDiv.querySelector("span").className =
+              "material-symbols-outlined text-[16px] align-middle text-green-600";
+            matchDiv.querySelector("span:last-child").className =
+              "text-green-600";
           } else {
-            matchDiv.querySelector('span').textContent = "error";
-            matchDiv.querySelector('span').className = "material-symbols-outlined text-[16px] align-middle text-red-600";
-            matchDiv.querySelector('span:last-child').className = "text-red-600";
-            matchDiv.querySelector('span:last-child').textContent = "Las contraseñas no coinciden";
+            matchDiv.querySelector("span").textContent = "error";
+            matchDiv.querySelector("span").className =
+              "material-symbols-outlined text-[16px] align-middle text-red-600";
+            matchDiv.querySelector("span:last-child").className =
+              "text-red-600";
+            matchDiv.querySelector("span:last-child").textContent =
+              "Las contraseñas no coinciden";
           }
         } else {
           matchDiv.classList.add("hidden");
@@ -735,10 +902,13 @@
 
       function togglePasswordVisibility(inputId) {
         const input = document.getElementById(inputId);
-        const icon = inputId === 'password' ? 
-          document.getElementById('passwordIcon') : 
-          input.nextElementSibling.querySelector('.material-symbols-outlined');
-        
+        const icon =
+          inputId === "password"
+            ? document.getElementById("passwordIcon")
+            : input.nextElementSibling.querySelector(
+                ".material-symbols-outlined",
+              );
+
         if (input.type === "password") {
           input.type = "text";
           icon.textContent = "visibility_off";
@@ -756,10 +926,10 @@
       const searchResults = document.getElementById("searchResults");
       let timeoutId = null;
 
-      searchInput.addEventListener("input", function() {
+      searchInput.addEventListener("input", function () {
         const query = this.value.trim();
         if (timeoutId) clearTimeout(timeoutId);
-        
+
         if (query.length >= 2) {
           timeoutId = setTimeout(() => buscarUsuarios(query), 300);
         } else {
@@ -770,23 +940,28 @@
 
       async function buscarUsuarios(query) {
         try {
-          const response = await fetch(`/usuarios/buscar?query=${encodeURIComponent(query)}`);
+          const response = await fetch(
+            `/usuarios/buscar?query=${encodeURIComponent(query)}`,
+          );
           const usuarios = await response.json();
-          
+
           if (usuarios.length === 0) {
-            searchResults.innerHTML = '<div class="search-result-item">No se encontraron usuarios</div>';
+            searchResults.innerHTML =
+              '<div class="search-result-item">No se encontraron usuarios</div>';
             searchResults.classList.add("active");
             return;
           }
-          
-          searchResults.innerHTML = usuarios.map(u => `
+
+          searchResults.innerHTML = usuarios
+            .map(
+              (u) => `
             <div class="search-result-item" onclick="seleccionarUsuario(${u.id})">
               <div class="flex justify-between items-center">
                 <div>
                   <span class="font-bold">${u.nombreCompleto}</span>
                   <span class="text-label-sm text-on-surface-variant ml-2">@${u.username}</span>
                 </div>
-                <span class="text-label-sm px-2 py-0.5 rounded-full ${u.estado === 'ACTIVO' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}">
+                <span class="text-label-sm px-2 py-0.5 rounded-full ${u.estado === "ACTIVO" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}">
                   ${u.estado}
                 </span>
               </div>
@@ -794,7 +969,9 @@
                 ${u.rol}
               </div>
             </div>
-          `).join("");
+          `,
+            )
+            .join("");
           searchResults.classList.add("active");
         } catch (error) {
           console.error("Error al buscar:", error);
@@ -803,25 +980,28 @@
 
       function seleccionarUsuario(id) {
         fetch(`/usuarios/${id}`)
-          .then(response => response.json())
-          .then(data => {
+          .then((response) => response.json())
+          .then((data) => {
             editarUsuario({ getAttribute: () => id });
             searchResults.classList.remove("active");
             searchResults.innerHTML = "";
             searchInput.value = "";
           })
-          .catch(error => console.error("Error:", error));
+          .catch((error) => console.error("Error:", error));
       }
 
       // Cerrar resultados al hacer clic fuera
-      document.addEventListener("click", function(e) {
-        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+      document.addEventListener("click", function (e) {
+        if (
+          !searchInput.contains(e.target) &&
+          !searchResults.contains(e.target)
+        ) {
           searchResults.classList.remove("active");
         }
       });
 
       // Cerrar con ESC
-      document.addEventListener("keydown", function(e) {
+      document.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
           searchResults.classList.remove("active");
           searchResults.innerHTML = "";
@@ -834,20 +1014,23 @@
       // ==========================================
 
       // Auto-cerrar mensajes después de 5 segundos
-      document.addEventListener("DOMContentLoaded", function() {
+      document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
-          document.querySelectorAll('.bg-green-100, .bg-blue-100, .bg-error-container').forEach(el => {
-            if (el.classList.contains('border')) {
-              setTimeout(() => {
-                el.style.opacity = '0';
-                el.style.transition = 'opacity 0.5s';
-                setTimeout(() => el.remove(), 500);
-              }, 4000);
-            }
-          });
+          document
+            .querySelectorAll(
+              ".bg-green-100, .bg-blue-100, .bg-error-container",
+            )
+            .forEach((el) => {
+              if (el.classList.contains("border")) {
+                setTimeout(() => {
+                  el.style.opacity = "0";
+                  el.style.transition = "opacity 0.5s";
+                  setTimeout(() => el.remove(), 500);
+                }, 4000);
+              }
+            });
         }, 1000);
       });
     </script>
-
   </body>
 </html>

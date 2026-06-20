@@ -253,8 +253,8 @@
           <span class="material-symbols-outlined">group</span> Clientes
         </a>
         <a
+          th:href="@{/historial}"
           class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">history</span>
           Historial de Acciones
@@ -276,34 +276,28 @@
     >
       <div class="flex justify-between items-center px-gutter w-full h-full">
         <div class="flex items-center gap-4 flex-1 max-w-md"></div>
-        <div class="flex items-center gap-6">
-          <div class="flex items-center gap-2">
-            <button
-              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
-            >
-              <span class="material-symbols-outlined">notifications</span>
-            </button>
-            <button
-              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
-            >
-              <span class="material-symbols-outlined">settings</span>
-            </button>
-          </div>
+        <div class="flex items-center gap-4">
           <div
-            class="flex items-center gap-3 ml-2 border-l border-outline-variant pl-6"
+            class="flex items-center gap-3 pl-4 border-l border-outline-variant"
           >
             <div class="text-right">
-              <p class="font-label-lg text-label-lg leading-none">
+              <p
+                class="font-label-lg text-label-lg text-on-surface"
+                th:text="${nombreUsuario}"
+              >
                 Dr. Ricardo Pérez
               </p>
-              <p class="text-[12px] text-on-surface-variant">
-                Farmacéutico Jefe
+              <p
+                class="text-[10px] uppercase tracking-wider text-outline"
+                th:text="${rolUsuario}"
+              >
+                Administrador
               </p>
             </div>
             <img
               alt="Avatar del Farmacéutico"
-              class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA80n2oKDsA5z5f8Gd4fQvLsgvezITVxm0FpqD4RdK0UGzmKql1RPkJDHroyl-wjabRtWYkxIVzuj66yU-o0qlGyKcF0WtWthQtTualcLRPhkT_sPZfARO2JaW2veVJIKM2RCBLHhucAS5zoI2GUEKBWKRD6H_3Z4bwHO09zlhbbgXZqNkEIFNycb5c5Lw0hg0tQKXHRxSAFbmAtRjjW-GZ9kEe6tfDfSlGqEOpThSwzKmDGia9RXyAyxZe7wpEyBI5X7jDjNODcdU5"
+              class="w-10 h-10 rounded-full border border-outline-variant bg-surface-container"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCivfE-EVV7Z375eyD66b7eC-zCWcc8UvX3Wmw6Ppqq8rTruJlP2La1yF8UGhQIuZiDsLt4R24bXpz3iRBEAr7o5qQUeXLvMopC6yIKqRupCy95BqOKZsOHGEMTP3U_fJPsOIG2G5zc9h3ev5tzXD4ak4JOEHxSL9HxmZ6Fv-LtX31m4A6oweEX2JVt2gZ8naTuIZ6Az08ht7KQzQsvY6PEH4Zz4AeeCHBywXOztJfgSG5CfTXHnhls_xg5y4ZNS-HlRYsrBj42CPVz"
             />
           </div>
         </div>
@@ -658,70 +652,87 @@
     ></div>
 
     <script>
-    // ==========================================
-    // VARIABLES GLOBALES
-    // ==========================================
-    let carrito = [];
-    let timeoutId = null;
-    let clienteTimeoutId = null;
-    let selectedIndex = -1;
-    let clienteSeleccionadoId = 0;
-    let clienteSeleccionadoNombre = null;
+      // ==========================================
+      // VARIABLES GLOBALES
+      // ==========================================
+      let carrito = [];
+      let timeoutId = null;
+      let clienteTimeoutId = null;
+      let selectedIndex = -1;
+      let clienteSeleccionadoId = 0;
+      let clienteSeleccionadoNombre = null;
 
-    // ==========================================
-    // ELEMENTOS DOM
-    // ==========================================
-    const searchInput = document.getElementById("searchInput");
-    const searchResults = document.getElementById("searchResults");
-    const cartBody = document.getElementById("cartBody");
-    const cartCount = document.getElementById("cartCount");
-    const totalPagar = document.getElementById("totalPagar");
-    const subtotal = document.getElementById("subtotal");
-    const totalNeto = document.getElementById("totalNeto");
-    const totalConDescuento = document.getElementById("totalConDescuento");
-    const registrarBtn = document.getElementById("registrarVentaBtn");
-    const totalInput = document.getElementById("totalInput");
-    const detallesVenta = document.getElementById("detallesVenta");
-    const clienteNombre = document.getElementById("clienteNombre");
-    const buscarCliente = document.getElementById("buscarCliente");
-    const clienteSearchResults = document.getElementById("clienteSearchResults");
-    const clienteSeleccionadoDiv = document.getElementById("clienteSeleccionado");
-    const clienteSeleccionadoNombreSpan = document.getElementById("clienteSeleccionadoNombre");
-    const clienteSeleccionadoDniSpan = document.getElementById("clienteSeleccionadoDni");
-    const clienteSeleccionadoComprasSpan = document.getElementById("clienteSeleccionadoCompras");
-    const clienteSeleccionadoBadge = document.getElementById("clienteSeleccionadoBadge");
-    const pacienteIdInput = document.getElementById("pacienteIdInput");
-    const descuentoMonto = document.getElementById("descuentoMonto");
-    const igvElement = document.getElementById("igv");
-    const descuentoBadge = document.getElementById("descuentoBadge");
-    const descuentoRow = document.getElementById("descuentoRow");
+      // ==========================================
+      // ELEMENTOS DOM
+      // ==========================================
+      const searchInput = document.getElementById("searchInput");
+      const searchResults = document.getElementById("searchResults");
+      const cartBody = document.getElementById("cartBody");
+      const cartCount = document.getElementById("cartCount");
+      const totalPagar = document.getElementById("totalPagar");
+      const subtotal = document.getElementById("subtotal");
+      const totalNeto = document.getElementById("totalNeto");
+      const totalConDescuento = document.getElementById("totalConDescuento");
+      const registrarBtn = document.getElementById("registrarVentaBtn");
+      const totalInput = document.getElementById("totalInput");
+      const detallesVenta = document.getElementById("detallesVenta");
+      const clienteNombre = document.getElementById("clienteNombre");
+      const buscarCliente = document.getElementById("buscarCliente");
+      const clienteSearchResults = document.getElementById(
+        "clienteSearchResults",
+      );
+      const clienteSeleccionadoDiv = document.getElementById(
+        "clienteSeleccionado",
+      );
+      const clienteSeleccionadoNombreSpan = document.getElementById(
+        "clienteSeleccionadoNombre",
+      );
+      const clienteSeleccionadoDniSpan = document.getElementById(
+        "clienteSeleccionadoDni",
+      );
+      const clienteSeleccionadoComprasSpan = document.getElementById(
+        "clienteSeleccionadoCompras",
+      );
+      const clienteSeleccionadoBadge = document.getElementById(
+        "clienteSeleccionadoBadge",
+      );
+      const pacienteIdInput = document.getElementById("pacienteIdInput");
+      const descuentoMonto = document.getElementById("descuentoMonto");
+      const igvElement = document.getElementById("igv");
+      const descuentoBadge = document.getElementById("descuentoBadge");
+      const descuentoRow = document.getElementById("descuentoRow");
 
-    // ==========================================
-    // BUSCADOR DE MEDICAMENTOS
-    // ==========================================
-    searchInput.addEventListener("input", function () {
+      // ==========================================
+      // BUSCADOR DE MEDICAMENTOS
+      // ==========================================
+      searchInput.addEventListener("input", function () {
         const query = this.value.trim();
         if (timeoutId) clearTimeout(timeoutId);
         if (query.length >= 4) {
-            timeoutId = setTimeout(() => buscarMedicamentos(query), 300);
+          timeoutId = setTimeout(() => buscarMedicamentos(query), 300);
         } else {
-            searchResults.classList.remove("active");
-            searchResults.innerHTML = "";
+          searchResults.classList.remove("active");
+          searchResults.innerHTML = "";
         }
-    });
+      });
 
-    async function buscarMedicamentos(query) {
+      async function buscarMedicamentos(query) {
         try {
-            const response = await fetch(`/ventas/buscar?query=${encodeURIComponent(query)}`);
-            const medicamentos = await response.json();
+          const response = await fetch(
+            `/ventas/buscar?query=${encodeURIComponent(query)}`,
+          );
+          const medicamentos = await response.json();
 
-            if (medicamentos.length === 0) {
-                searchResults.innerHTML = '<div class="search-result-item">No se encontraron medicamentos</div>';
-                searchResults.classList.add("active");
-                return;
-            }
+          if (medicamentos.length === 0) {
+            searchResults.innerHTML =
+              '<div class="search-result-item">No se encontraron medicamentos</div>';
+            searchResults.classList.add("active");
+            return;
+          }
 
-            searchResults.innerHTML = medicamentos.map((med) => `
+          searchResults.innerHTML = medicamentos
+            .map(
+              (med) => `
                 <div class="search-result-item" onclick="agregarAlCarrito(${med.id}, '${med.nombre}', ${med.precio}, ${med.stock})">
                     <div class="flex justify-between items-center">
                         <div>
@@ -732,85 +743,100 @@
                     </div>
                     <div class="text-label-sm text-on-surface-variant">${med.formaFarmaceutica || ""}</div>
                 </div>
-            `).join("");
-            searchResults.classList.add("active");
+            `,
+            )
+            .join("");
+          searchResults.classList.add("active");
         } catch (error) {
-            console.error("Error al buscar:", error);
+          console.error("Error al buscar:", error);
         }
-    }
+      }
 
-    // ==========================================
-    // BUSCADOR DE CLIENTES
-    // ==========================================
-    buscarCliente.addEventListener("input", function () {
+      // ==========================================
+      // BUSCADOR DE CLIENTES
+      // ==========================================
+      buscarCliente.addEventListener("input", function () {
         const query = this.value.trim();
         if (clienteTimeoutId) clearTimeout(clienteTimeoutId);
         if (query.length >= 3) {
-            clienteTimeoutId = setTimeout(() => buscarClientes(query), 300);
+          clienteTimeoutId = setTimeout(() => buscarClientes(query), 300);
         } else {
-            clienteSearchResults.classList.remove("active");
-            clienteSearchResults.innerHTML = "";
+          clienteSearchResults.classList.remove("active");
+          clienteSearchResults.innerHTML = "";
         }
-    });
+      });
 
-    async function buscarClientes(query) {
-    try {
-        const response = await fetch(`/ventas/buscar-pacientes?query=${encodeURIComponent(query)}`);
-        const pacientes = await response.json();
+      async function buscarClientes(query) {
+        try {
+          const response = await fetch(
+            `/ventas/buscar-pacientes?query=${encodeURIComponent(query)}`,
+          );
+          const pacientes = await response.json();
 
-        if (pacientes.length === 0) {
-            clienteSearchResults.innerHTML = '<div class="search-result-item">No se encontraron clientes</div>';
+          if (pacientes.length === 0) {
+            clienteSearchResults.innerHTML =
+              '<div class="search-result-item">No se encontraron clientes</div>';
             clienteSearchResults.classList.add("active");
             return;
-        }
+          }
 
-        clienteSearchResults.innerHTML = pacientes.map((p) => {
-            const tieneDescuento = p.tieneDescuento || ((p.comprasRealizadas + 1) % 5 === 0);
-            return `
+          clienteSearchResults.innerHTML = pacientes
+            .map((p) => {
+              const tieneDescuento =
+                p.tieneDescuento || (p.comprasRealizadas + 1) % 5 === 0;
+              return `
                 <div class="search-result-item" onclick="seleccionarCliente(${p.id}, '${p.nombre}', '${p.apellido}', '${p.dni}', ${p.comprasRealizadas}, ${tieneDescuento}, ${p.comprasFaltantes || 0})">
                     <div class="flex justify-between items-center">
                         <div>
                             <span class="font-bold">${p.nombre} ${p.apellido}</span>
                             <span class="text-label-sm text-on-surface-variant ml-2">DNI: ${p.dni}</span>
-                            ${tieneDescuento ? '<span class="badge-frecuente" style="background-color: #fbbf24; color: #000; padding: 2px 8px; border-radius: 9999px; font-size: 10px; font-weight: bold; margin-left: 4px;">🎉 DESCUENTO</span>' : ''}
+                            ${tieneDescuento ? '<span class="badge-frecuente" style="background-color: #fbbf24; color: #000; padding: 2px 8px; border-radius: 9999px; font-size: 10px; font-weight: bold; margin-left: 4px;">🎉 DESCUENTO</span>' : ""}
                         </div>
                         <div class="text-right">
                             <span class="text-label-sm block">${p.comprasRealizadas} compras</span>
-                            ${tieneDescuento ? '<span class="text-green-600 text-xs font-bold">¡Compra N° ' + (p.comprasRealizadas + 1) + '!</span>' : ''}
-                            ${!tieneDescuento && p.comprasFaltantes ? '<span class="text-xs text-on-surface-variant">Faltan ' + p.comprasFaltantes + ' compras</span>' : ''}
+                            ${tieneDescuento ? '<span class="text-green-600 text-xs font-bold">¡Compra N° ' + (p.comprasRealizadas + 1) + "!</span>" : ""}
+                            ${!tieneDescuento && p.comprasFaltantes ? '<span class="text-xs text-on-surface-variant">Faltan ' + p.comprasFaltantes + " compras</span>" : ""}
                         </div>
                     </div>
                     <div class="text-label-sm text-on-surface-variant mt-1">
-                        ${p.telefono ? `📱 ${p.telefono}` : ''} | ${p.estado === 'ACTIVO' ? '🟢 Activo' : '🔴 Inactivo'}
+                        ${p.telefono ? `📱 ${p.telefono}` : ""} | ${p.estado === "ACTIVO" ? "🟢 Activo" : "🔴 Inactivo"}
                     </div>
                 </div>
             `;
-        }).join("");
-        clienteSearchResults.classList.add("active");
-    } catch (error) {
-        console.error("Error al buscar clientes:", error);
-    }
-}
+            })
+            .join("");
+          clienteSearchResults.classList.add("active");
+        } catch (error) {
+          console.error("Error al buscar clientes:", error);
+        }
+      }
 
+      // ==========================================
+      // SELECCIONAR CLIENTE
+      // ==========================================
+      function seleccionarCliente(
+        id,
+        nombre,
+        apellido,
+        dni,
+        compras,
+        tieneDescuento,
+        comprasFaltantes,
+      ) {
+        const nombreCompleto = `${nombre} ${apellido}`;
 
-    // ==========================================
-    // SELECCIONAR CLIENTE
-    // ==========================================
-    function seleccionarCliente(id, nombre, apellido, dni, compras, tieneDescuento, comprasFaltantes) {
-    const nombreCompleto = `${nombre} ${apellido}`;
-    
-    clienteSeleccionadoId = id;
-    clienteSeleccionadoNombre = nombreCompleto;
-    pacienteIdInput.value = id;
-    clienteNombre.value = nombreCompleto;
-    
-    clienteSeleccionadoNombreSpan.textContent = nombreCompleto;
-    clienteSeleccionadoDniSpan.textContent = `DNI: ${dni}`;
-    clienteSeleccionadoComprasSpan.textContent = compras;
-    
-    // Verificar si la PRÓXIMA compra tiene descuento
-    if (tieneDescuento) {
-        clienteSeleccionadoBadge.innerHTML = `
+        clienteSeleccionadoId = id;
+        clienteSeleccionadoNombre = nombreCompleto;
+        pacienteIdInput.value = id;
+        clienteNombre.value = nombreCompleto;
+
+        clienteSeleccionadoNombreSpan.textContent = nombreCompleto;
+        clienteSeleccionadoDniSpan.textContent = `DNI: ${dni}`;
+        clienteSeleccionadoComprasSpan.textContent = compras;
+
+        // Verificar si la PRÓXIMA compra tiene descuento
+        if (tieneDescuento) {
+          clienteSeleccionadoBadge.innerHTML = `
             <span class="badge-frecuente" style="background-color: #fbbf24; color: #000; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: bold;">
                 ⭐ ¡Compra N° ${parseInt(compras) + 1} - 5% DESCUENTO!
             </span>
@@ -818,34 +844,33 @@
                 (${compras} compras acumuladas)
             </span>
         `;
-    } else {
-        const faltantes = comprasFaltantes || (5 - (compras % 5));
-        clienteSeleccionadoBadge.innerHTML = `
+        } else {
+          const faltantes = comprasFaltantes || 5 - (compras % 5);
+          clienteSeleccionadoBadge.innerHTML = `
             <span class="text-xs text-on-surface-variant">
                 ${compras} compras acumuladas - Faltan ${faltantes} compras para descuento
             </span>
         `;
-    }
-    
-    clienteSeleccionadoDiv.classList.remove("hidden");
-    clienteSearchResults.classList.remove("active");
-    clienteSearchResults.innerHTML = "";
-    buscarCliente.value = "";
-    
-    calcularTotal();
-    
-    const mensaje = tieneDescuento 
-        ? `✅ Cliente seleccionado: ${nombreCompleto}\n🎉 ¡Compra N° ${parseInt(compras) + 1}! 5% de descuento aplicado!`
-        : `✅ Cliente seleccionado: ${nombreCompleto}\n📊 ${compras} compras acumuladas`;
-    
-    mostrarNotificacion(mensaje, "success");
-}
+        }
 
+        clienteSeleccionadoDiv.classList.remove("hidden");
+        clienteSearchResults.classList.remove("active");
+        clienteSearchResults.innerHTML = "";
+        buscarCliente.value = "";
 
-    // ==========================================
-    // LIMPIAR CLIENTE SELECCIONADO
-    // ==========================================
-    function limpiarClienteSeleccionado() {
+        calcularTotal();
+
+        const mensaje = tieneDescuento
+          ? `✅ Cliente seleccionado: ${nombreCompleto}\n🎉 ¡Compra N° ${parseInt(compras) + 1}! 5% de descuento aplicado!`
+          : `✅ Cliente seleccionado: ${nombreCompleto}\n📊 ${compras} compras acumuladas`;
+
+        mostrarNotificacion(mensaje, "success");
+      }
+
+      // ==========================================
+      // LIMPIAR CLIENTE SELECCIONADO
+      // ==========================================
+      function limpiarClienteSeleccionado() {
         clienteSeleccionadoId = 0;
         clienteSeleccionadoNombre = null;
         pacienteIdInput.value = "0";
@@ -853,47 +878,59 @@
         clienteSeleccionadoDiv.classList.add("hidden");
         clienteSeleccionadoBadge.innerHTML = "";
         document.getElementById("clienteSeleccionadoCompras").textContent = "0";
-        
+
         calcularTotal();
-        
+
         mostrarNotificacion("Cliente removido, se usará Anónimo", "info");
-    }
+      }
 
-    // ==========================================
-    // CERRAR RESULTADOS AL HACER CLIC FUERA
-    // ==========================================
-    document.addEventListener("click", function (e) {
-        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-            searchResults.classList.remove("active");
+      // ==========================================
+      // CERRAR RESULTADOS AL HACER CLIC FUERA
+      // ==========================================
+      document.addEventListener("click", function (e) {
+        if (
+          !searchInput.contains(e.target) &&
+          !searchResults.contains(e.target)
+        ) {
+          searchResults.classList.remove("active");
         }
-        if (!buscarCliente.contains(e.target) && !clienteSearchResults.contains(e.target)) {
-            clienteSearchResults.classList.remove("active");
+        if (
+          !buscarCliente.contains(e.target) &&
+          !clienteSearchResults.contains(e.target)
+        ) {
+          clienteSearchResults.classList.remove("active");
         }
-    });
+      });
 
-    // ==========================================
-    // FUNCIONES DEL CARRITO
-    // ==========================================
-    function agregarAlCarrito(id, nombre, precio, stockMaximo) {
+      // ==========================================
+      // FUNCIONES DEL CARRITO
+      // ==========================================
+      function agregarAlCarrito(id, nombre, precio, stockMaximo) {
         const existente = carrito.find((item) => item.id === id);
         if (existente) {
-            if (existente.cantidad < stockMaximo) {
-                existente.cantidad++;
-            } else {
-                alert("Stock insuficiente");
-                return;
-            }
+          if (existente.cantidad < stockMaximo) {
+            existente.cantidad++;
+          } else {
+            alert("Stock insuficiente");
+            return;
+          }
         } else {
-            carrito.push({ id, nombre, precio, cantidad: 1, maxStock: stockMaximo });
+          carrito.push({
+            id,
+            nombre,
+            precio,
+            cantidad: 1,
+            maxStock: stockMaximo,
+          });
         }
         actualizarCarrito();
         searchResults.classList.remove("active");
         searchInput.value = "";
-    }
+      }
 
-    function actualizarCarrito() {
+      function actualizarCarrito() {
         if (carrito.length === 0) {
-            cartBody.innerHTML = `
+          cartBody.innerHTML = `
                 <tr>
                     <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
                         <span class="material-symbols-outlined text-4xl mb-2">shopping_cart</span>
@@ -902,12 +939,14 @@
                     </td>
                 </tr>
             `;
-            cartCount.innerText = "0 items";
-            calcularTotal();
-            return;
+          cartCount.innerText = "0 items";
+          calcularTotal();
+          return;
         }
 
-        cartBody.innerHTML = carrito.map((item, index) => `
+        cartBody.innerHTML = carrito
+          .map(
+            (item, index) => `
             <tr class="cart-item">
                 <td class="px-6 py-4">
                     <div>
@@ -933,171 +972,197 @@
                     </button>
                 </td>
             </tr>
-        `).join("");
+        `,
+          )
+          .join("");
 
-        const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+        const totalItems = carrito.reduce(
+          (sum, item) => sum + item.cantidad,
+          0,
+        );
         cartCount.innerText = `${totalItems} items`;
         calcularTotal();
-    }
+      }
 
-    function cambiarCantidad(index, cambio) {
+      function cambiarCantidad(index, cambio) {
         const item = carrito[index];
         const nuevaCantidad = item.cantidad + cambio;
         if (nuevaCantidad < 1) {
-            eliminarDelCarrito(index);
+          eliminarDelCarrito(index);
         } else if (nuevaCantidad <= item.maxStock) {
-            item.cantidad = nuevaCantidad;
-            actualizarCarrito();
+          item.cantidad = nuevaCantidad;
+          actualizarCarrito();
         } else {
-            alert(`Stock máximo disponible: ${item.maxStock}`);
+          alert(`Stock máximo disponible: ${item.maxStock}`);
         }
-    }
+      }
 
-    function eliminarDelCarrito(index) {
+      function eliminarDelCarrito(index) {
         carrito.splice(index, 1);
         actualizarCarrito();
-    }
+      }
 
-    // ==========================================
-    // CALCULAR TOTAL (CORREGIDO)
-    // ==========================================
-    function calcularTotal() {
-    // 1. CALCULAR SUBTOTAL (suma de todos los medicamentos)
-    const subtotalValue = carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
-    
-    // 2. VERIFICAR DESCUENTO (solo si la PRÓXIMA compra tiene descuento)
-    const compras = parseInt(document.getElementById("clienteSeleccionadoCompras").textContent) || 0;
-    // El descuento aplica cuando (compras + 1) es múltiplo de 5
-    const tieneDescuento = clienteSeleccionadoId > 0 && (compras + 1) % 5 === 0;
-    
-    // 3. CALCULAR DESCUENTO
-    let montoDescuento = 0;
-    let totalConDescuentoValue = subtotalValue;
-    
-    if (tieneDescuento) {
-        montoDescuento = subtotalValue * 0.05;
-        totalConDescuentoValue = subtotalValue - montoDescuento;
-        
-        // Mostrar elementos de descuento
-        descuentoBadge.classList.remove("hidden");
-        descuentoRow.classList.remove("hidden");
-        descuentoMonto.textContent = `-S/ ${montoDescuento.toFixed(2)}`;
-        totalConDescuento.textContent = `S/ ${totalConDescuentoValue.toFixed(2)}`;
-        
-        // Actualizar badge para mostrar que es la compra con descuento
-        const badge = document.getElementById("clienteSeleccionadoBadge");
-        badge.innerHTML = `
+      // ==========================================
+      // CALCULAR TOTAL (CORREGIDO)
+      // ==========================================
+      function calcularTotal() {
+        // 1. CALCULAR SUBTOTAL (suma de todos los medicamentos)
+        const subtotalValue = carrito.reduce(
+          (sum, item) => sum + item.precio * item.cantidad,
+          0,
+        );
+
+        // 2. VERIFICAR DESCUENTO (solo si la PRÓXIMA compra tiene descuento)
+        const compras =
+          parseInt(
+            document.getElementById("clienteSeleccionadoCompras").textContent,
+          ) || 0;
+        // El descuento aplica cuando (compras + 1) es múltiplo de 5
+        const tieneDescuento =
+          clienteSeleccionadoId > 0 && (compras + 1) % 5 === 0;
+
+        // 3. CALCULAR DESCUENTO
+        let montoDescuento = 0;
+        let totalConDescuentoValue = subtotalValue;
+
+        if (tieneDescuento) {
+          montoDescuento = subtotalValue * 0.05;
+          totalConDescuentoValue = subtotalValue - montoDescuento;
+
+          // Mostrar elementos de descuento
+          descuentoBadge.classList.remove("hidden");
+          descuentoRow.classList.remove("hidden");
+          descuentoMonto.textContent = `-S/ ${montoDescuento.toFixed(2)}`;
+          totalConDescuento.textContent = `S/ ${totalConDescuentoValue.toFixed(2)}`;
+
+          // Actualizar badge para mostrar que es la compra con descuento
+          const badge = document.getElementById("clienteSeleccionadoBadge");
+          badge.innerHTML = `
             <span class="badge-frecuente" style="background-color: #fbbf24; color: #000; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: bold;">
                 ⭐ ¡Compra N° ${compras + 1} - 5% DESCUENTO!
             </span>
         `;
-    } else {
-        descuentoBadge.classList.add("hidden");
-        descuentoRow.classList.add("hidden");
-        descuentoMonto.textContent = "-S/ 0.00";
-        totalConDescuento.textContent = `S/ ${subtotalValue.toFixed(2)}`;
-    }
-    
-    // 4. EL TOTAL A PAGAR ES EL SUBTOTAL CON DESCUENTO (si aplica)
-    const totalFinal = totalConDescuentoValue;
-    
-    // 5. CALCULAR IGV (SOLO INFORMATIVO - 18% del total con descuento)
-    const igvCalculado = totalConDescuentoValue * 0.18;
-    
-    // 6. ACTUALIZAR UI
-    totalPagar.textContent = totalFinal.toFixed(2);
-    subtotal.textContent = `S/ ${subtotalValue.toFixed(2)}`;
-    igvElement.textContent = `S/ ${igvCalculado.toFixed(2)}`;
-    totalNeto.textContent = `S/ ${totalFinal.toFixed(2)}`;
-    
-    // 7. ACTUALIZAR CAMPOS OCULTOS
-    document.getElementById("subtotalInput").value = subtotalValue.toFixed(2);
-    document.getElementById("igvInput").value = igvCalculado.toFixed(2);
-    document.getElementById("totalInput").value = totalFinal.toFixed(2);
-    document.getElementById("descuentoInput").value = montoDescuento.toFixed(2);
-    
-    // 8. PREPARAR DETALLES PARA EL BACKEND
-    const detalles = carrito.map((item) => ({
-        medicamentoId: item.id,
-        cantidad: item.cantidad,
-        precioUnitario: item.precio,
-        subtotal: item.precio * item.cantidad,
-    }));
-    document.getElementById("detallesVenta").value = JSON.stringify(detalles);
-    
-    // 9. HABILITAR/DESABILITAR BOTÓN DE REGISTRO
-    const tieneItems = carrito.length > 0;
-    registrarBtn.disabled = !tieneItems;
-    document.getElementById("btnComprobante").disabled = !tieneItems;
-}
+        } else {
+          descuentoBadge.classList.add("hidden");
+          descuentoRow.classList.add("hidden");
+          descuentoMonto.textContent = "-S/ 0.00";
+          totalConDescuento.textContent = `S/ ${subtotalValue.toFixed(2)}`;
+        }
 
-    // ==========================================
-    // ENVÍO DEL FORMULARIO
-    // ==========================================
-    document.getElementById("ventaForm").addEventListener("submit", function (e) {
-        if (carrito.length === 0) {
+        // 4. EL TOTAL A PAGAR ES EL SUBTOTAL CON DESCUENTO (si aplica)
+        const totalFinal = totalConDescuentoValue;
+
+        // 5. CALCULAR IGV (SOLO INFORMATIVO - 18% del total con descuento)
+        const igvCalculado = totalConDescuentoValue * 0.18;
+
+        // 6. ACTUALIZAR UI
+        totalPagar.textContent = totalFinal.toFixed(2);
+        subtotal.textContent = `S/ ${subtotalValue.toFixed(2)}`;
+        igvElement.textContent = `S/ ${igvCalculado.toFixed(2)}`;
+        totalNeto.textContent = `S/ ${totalFinal.toFixed(2)}`;
+
+        // 7. ACTUALIZAR CAMPOS OCULTOS
+        document.getElementById("subtotalInput").value =
+          subtotalValue.toFixed(2);
+        document.getElementById("igvInput").value = igvCalculado.toFixed(2);
+        document.getElementById("totalInput").value = totalFinal.toFixed(2);
+        document.getElementById("descuentoInput").value =
+          montoDescuento.toFixed(2);
+
+        // 8. PREPARAR DETALLES PARA EL BACKEND
+        const detalles = carrito.map((item) => ({
+          medicamentoId: item.id,
+          cantidad: item.cantidad,
+          precioUnitario: item.precio,
+          subtotal: item.precio * item.cantidad,
+        }));
+        document.getElementById("detallesVenta").value =
+          JSON.stringify(detalles);
+
+        // 9. HABILITAR/DESABILITAR BOTÓN DE REGISTRO
+        const tieneItems = carrito.length > 0;
+        registrarBtn.disabled = !tieneItems;
+        document.getElementById("btnComprobante").disabled = !tieneItems;
+      }
+
+      // ==========================================
+      // ENVÍO DEL FORMULARIO
+      // ==========================================
+      document
+        .getElementById("ventaForm")
+        .addEventListener("submit", function (e) {
+          if (carrito.length === 0) {
             e.preventDefault();
             alert("Agregue productos al carrito");
             return false;
-        }
+          }
 
-        const nombre = document.getElementById("clienteNombre").value.trim();
-        if (!nombre) {
+          const nombre = document.getElementById("clienteNombre").value.trim();
+          if (!nombre) {
             e.preventDefault();
             alert("Ingrese el nombre del cliente");
             return false;
-        }
+          }
 
-        const metodoPago = document.getElementById("metodoPago").value;
-        document.getElementById("metodoPagoInput").value = metodoPago;
-        document.getElementById("clienteNombreInput").value = nombre;
+          const metodoPago = document.getElementById("metodoPago").value;
+          document.getElementById("metodoPagoInput").value = metodoPago;
+          document.getElementById("clienteNombreInput").value = nombre;
 
-        const tieneDescuento = clienteSeleccionadoId > 0 && 
-                              parseInt(document.getElementById("clienteSeleccionadoCompras").textContent) >= 5;
-        
-        let mensaje = `Confirmar venta para ${nombre}`;
-        if (clienteSeleccionadoId > 0) {
+          const tieneDescuento =
+            clienteSeleccionadoId > 0 &&
+            parseInt(
+              document.getElementById("clienteSeleccionadoCompras").textContent,
+            ) >= 5;
+
+          let mensaje = `Confirmar venta para ${nombre}`;
+          if (clienteSeleccionadoId > 0) {
             mensaje += ` (Cliente registrado)`;
             if (tieneDescuento) {
-                mensaje += `\n🎉 5% de descuento aplicado`;
+              mensaje += `\n🎉 5% de descuento aplicado`;
             }
-        } else {
+          } else {
             mensaje += ` (Anónimo)`;
-        }
-        mensaje += `\nTotal: S/ ${document.getElementById("totalPagar").innerText}`;
+          }
+          mensaje += `\nTotal: S/ ${document.getElementById("totalPagar").innerText}`;
 
-        if (!confirm(mensaje)) {
+          if (!confirm(mensaje)) {
             e.preventDefault();
             return false;
-        }
-    });
+          }
+        });
 
-    // ==========================================
-    // GENERAR COMPROBANTE
-    // ==========================================
-    async function generarComprobante() {
+      // ==========================================
+      // GENERAR COMPROBANTE
+      // ==========================================
+      async function generarComprobante() {
         if (carrito.length === 0) {
-            alert("No hay productos en el carrito");
-            return;
+          alert("No hay productos en el carrito");
+          return;
         }
 
         const nombre = document.getElementById("clienteNombre").value.trim();
         if (!nombre) {
-            alert("Ingrese el nombre del cliente");
-            return;
+          alert("Ingrese el nombre del cliente");
+          return;
         }
 
-        const metodoPago = document.getElementById("metodoPago").options[
+        const metodoPago =
+          document.getElementById("metodoPago").options[
             document.getElementById("metodoPago").selectedIndex
-        ].text;
-        
-        const subtotalValue = parseFloat(document.getElementById("subtotalInput").value) || 0;
-        const descuentoValue = parseFloat(document.getElementById("descuentoInput").value) || 0;
-        const totalValue = parseFloat(document.getElementById("totalInput").value) || 0;
-        const igvValue = parseFloat(document.getElementById("igvInput").value) || 0;
-        
+          ].text;
+
+        const subtotalValue =
+          parseFloat(document.getElementById("subtotalInput").value) || 0;
+        const descuentoValue =
+          parseFloat(document.getElementById("descuentoInput").value) || 0;
+        const totalValue =
+          parseFloat(document.getElementById("totalInput").value) || 0;
+        const igvValue =
+          parseFloat(document.getElementById("igvInput").value) || 0;
+
         const fecha = new Date().toLocaleString();
-        const numeroBoleta = "B001-" + String(Math.floor(Math.random() * 100000)).padStart(5, "0");
+        const numeroBoleta =
+          "B001-" + String(Math.floor(Math.random() * 100000)).padStart(5, "0");
 
         const contenidoHTML = `
         <!DOCTYPE html>
@@ -1150,20 +1215,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${carrito.map((item) => `
+                        ${carrito
+                          .map(
+                            (item) => `
                             <tr>
                                 <td>${item.nombre}</td>
                                 <td class="text-right">${item.cantidad}</td>
                                 <td class="text-right">S/ ${item.precio.toFixed(2)}</td>
                                 <td class="text-right">S/ ${(item.precio * item.cantidad).toFixed(2)}</td>
                             </tr>
-                        `).join("")}
+                        `,
+                          )
+                          .join("")}
                     </tbody>
                 </table>
                 <div class="totales">
                     <p><span>Subtotal:</span><span>S/ ${subtotalValue.toFixed(2)}</span></p>
-                    ${descuentoValue > 0 ? `<p class="descuento"><span>Descuento (5%):</span><span>-S/ ${descuentoValue.toFixed(2)}</span></p>` : ''}
-                    ${descuentoValue > 0 ? `<p><span>Total con descuento:</span><span>S/ ${(subtotalValue - descuentoValue).toFixed(2)}</span></p>` : ''}
+                    ${descuentoValue > 0 ? `<p class="descuento"><span>Descuento (5%):</span><span>-S/ ${descuentoValue.toFixed(2)}</span></p>` : ""}
+                    ${descuentoValue > 0 ? `<p><span>Total con descuento:</span><span>S/ ${(subtotalValue - descuentoValue).toFixed(2)}</span></p>` : ""}
                     <p class="total-final"><span>TOTAL:</span><span>S/ ${totalValue.toFixed(2)}</span></p>
                 </div>
                 <div class="igv-info">
@@ -1182,24 +1251,30 @@
         ventana.document.write(contenidoHTML);
         ventana.document.close();
         ventana.print();
-    }
+      }
 
-    // ==========================================
-    // NOTIFICACIONES
-    // ==========================================
-    function mostrarNotificacion(mensaje, tipo) {
+      // ==========================================
+      // NOTIFICACIONES
+      // ==========================================
+      function mostrarNotificacion(mensaje, tipo) {
         const notificacion = document.createElement("div");
         notificacion.className = `fixed top-20 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transform transition-all duration-500 ${
-            tipo === 'success' ? 'bg-green-500 text-white' :
-            tipo === 'error' ? 'bg-red-500 text-white' :
-            'bg-blue-500 text-white'
+          tipo === "success"
+            ? "bg-green-500 text-white"
+            : tipo === "error"
+              ? "bg-red-500 text-white"
+              : "bg-blue-500 text-white"
         }`;
         notificacion.innerHTML = `
             <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined">
-                    ${tipo === 'success' ? 'check_circle' :
-                      tipo === 'error' ? 'error' :
-                      'info'}
+                    ${
+                      tipo === "success"
+                        ? "check_circle"
+                        : tipo === "error"
+                          ? "error"
+                          : "info"
+                    }
                 </span>
                 <span class="font-label-lg">${mensaje}</span>
                 <button onclick="this.parentElement.parentElement.remove()" class="ml-4 hover:opacity-80">
@@ -1209,98 +1284,101 @@
         `;
         document.body.appendChild(notificacion);
         setTimeout(() => {
-            if (notificacion.parentElement) {
-                notificacion.style.opacity = "0";
-                notificacion.style.transform = "translateX(100%)";
-                setTimeout(() => {
-                    if (notificacion.parentElement) {
-                        notificacion.remove();
-                    }
-                }, 500);
-            }
+          if (notificacion.parentElement) {
+            notificacion.style.opacity = "0";
+            notificacion.style.transform = "translateX(100%)";
+            setTimeout(() => {
+              if (notificacion.parentElement) {
+                notificacion.remove();
+              }
+            }, 500);
+          }
         }, 5000);
-    }
+      }
 
-    // ==========================================
-    // TECLADO: Cerrar resultados con ESC
-    // ==========================================
-    document.addEventListener("keydown", function(e) {
+      // ==========================================
+      // TECLADO: Cerrar resultados con ESC
+      // ==========================================
+      document.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
-            searchResults.classList.remove("active");
-            searchResults.innerHTML = "";
-            searchInput.blur();
-            clienteSearchResults.classList.remove("active");
-            clienteSearchResults.innerHTML = "";
-            buscarCliente.blur();
+          searchResults.classList.remove("active");
+          searchResults.innerHTML = "";
+          searchInput.blur();
+          clienteSearchResults.classList.remove("active");
+          clienteSearchResults.innerHTML = "";
+          buscarCliente.blur();
         }
-    });
+      });
 
-    // ==========================================
-    // TECLADO: Navegación con flechas
-    // ==========================================
-    searchInput.addEventListener("keydown", function(e) {
+      // ==========================================
+      // TECLADO: Navegación con flechas
+      // ==========================================
+      searchInput.addEventListener("keydown", function (e) {
         const items = searchResults.querySelectorAll(".search-result-item");
         if (items.length === 0) return;
-        
+
         if (e.key === "ArrowDown") {
-            e.preventDefault();
-            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-            updateSelection(items);
+          e.preventDefault();
+          selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+          updateSelection(items);
         } else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            selectedIndex = Math.max(selectedIndex - 1, 0);
-            updateSelection(items);
+          e.preventDefault();
+          selectedIndex = Math.max(selectedIndex - 1, 0);
+          updateSelection(items);
         } else if (e.key === "Enter" && selectedIndex >= 0) {
-            e.preventDefault();
-            const item = items[selectedIndex];
-            if (item) item.click();
+          e.preventDefault();
+          const item = items[selectedIndex];
+          if (item) item.click();
         }
-    });
+      });
 
-    function updateSelection(items) {
+      function updateSelection(items) {
         items.forEach((item, index) => {
-            if (index === selectedIndex) {
-                item.style.backgroundColor = "#d8e2ff";
-                item.scrollIntoView({ block: "nearest" });
-            } else {
-                item.style.backgroundColor = "";
-            }
+          if (index === selectedIndex) {
+            item.style.backgroundColor = "#d8e2ff";
+            item.scrollIntoView({ block: "nearest" });
+          } else {
+            item.style.backgroundColor = "";
+          }
         });
-    }
+      }
 
-    // Resetear selección cuando se ocultan los resultados
-    const observer = new MutationObserver(() => {
+      // Resetear selección cuando se ocultan los resultados
+      const observer = new MutationObserver(() => {
         if (!searchResults.classList.contains("active")) {
-            selectedIndex = -1;
+          selectedIndex = -1;
         }
-    });
-    observer.observe(searchResults, { attributes: true, attributeFilter: ["class"] });
+      });
+      observer.observe(searchResults, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
 
-    // ==========================================
-    // INICIALIZACIÓN
-    // ==========================================
-    document.addEventListener("DOMContentLoaded", function() {
+      // ==========================================
+      // INICIALIZACIÓN
+      // ==========================================
+      document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has("success")) {
-            mostrarNotificacion("✅ Venta registrada exitosamente", "success");
+          mostrarNotificacion("✅ Venta registrada exitosamente", "success");
         }
         if (urlParams.has("error")) {
-            mostrarNotificacion("❌ Error: " + urlParams.get("error"), "error");
+          mostrarNotificacion("❌ Error: " + urlParams.get("error"), "error");
         }
-        
+
         // Enfocar buscador al cargar
         setTimeout(() => searchInput.focus(), 100);
-    });
+      });
 
-    // ==========================================
-    // FUNCIÓN PARA ESCAPAR HTML
-    // ==========================================
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
+      // ==========================================
+      // FUNCIÓN PARA ESCAPAR HTML
+      // ==========================================
+      function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
-    }
-</script>
+      }
+    </script>
   </body>
 </html>

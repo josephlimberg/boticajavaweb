@@ -5,17 +5,21 @@ import com.java.boticaintegrador.model.Paciente;
 import com.java.boticaintegrador.model.Usuario;
 import com.java.boticaintegrador.model.Venta;
 import com.java.boticaintegrador.model.DetalleVenta;
+import com.java.boticaintegrador.service.AccionService;
 import com.java.boticaintegrador.service.MedicamentoService;
 import com.java.boticaintegrador.service.PacienteService;
+import com.java.boticaintegrador.service.UsuarioService;
 import com.java.boticaintegrador.service.VentaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -39,10 +43,35 @@ public class VentaController {
     private PacienteService pacienteService;
 
     @Autowired
+    private AccionService accionService;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @GetMapping
-    public String mostrarVenta(Model model) {
+    public String mostrarVenta(Model model, HttpServletRequest request) {
+        try {
+            // Obtener usuario autenticado
+            String nombreUsuario = obtenerNombreUsuario();
+            String rolUsuario = obtenerRolUsuario();
+            model.addAttribute("nombreUsuario", nombreUsuario);
+            model.addAttribute("rolUsuario", rolUsuario);
+
+            accionService.registrarAccion(
+                "SISTEMA",
+                "Visualizó pantalla de ventas",
+                "Ventas",
+                "Usuario: " + nombreUsuario,
+                request.getRemoteAddr()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("nombreUsuario", "Usuario");
+            model.addAttribute("rolUsuario", "Rol");
+        }
         return "registrarVenta";
     }
 
@@ -85,7 +114,6 @@ public class VentaController {
                 map.put("genero", p.getGenero());
                 map.put("estado", p.getEstado());
                 map.put("comprasRealizadas", p.getComprasRealizadas());
-                // Verificar si la PRÓXIMA compra tiene descuento
                 map.put("tieneDescuento", p.tieneDescuentoEnProximaCompra());
                 map.put("comprasFaltantes", p.comprasFaltantesParaDescuento());
                 return map;
@@ -130,7 +158,8 @@ public class VentaController {
             @RequestParam("clienteNombre") String clienteNombre,
             @RequestParam(value = "pacienteId", required = false) Long pacienteId,
             @RequestParam(value = "descuento", required = false) BigDecimal descuento,
-            Authentication authentication) {
+            Authentication authentication,
+            HttpServletRequest request) {
         
         try {
             Usuario usuario = ventaService.obtenerUsuarioPorUsername(authentication.getName());
@@ -142,8 +171,9 @@ public class VentaController {
             venta.setClienteAnonimoNombre(clienteNombre);
             venta.setFechaVenta(LocalDate.now());
             
-            // Si hay paciente seleccionado, incrementar sus compras
+            Long pacienteIdFinal = null;
             if (pacienteId != null && pacienteId > 0) {
+                pacienteIdFinal = pacienteId;
                 pacienteService.incrementarCompras(pacienteId);
             }
             
@@ -177,6 +207,20 @@ public class VentaController {
             
             ventaService.guardar(venta);
             
+            String descripcionAccion = "Registró nueva venta para " + clienteNombre;
+            String detallesAccion = "Total: S/" + total + 
+                                   ", Método: " + metodoPago +
+                                   (pacienteIdFinal != null ? ", Paciente ID: " + pacienteIdFinal : ", Cliente anónimo") +
+                                   (descuento != null && descuento.compareTo(BigDecimal.ZERO) > 0 ? ", Descuento: S/" + descuento : "");
+            
+            accionService.registrarAccion(
+                "CREACIÓN",
+                descripcionAccion,
+                "Ventas",
+                detallesAccion,
+                request.getRemoteAddr()
+            );
+            
             return "redirect:/ventas?success";
             
         } catch (Exception e) {
@@ -186,7 +230,27 @@ public class VentaController {
     }
 
     @GetMapping("/diarias")
-    public String ventasDiarias(Model model, @RequestParam(required = false) String fecha) {
+    public String ventasDiarias(Model model, @RequestParam(required = false) String fecha, HttpServletRequest request) {
+        try {
+            // Obtener usuario autenticado
+            String nombreUsuario = obtenerNombreUsuario();
+            String rolUsuario = obtenerRolUsuario();
+            model.addAttribute("nombreUsuario", nombreUsuario);
+            model.addAttribute("rolUsuario", rolUsuario);
+
+            accionService.registrarAccion(
+                "SISTEMA",
+                "Visualizó ventas diarias",
+                "Ventas",
+                "Fecha: " + fecha + ", Usuario: " + nombreUsuario,
+                request.getRemoteAddr()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("nombreUsuario", "Usuario");
+            model.addAttribute("rolUsuario", "Rol");
+        }
+
         LocalDate fechaFiltro = fecha != null ? LocalDate.parse(fecha) : LocalDate.now();
         
         List<Venta> ventas = ventaService.buscarPorFecha(fechaFiltro);
@@ -214,7 +278,6 @@ public class VentaController {
         
         model.addAttribute("ventas", ventasDTO);
         model.addAttribute("fechaSeleccionada", fechaFiltro.toString());
-        model.addAttribute("usuarioNombre", "Administrador");
         
         return "ventasDiarias";
     }
@@ -247,5 +310,34 @@ public class VentaController {
         response.put("fecha", venta.getFechaVenta().toString());
         
         return response;
+    }
+
+    // Métodos auxiliares para obtener el usuario autenticado
+    private String obtenerNombreUsuario() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                String username = auth.getName();
+                Usuario usuario = usuarioService.buscarPorUsername(username);
+                return usuario != null ? usuario.getNombreCompleto() : username;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Usuario";
+    }
+
+    private String obtenerRolUsuario() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                String username = auth.getName();
+                Usuario usuario = usuarioService.buscarPorUsername(username);
+                return usuario != null ? usuario.getRol() : "Rol";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Rol";
     }
 }

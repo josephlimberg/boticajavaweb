@@ -155,6 +155,15 @@
         max-height: 90vh;
         overflow-y: auto;
       }
+      .error-border {
+        border-color: #ba1a1a !important;
+      }
+      .error-message {
+        color: #ba1a1a;
+        font-size: 12px;
+        margin-top: 4px;
+        display: block;
+      }
     </style>
   </head>
   <body class="bg-background text-on-surface">
@@ -179,14 +188,14 @@
       </div>
       <nav class="flex-1 space-y-1 px-4">
         <a
+          th:href="@{/}"
           class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">home</span> Inicio
         </a>
         <a
+          th:href="@{/medicamentos}"
           class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container border-l-4 border-primary font-bold font-label-lg text-label-lg rounded-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">inventory_2</span> Inventario
         </a>
@@ -223,8 +232,8 @@
           <span class="material-symbols-outlined">group</span> Clientes
         </a>
         <a
+          th:href="@{/historial}"
           class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">history</span> Historial de
           Acciones
@@ -232,8 +241,8 @@
       </nav>
       <div class="px-4 mt-auto">
         <a
+          th:href="@{/logout}"
           class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-lg text-label-lg rounded-lg"
-          href="#"
         >
           <span class="material-symbols-outlined">logout</span> Cerrar Sesión
         </a>
@@ -258,34 +267,28 @@
             />
           </div>
         </div>
-        <div class="flex items-center gap-6">
-          <div class="flex items-center gap-2">
-            <button
-              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
-            >
-              <span class="material-symbols-outlined">notifications</span>
-            </button>
-            <button
-              class="p-2 text-on-surface-variant hover:text-primary transition-colors"
-            >
-              <span class="material-symbols-outlined">settings</span>
-            </button>
-          </div>
+        <div class="flex items-center gap-4">
           <div
-            class="flex items-center gap-3 ml-2 border-l border-outline-variant pl-6"
+            class="flex items-center gap-3 pl-4 border-l border-outline-variant"
           >
             <div class="text-right">
-              <p class="font-label-lg text-label-lg leading-none">
+              <p
+                class="font-label-lg text-label-lg text-on-surface"
+                th:text="${nombreUsuario}"
+              >
                 Dr. Ricardo Pérez
               </p>
-              <p class="text-[12px] text-on-surface-variant">
-                Farmacéutico Jefe
+              <p
+                class="text-[10px] uppercase tracking-wider text-outline"
+                th:text="${rolUsuario}"
+              >
+                Administrador
               </p>
             </div>
             <img
               alt="Avatar del Farmacéutico"
-              class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA80n2oKDsA5z5f8Gd4fQvLsgvezITVxm0FpqD4RdK0UGzmKql1RPkJDHroyl-wjabRtWYkxIVzuj66yU-o0qlGyKcF0WtWthQtTualcLRPhkT_sPZfARO2JaW2veVJIKM2RCBLHhucAS5zoI2GUEKBWKRD6H_3Z4bwHO09zlhbbgXZqNkEIFNycb5c5Lw0hg0tQKXHRxSAFbmAtRjjW-GZ9kEe6tfDfSlGqEOpThSwzKmDGia9RXyAyxZe7wpEyBI5X7jDjNODcdU5"
+              class="w-10 h-10 rounded-full border border-outline-variant bg-surface-container"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCivfE-EVV7Z375eyD66b7eC-zCWcc8UvX3Wmw6Ppqq8rTruJlP2La1yF8UGhQIuZiDsLt4R24bXpz3iRBEAr7o5qQUeXLvMopC6yIKqRupCy95BqOKZsOHGEMTP3U_fJPsOIG2G5zc9h3ev5tzXD4ak4JOEHxSL9HxmZ6Fv-LtX31m4A6oweEX2JVt2gZ8naTuIZ6Az08ht7KQzQsvY6PEH4Zz4AeeCHBywXOztJfgSG5CfTXHnhls_xg5y4ZNS-HlRYsrBj42CPVz"
             />
           </div>
         </div>
@@ -610,6 +613,7 @@
           th:action="@{/medicamentos/guardar}"
           method="post"
           class="p-6 space-y-5"
+          novalidate
         >
           <input type="hidden" id="medicamentoId" name="id" value="0" />
 
@@ -699,8 +703,10 @@
                 required
                 value="0"
                 min="0"
+                max="9999"
                 class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
               />
+              <span class="error-message" id="stockError"></span>
             </div>
             <div>
               <label
@@ -715,6 +721,7 @@
                 min="0"
                 class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
               />
+              <span class="error-message" id="nivelMinimoError"></span>
             </div>
           </div>
 
@@ -731,8 +738,10 @@
                 name="precio"
                 required
                 value="0"
+                max="9999"
                 class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
               />
+              <span class="error-message" id="precioError"></span>
             </div>
             <div>
               <label
@@ -760,6 +769,7 @@
               required
               class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
             />
+            <span class="error-message" id="fechaVencimientoError"></span>
           </div>
 
           <!-- SECCIÓN DE LOTE -->
@@ -794,6 +804,7 @@
                   min="0"
                   class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
                 />
+                <span class="error-message" id="stockLoteError"></span>
               </div>
             </div>
             <div class="grid grid-cols-2 gap-4 mt-4">
@@ -808,6 +819,7 @@
                   name="fechaFabricacion"
                   class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
                 />
+                <span class="error-message" id="fechaFabricacionError"></span>
               </div>
               <div>
                 <label
@@ -821,6 +833,7 @@
                   name="precioCompra"
                   class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
                 />
+                <span class="error-message" id="precioCompraError"></span>
               </div>
             </div>
           </div>
@@ -925,12 +938,145 @@
       const fechaFabricacionInput = document.getElementById("fechaFabricacion");
       const precioCompraInput = document.getElementById("precioCompra");
 
-      // --- NUEVA FUNCIONALIDAD: AUTO-GUARDADO DE BORRADOR ---
+      // --- FUNCIONES DE VALIDACIÓN ---
+
+      // Validar que un número tenga máximo 4 dígitos
+      function validarMaximoCuatroDigitos(valor) {
+        const num = parseInt(valor);
+        if (isNaN(num)) return false;
+        return num >= 0 && num <= 9999;
+      }
+
+      // Validar fecha: debe ser mayor a hoy
+      function validarFechaMayorAHoy(fechaStr) {
+        if (!fechaStr) return false;
+        const fecha = new Date(fechaStr);
+        fecha.setHours(0, 0, 0, 0);
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        return fecha > hoy;
+      }
+
+      // Validar fecha: debe ser menor a hoy
+      function validarFechaMenorAHoy(fechaStr) {
+        if (!fechaStr) return true; // No es obligatoria
+        const fecha = new Date(fechaStr);
+        fecha.setHours(0, 0, 0, 0);
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        return fecha < hoy;
+      }
+
+      // Limpiar errores de un campo
+      function limpiarError(campoId, errorId) {
+        const campo = document.getElementById(campoId);
+        const error = document.getElementById(errorId);
+        if (campo) campo.classList.remove("error-border");
+        if (error) error.textContent = "";
+      }
+
+      // Mostrar error en un campo
+      function mostrarError(campoId, errorId, mensaje) {
+        const campo = document.getElementById(campoId);
+        const error = document.getElementById(errorId);
+        if (campo) campo.classList.add("error-border");
+        if (error) error.textContent = mensaje;
+      }
+
+      // --- FUNCIÓN PRINCIPAL DE VALIDACIÓN DEL FORMULARIO ---
+      function validarFormulario() {
+        let esValido = true;
+
+        // 1. Validar Stock: máximo 4 números (0-9999)
+        const stock = parseInt(stockInput.value);
+        if (!validarMaximoCuatroDigitos(stock)) {
+          mostrarError("stock", "stockError", "El stock debe ser entre 0 y 9999");
+          esValido = false;
+        } else {
+          limpiarError("stock", "stockError");
+        }
+
+        // 2. Validar Nivel Mínimo: debe ser menor al stock
+        const nivelMinimo = parseInt(nivelMinimoInput.value);
+        if (!isNaN(nivelMinimo) && !isNaN(stock) && nivelMinimo >= stock) {
+          mostrarError(
+            "nivelMinimo",
+            "nivelMinimoError",
+            "El nivel mínimo debe ser menor al stock (" + stock + ")"
+          );
+          esValido = false;
+        } else {
+          limpiarError("nivelMinimo", "nivelMinimoError");
+        }
+
+        // 3. Validar Precio: máximo 4 números (0-9999)
+        const precio = parseFloat(precioInput.value);
+        if (!validarMaximoCuatroDigitos(precio)) {
+          mostrarError("precio", "precioError", "El precio debe ser entre 0 y 9999");
+          esValido = false;
+        } else {
+          limpiarError("precio", "precioError");
+        }
+
+        // 4. Validar Precio Compra: debe ser menor al Precio
+        const precioCompra = parseFloat(precioCompraInput.value);
+        if (!isNaN(precioCompra) && !isNaN(precio) && precioCompra >= precio) {
+          mostrarError(
+            "precioCompra",
+            "precioCompraError",
+            "El precio de compra debe ser menor al precio (" + precio + ")"
+          );
+          esValido = false;
+        } else {
+          limpiarError("precioCompra", "precioCompraError");
+        }
+
+        // 5. Validar Stock del Lote: debe ser igual al Stock
+        const stockLote = parseInt(stockLoteInput.value);
+        if (!isNaN(stockLote) && !isNaN(stock) && stockLote !== stock) {
+          mostrarError(
+            "stockLote",
+            "stockLoteError",
+            "El stock del lote debe ser igual al stock (" + stock + ")"
+          );
+          esValido = false;
+        } else {
+          limpiarError("stockLote", "stockLoteError");
+        }
+
+        // 6. Validar Fecha Vencimiento: debe ser mayor a hoy
+        const fechaVencimiento = fechaVencimientoInput.value;
+        if (!validarFechaMayorAHoy(fechaVencimiento)) {
+          mostrarError(
+            "fechaVencimiento",
+            "fechaVencimientoError",
+            "La fecha de vencimiento debe ser mayor a hoy"
+          );
+          esValido = false;
+        } else {
+          limpiarError("fechaVencimiento", "fechaVencimientoError");
+        }
+
+        // 7. Validar Fecha Fabricación: debe ser menor a hoy
+        const fechaFabricacion = fechaFabricacionInput.value;
+        if (fechaFabricacion && !validarFechaMenorAHoy(fechaFabricacion)) {
+          mostrarError(
+            "fechaFabricacion",
+            "fechaFabricacionError",
+            "La fecha de fabricación debe ser menor a hoy"
+          );
+          esValido = false;
+        } else {
+          limpiarError("fechaFabricacion", "fechaFabricacionError");
+        }
+
+        return esValido;
+      }
+
+      // --- FUNCIONES DE AUTO-GUARDADO DE BORRADOR ---
       const STORAGE_KEY = "medicamentoFormDraft";
 
-      // Función para guardar el estado actual del formulario en localStorage
       function saveFormDraft() {
-        // Solo guardamos si el modal NO está en modo edición (id vacío o 0)
         const isEditMode = medicamentoId.value && medicamentoId.value !== "0";
         if (isEditMode) return;
 
@@ -958,9 +1104,7 @@
         }
       }
 
-      // Función para cargar el borrador guardado en el formulario
       function loadFormDraft() {
-        // Solo cargamos si estamos en modo "Agregar" (no edición)
         if (medicamentoId.value && medicamentoId.value !== "0") return;
 
         const savedDraft = localStorage.getItem(STORAGE_KEY);
@@ -968,7 +1112,6 @@
 
         try {
           const draftData = JSON.parse(savedDraft);
-          // Cargamos los datos en el formulario si existen
           if (draftData.nombre) nombreInput.value = draftData.nombre;
           if (draftData.categoriaId)
             categoriaSelect.value = draftData.categoriaId;
@@ -997,45 +1140,42 @@
         }
       }
 
-      // Función para limpiar el borrador después de guardar exitosamente
       function clearFormDraft() {
         localStorage.removeItem(STORAGE_KEY);
       }
 
-      // --- MODIFICAR FUNCIONES EXISTENTES ---
-      // Open modal for new medicamento
+      // --- FUNCIONES DEL MODAL ---
       function openModal() {
         modalTitle.innerText = "Agregar Medicamento";
         medicamentoId.value = "";
         form.reset();
-        // Valores por defecto
         stockInput.value = "0";
         nivelMinimoInput.value = "20";
         stockLoteInput.value = "0";
-        // Limpiar otros campos
         codigoLoteInput.value = "";
         fechaFabricacionInput.value = "";
         precioCompraInput.value = "";
 
-        // CARGAR EL BORRADOR GUARDADO
-        loadFormDraft();
+        // Limpiar errores
+        document.querySelectorAll(".error-border").forEach(el => el.classList.remove("error-border"));
+        document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
 
+        loadFormDraft();
         modal.classList.add("active");
       }
 
-      // Open modal for edit con AJAX
       async function openEditModal(id) {
         try {
           modalTitle.innerText = "Editar Medicamento";
-
-          // Limpiar formulario primero
           form.reset();
 
-          // Hacer petición para obtener los datos completos
+          // Limpiar errores
+          document.querySelectorAll(".error-border").forEach(el => el.classList.remove("error-border"));
+          document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+
           const response = await fetch(`/medicamentos/${id}`);
           const data = await response.json();
 
-          // Llenar campos del medicamento
           medicamentoId.value = data.id || "";
           nombreInput.value = data.nombre || "";
           categoriaSelect.value = data.categoriaId || "";
@@ -1048,7 +1188,6 @@
           ubicacionInput.value = data.ubicacionEstante || "";
           fechaVencimientoInput.value = data.fechaVencimiento || "";
 
-          // Llenar campos del lote
           if (data.codigoLote) {
             codigoLoteInput.value = data.codigoLote;
             stockLoteInput.value = data.stockLote || 0;
@@ -1068,41 +1207,131 @@
         }
       }
 
-      // Close modal (funcion modificada para guardar antes de cerrar)
       function closeModal() {
-        // Guardar el estado actual del formulario (solo si no estamos editando)
-        if (
-          !medicamentoId.value ||
-          medicamentoId.value === "0" ||
-          medicamentoId.value === ""
-        ) {
+        if (!medicamentoId.value || medicamentoId.value === "0" || medicamentoId.value === "") {
           saveFormDraft();
         }
         modal.classList.remove("active");
+        // Limpiar errores al cerrar
+        document.querySelectorAll(".error-border").forEach(el => el.classList.remove("error-border"));
+        document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
       }
 
-      // --- MODIFICAR EL ENVÍO DEL FORMULARIO ---
-      // Interceptar el envío del formulario para limpiar el borrador si se guarda exitosamente
+      // --- EVENTO DE ENVÍO DEL FORMULARIO CON VALIDACIÓN ---
       form.addEventListener("submit", function (e) {
-        // No prevenimos el envío normal, solo agregamos un listener para después
-        // Como el formulario se envía de manera tradicional, no podemos esperar la respuesta aquí fácilmente.
-        // Una forma es asumir que si se envió (y no hay errores de red), el borrador se limpia.
-        // Para una experiencia más robusta, idealmente se usaría fetch, pero por ahora:
+        // Ejecutar validación antes de enviar
+        if (!validarFormulario()) {
+          e.preventDefault();
+          // Mostrar mensaje de error general
+          alert("Por favor, corrija los errores en el formulario antes de guardar.");
+          return;
+        }
+
+        // Si es válido, guardar y limpiar borrador
         if (!medicamentoId.value || medicamentoId.value === "0") {
-          // Es un nuevo medicamento, programamos la limpieza del borrador
-          // El problema es que si la página recarga, el borrador se perderá igual.
-          // Usaremos sessionStorage para indicar que se acaba de enviar el form
           sessionStorage.setItem("formJustSubmitted", "true");
         }
       });
 
-      // Al cargar la página, si venimos de un envío exitoso, limpiamos el borrador.
-      if (sessionStorage.getItem("formJustSubmitted") === "true") {
-        clearFormDraft();
-        sessionStorage.removeItem("formJustSubmitted");
-      }
+      // --- VALIDACIONES EN TIEMPO REAL (on blur) ---
+      // Stock
+      stockInput.addEventListener("blur", function() {
+        const val = parseInt(this.value);
+        if (!validarMaximoCuatroDigitos(val)) {
+          mostrarError("stock", "stockError", "El stock debe ser entre 0 y 9999");
+        } else {
+          limpiarError("stock", "stockError");
+          // Revalidar nivel mínimo y stock lote si cambia stock
+          if (nivelMinimoInput.value) {
+            const nm = parseInt(nivelMinimoInput.value);
+            if (!isNaN(nm) && nm >= val) {
+              mostrarError("nivelMinimo", "nivelMinimoError", "El nivel mínimo debe ser menor al stock (" + val + ")");
+            } else {
+              limpiarError("nivelMinimo", "nivelMinimoError");
+            }
+          }
+          if (stockLoteInput.value) {
+            const sl = parseInt(stockLoteInput.value);
+            if (!isNaN(sl) && sl !== val) {
+              mostrarError("stockLote", "stockLoteError", "El stock del lote debe ser igual al stock (" + val + ")");
+            } else {
+              limpiarError("stockLote", "stockLoteError");
+            }
+          }
+        }
+      });
 
-      // Delete modal functions
+      // Nivel Mínimo
+      nivelMinimoInput.addEventListener("blur", function() {
+        const stock = parseInt(stockInput.value);
+        const nivelMin = parseInt(this.value);
+        if (!isNaN(nivelMin) && !isNaN(stock) && nivelMin >= stock) {
+          mostrarError("nivelMinimo", "nivelMinimoError", "El nivel mínimo debe ser menor al stock (" + stock + ")");
+        } else {
+          limpiarError("nivelMinimo", "nivelMinimoError");
+        }
+      });
+
+      // Precio
+      precioInput.addEventListener("blur", function() {
+        const val = parseFloat(this.value);
+        if (!validarMaximoCuatroDigitos(val)) {
+          mostrarError("precio", "precioError", "El precio debe ser entre 0 y 9999");
+        } else {
+          limpiarError("precio", "precioError");
+          // Revalidar precio compra
+          if (precioCompraInput.value) {
+            const pc = parseFloat(precioCompraInput.value);
+            if (!isNaN(pc) && pc >= val) {
+              mostrarError("precioCompra", "precioCompraError", "El precio de compra debe ser menor al precio (" + val + ")");
+            } else {
+              limpiarError("precioCompra", "precioCompraError");
+            }
+          }
+        }
+      });
+
+      // Precio Compra
+      precioCompraInput.addEventListener("blur", function() {
+        const precio = parseFloat(precioInput.value);
+        const precioCompra = parseFloat(this.value);
+        if (!isNaN(precioCompra) && !isNaN(precio) && precioCompra >= precio) {
+          mostrarError("precioCompra", "precioCompraError", "El precio de compra debe ser menor al precio (" + precio + ")");
+        } else {
+          limpiarError("precioCompra", "precioCompraError");
+        }
+      });
+
+      // Stock Lote
+      stockLoteInput.addEventListener("blur", function() {
+        const stock = parseInt(stockInput.value);
+        const stockLote = parseInt(this.value);
+        if (!isNaN(stockLote) && !isNaN(stock) && stockLote !== stock) {
+          mostrarError("stockLote", "stockLoteError", "El stock del lote debe ser igual al stock (" + stock + ")");
+        } else {
+          limpiarError("stockLote", "stockLoteError");
+        }
+      });
+
+      // Fecha Vencimiento
+      fechaVencimientoInput.addEventListener("blur", function() {
+        if (!validarFechaMayorAHoy(this.value)) {
+          mostrarError("fechaVencimiento", "fechaVencimientoError", "La fecha de vencimiento debe ser mayor a hoy");
+        } else {
+          limpiarError("fechaVencimiento", "fechaVencimientoError");
+        }
+      });
+
+      // Fecha Fabricación
+      fechaFabricacionInput.addEventListener("blur", function() {
+        if (this.value && !validarFechaMenorAHoy(this.value)) {
+          mostrarError("fechaFabricacion", "fechaFabricacionError", "La fecha de fabricación debe ser menor a hoy");
+        } else {
+          limpiarError("fechaFabricacion", "fechaFabricacionError");
+        }
+      });
+
+      // --- FUNCIONES DE ELIMINACIÓN ---
       function openDeleteModal(id, nombre) {
         currentDeleteId = id;
         currentDeleteName = nombre;
@@ -1117,8 +1346,7 @@
         currentDeleteName = "";
       }
 
-      // --- CONFIGURAR AUTO-GUARDADO AL ESCRIBIR ---
-      // Añadir event listeners a todos los campos del formulario para guardar cambios en tiempo real
+      // --- AUTO-GUARDADO EN TIEMPO REAL ---
       const allFormInputs = [
         nombreInput,
         categoriaSelect,
@@ -1139,32 +1367,24 @@
       allFormInputs.forEach((input) => {
         if (input) {
           input.addEventListener("input", function () {
-            // Solo guardar si el modal está visible y no estamos en edición
-            if (
-              modal.classList.contains("active") &&
-              (!medicamentoId.value || medicamentoId.value === "0")
-            ) {
+            if (modal.classList.contains("active") && (!medicamentoId.value || medicamentoId.value === "0")) {
               saveFormDraft();
             }
           });
           input.addEventListener("change", function () {
-            if (
-              modal.classList.contains("active") &&
-              (!medicamentoId.value || medicamentoId.value === "0")
-            ) {
+            if (modal.classList.contains("active") && (!medicamentoId.value || medicamentoId.value === "0")) {
               saveFormDraft();
             }
           });
         }
       });
 
-      // Event listeners
+      // --- EVENT LISTENERS ---
       openBtn.addEventListener("click", openModal);
       closeBtn.addEventListener("click", closeModal);
       cancelBtn.addEventListener("click", closeModal);
       cancelDeleteBtn.addEventListener("click", closeDeleteModal);
 
-      // Close modal on outside click (también guardará)
       modal.addEventListener("click", (e) => {
         if (e.target === modal) closeModal();
       });
@@ -1172,10 +1392,9 @@
         if (e.target === deleteModal) closeDeleteModal();
       });
 
-      // Edit buttons - usar el ID para hacer fetch
+      // --- BOTONES DE EDICIÓN ---
       function setupEditButtons() {
         document.querySelectorAll(".edit-btn").forEach((btn) => {
-          // Remover event listeners anteriores si existen
           const newBtn = btn.cloneNode(true);
           btn.parentNode.replaceChild(newBtn, btn);
 
@@ -1188,7 +1407,6 @@
         });
       }
 
-      // Delete buttons
       function setupDeleteButtons() {
         document.querySelectorAll(".delete-btn").forEach((btn) => {
           const newBtn = btn.cloneNode(true);
@@ -1202,33 +1420,31 @@
         });
       }
 
-      // Inicializar los botones cuando la página carga
+      // --- INICIALIZACIÓN ---
       document.addEventListener("DOMContentLoaded", () => {
         setupEditButtons();
         setupDeleteButtons();
 
-        // Configurar filtros de búsqueda
         const searchInput = document.getElementById("searchInput");
         const categoryFilter = document.getElementById("categoryFilter");
         const statusFilter = document.getElementById("statusFilter");
 
         if (searchInput) searchInput.addEventListener("input", filterTable);
-        if (categoryFilter)
-          categoryFilter.addEventListener("change", filterTable);
+        if (categoryFilter) categoryFilter.addEventListener("change", filterTable);
         if (statusFilter) statusFilter.addEventListener("change", filterTable);
 
-        // Limpiar borrador si existe al inicio (opcional, para evitar datos residuales)
-        // clearFormDraft(); // Descomentar si quieres que siempre empiece limpio al cargar la página
+        if (sessionStorage.getItem("formJustSubmitted") === "true") {
+          clearFormDraft();
+          sessionStorage.removeItem("formJustSubmitted");
+        }
 
         filterTable();
       });
 
-      // Función de filtrado (mantener la existente)
+      // --- FUNCIÓN DE FILTRADO ---
       function filterTable() {
-        const searchTerm =
-          document.getElementById("searchInput")?.value.toLowerCase() || "";
-        const categoryId =
-          document.getElementById("categoryFilter")?.value || "";
+        const searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
+        const categoryId = document.getElementById("categoryFilter")?.value || "";
         const status = document.getElementById("statusFilter")?.value || "";
         const tableBody = document.getElementById("medicamentosTableBody");
         if (!tableBody) return;
@@ -1241,18 +1457,11 @@
         fechaLimite.setDate(hoy.getDate() + 30);
 
         rows.forEach((row) => {
-          const nombre =
-            row
-              .querySelector("td:first-child .font-bold")
-              ?.innerText.toLowerCase() || "";
-          const categoria =
-            row.querySelector("td:nth-child(2) span")?.innerText || "";
-          const stock =
-            parseInt(row.querySelector("td:nth-child(3)")?.innerText) || 0;
-          const fechaVencimientoStr =
-            row.querySelector("td:nth-child(4) span")?.innerText || "";
+          const nombre = row.querySelector("td:first-child .font-bold")?.innerText.toLowerCase() || "";
+          const categoria = row.querySelector("td:nth-child(2) span")?.innerText || "";
+          const stock = parseInt(row.querySelector("td:nth-child(3)")?.innerText) || 0;
+          const fechaVencimientoStr = row.querySelector("td:nth-child(4) span")?.innerText || "";
 
-          // Convertir fecha de vencimiento
           let fechaVenc = null;
           let estaVencido = false;
           if (fechaVencimientoStr) {
@@ -1263,14 +1472,9 @@
           }
 
           let matchesSearch = nombre.includes(searchTerm);
-          let matchesCategory =
-            !categoryId ||
-            categoria ===
-              document.querySelector(`option[value="${categoryId}"]`)
-                ?.innerText;
+          let matchesCategory = !categoryId || categoria === document.querySelector(`option[value="${categoryId}"]`)?.innerText;
           let matchesStatus = true;
 
-          // Filtrar por estado
           if (status === "bajo") {
             matchesStatus = stock < 20;
           } else if (status === "proximo") {
@@ -1282,7 +1486,6 @@
           } else if (status === "vencido") {
             matchesStatus = estaVencido;
           } else if (status === "") {
-            // Cuando es "Todos", NO mostrar los vencidos
             matchesStatus = !estaVencido;
           }
 
@@ -1299,14 +1502,6 @@
           recordCountSpan.innerHTML = `Mostrando ${visibleCount} medicamentos`;
         }
       }
-
-      // Si hay cambios dinámicos en la tabla (por ejemplo después de guardar/eliminar)
-      // puedes llamar a setupEditButtons y setupDeleteButtons nuevamente
-
-      if (searchInput) searchInput.addEventListener("input", filterTable);
-      if (categoryFilter)
-        categoryFilter.addEventListener("change", filterTable);
-      if (statusFilter) statusFilter.addEventListener("change", filterTable);
     </script>
   </body>
 </html>
