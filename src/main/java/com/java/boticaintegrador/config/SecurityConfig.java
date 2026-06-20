@@ -8,8 +8,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -20,28 +23,41 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/usuarios/cambiar-estado", "/usuarios/eliminar")
+                        .ignoringRequestMatchers("/usuarios/cambiar-estado", "/usuarios/eliminar", "/verificacion/**")
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Permitimos que cualquiera vea la página de login y los archivos estáticos (CSS, JS)
-                        .requestMatchers("/login", "/css/**", "/js/**", "/img/**").permitAll()
-                        // Permitir solicitudes POST de estado sin autenticación (para pruebas)
+                        .requestMatchers("/login", "/css/**", "/js/**", "/img/**", "/verificacion/**").permitAll()
                         .requestMatchers("/usuarios/cambiar-estado", "/usuarios/eliminar").permitAll()
-                        // Cualquier otra ruta requiere estar logueado
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/medicamentos", true)
+                        .successHandler(authenticationSuccessHandler()) // Usar handler personalizado
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new AuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, 
+                                                HttpServletResponse response, 
+                                                org.springframework.security.core.Authentication authentication) 
+                                                throws IOException, ServletException {
+                // Redirige siempre a /verificacion después del login
+                response.sendRedirect("/verificacion");
+            }
+        };
     }
 
     @Bean

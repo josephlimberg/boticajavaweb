@@ -1,0 +1,115 @@
+<!doctype html>
+<html class="light" lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Verificación | Botica Control</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f9f9ff;
+      }
+      .verification-card {
+        max-width: 420px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex items-center justify-center p-4">
+    <div class="verification-card w-full">
+      <div
+        class="bg-white rounded-2xl shadow-xl p-8 border border-gray-200"
+      >
+        <!-- Logo -->
+        <div class="text-center mb-8">
+          <div
+            class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4"
+          >
+            <span class="text-white text-3xl font-bold">B</span>
+          </div>
+          <h1 class="text-2xl font-bold text-gray-800">Botica Control</h1>
+          <p class="text-gray-500 text-sm">
+            Verificación de dos pasos
+          </p>
+        </div>
+
+        <!-- Mensajes -->
+        <div
+          th:if="${mensaje}"
+          class="mb-4 p-3 bg-green-50 text-green-700 rounded-lg border border-green-200 text-sm"
+        >
+          <span th:text="${mensaje}"></span>
+        </div>
+        <div
+          th:if="${error}"
+          class="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm"
+        >
+          <span th:text="${error}"></span>
+        </div>
+
+        <!-- Instrucciones -->
+        <div class="bg-gray-50 rounded-xl p-4 mb-6 text-center border border-gray-200">
+          <p class="text-sm text-gray-600">
+            Enviaremos un código SMS al número de verificación
+          </p>
+          <p class="text-xs text-gray-500 mt-1">
+            <span class="font-bold">+51 941 233 970</span>
+          </p>
+        </div>
+
+        <!-- Formulario -->
+        <form
+          th:action="@{/verificacion/validar}"
+          method="post"
+          class="space-y-4"
+        >
+          <div>
+            <label
+              class="block text-sm font-medium text-gray-700 mb-2"
+              >Código de 6 dígitos</label
+            >
+            <input
+              type="text"
+              name="codigo"
+              required
+              maxlength="6"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest font-bold"
+              placeholder="000000"
+              inputmode="numeric"
+              pattern="[0-9]*"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          >
+            Verificar
+          </button>
+        </form>
+
+        <!-- Reenviar código -->
+        <form th:action="@{/verificacion/enviar}" method="post" class="mt-3">
+          <button
+            type="submit"
+            class="w-full border border-gray-300 text-gray-600 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+          >
+            Reenviar código
+          </button>
+        </form>
+
+        <div class="mt-6 text-center text-xs text-gray-500">
+          <p>El código expirará en 5 minutos</p>
+          <a th:href="@{/logout}" class="text-blue-600 hover:underline"
+            >Volver al login</a
+          >
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
