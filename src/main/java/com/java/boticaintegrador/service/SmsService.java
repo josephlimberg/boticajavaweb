@@ -12,15 +12,19 @@ import java.util.Random;
 @Service
 public class SmsService {
 
-    // Configuración de Twilio
     private static final String ACCOUNT_SID = "AC6168196d54ef765f6864ac1b68e9586c";
-    private static final String AUTH_TOKEN = "b8d2d53b6ee1ca7cf14d864b480c783a";
-    private static final String TWILIO_PHONE_NUMBER = "+18172420459"; // Número de Twilio
+    private static final String AUTH_TOKEN = "81a6b036a76ca432d1cec8ed9e1fd6f1";
+    private static final String TWILIO_PHONE_NUMBER = "+18172420459";
 
     private final Map<String, String> codigosVerificacion = new HashMap<>();
 
     static {
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        try {
+            Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+            System.out.println("✅ Twilio inicializado correctamente");
+        } catch (Exception e) {
+            System.out.println("❌ Error inicializando Twilio: " + e.getMessage());
+        }
     }
 
     public String generarCodigo() {
@@ -30,11 +34,14 @@ public class SmsService {
 
     public boolean enviarSms(String telefonoDestino, String codigo) {
         try {
+            System.out.println("📱 Intentando enviar SMS...");
+            System.out.println("📱 De: " + TWILIO_PHONE_NUMBER);
+            System.out.println("📱 A: " + telefonoDestino);
+            System.out.println("🔐 Código: " + codigo);
+
             // Verificar si el número destino es el mismo que el de Twilio
             if (telefonoDestino.equals(TWILIO_PHONE_NUMBER)) {
-                System.out.println("No se puede enviar SMS al mismo número de Twilio");
-                System.out.println("Mostrando código en consola en su lugar");
-                System.out.println("CÓDIGO: " + codigo);
+                System.out.println("⚠️ No se puede enviar al mismo número");
                 codigosVerificacion.put(telefonoDestino, codigo);
                 return true;
             }
@@ -46,19 +53,18 @@ public class SmsService {
                 "Tu código de verificación Botica Control es: " + codigo
             ).create();
             
-            System.out.println("SMS ENVIADO EXITOSAMENTE");
-            System.out.println("De: " + TWILIO_PHONE_NUMBER);
-            System.out.println("A: " + telefonoDestino);
-            System.out.println("Código: " + codigo);
-            System.out.println("SID: " + message.getSid());
+            System.out.println("✅ SMS ENVIADO!");
+            System.out.println("📨 SID: " + message.getSid());
+            System.out.println("📊 Estado: " + message.getStatus());
             
             codigosVerificacion.put(telefonoDestino, codigo);
             return true;
             
         } catch (Exception e) {
-            System.out.println("Error al enviar SMS: " + e.getMessage());
+            System.out.println("❌ ERROR DETALLADO:");
+            e.printStackTrace();
             // Fallback: mostrar en consola
-            System.out.println("Código (fallback): " + codigo);
+            System.out.println("📱 Código (fallback): " + codigo);
             codigosVerificacion.put(telefonoDestino, codigo);
             return true;
         }
@@ -67,21 +73,21 @@ public class SmsService {
     public boolean verificarCodigo(String telefono, String codigoIngresado) {
         String codigoGuardado = codigosVerificacion.get(telefono);
         if (codigoGuardado == null) {
-            System.out.println("No hay código guardado para: " + telefono);
+            System.out.println("❌ No hay código guardado para: " + telefono);
             return false;
         }
         
         boolean valido = codigoGuardado.equals(codigoIngresado);
         if (valido) {
             codigosVerificacion.remove(telefono);
-            System.out.println("Código verificado correctamente para: " + telefono);
+            System.out.println("✅ Código verificado correctamente");
         } else {
-            System.out.println("Código incorrecto. Esperado: " + codigoGuardado + ", Ingresado: " + codigoIngresado);
+            System.out.println("❌ Código incorrecto");
         }
         return valido;
     }
 
     public String obtenerNumeroVerificacion() {
-        return "+51941233970"; // Tu número personal
+        return "+51941233970";
     }
 }
