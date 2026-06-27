@@ -1,19 +1,30 @@
 version: '3.8'
 
 services:
-  mysql-db:
-    image: mysql:8.0
-    container_name: botica-integrador
-    restart: "no"
+  db:
+    image: mariadb:10.4.32
+    container_name: botica-mysql
+    restart: always
     environment:
+      MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: boticaintegrador2
-      MYSQL_ROOT_PASSWORD: root123 # Contraseña para el usuario root
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
-      # Mapeamos tu script SQL para que cree las tablas e inserte los datos iniciales
-      - ./bdbotica.sql:/docker-entrypoint-initdb.d/init.sql
+      - mariadb_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: botica-phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"  # ← CAMBIÉ ESTO: 8081 en lugar de 8080
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
 
 volumes:
-  mysql_data:
+  mariadb_data:
+
+#docker-compose down
+#docker-compose up -d

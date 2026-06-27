@@ -75,5 +75,37 @@ mi-proyecto/
 │   │
 │   └── test/                       <-- Pruebas unitarias y de integración
 
+````
 #Correr el spring boot en el directorio boticajavaweb
 mvn spring-boot:run
+
+
+
+cambios entrega 3er avance
+
+#### descargar k6
+windows en cmd -> winget install k6
+
+### ejecutar pruebas de k6
+buscamos donde se descargo el k6, lo comun es en " /c/Program Files/k6/k6.exe ", si no es asi es mejor buscarlo y copiamos la url 
+#### Prueba de Carga
+"/c/Program Files/k6/k6.exe" run carga.js
+
+#### Prueba de Pico
+"/c/Program Files/k6/k6.exe" run pico.js
+
+#### Prueba de Estrés
+"/c/Program Files/k6/k6.exe" run estres.js
+
+# Docker
+para docker, debemos cambiar en java.application.properties,   
+cambiando password: root123 . Por temas de seguridad de mysql
+
+en docker compose podemos ver que se ejecuta la bd y  phpmyadmin de mysql como interfaz en el puerto 8081
+cuando ingresemos, podemos importar del archivo .sql
+
+# cambiar la ruta
+config/SecurityConfig:
+// Redirige siempre a /verificacion después del login
+response.sendRedirect("/medicamentos"); //medicamentos para entrar defrente
+// verificacion para login de verficiacion 2 pasos sms
